@@ -1,0 +1,45 @@
+
+> kanban-board@1.0.0 dev
+> concurrently "npm run dev:backend" "npm run dev:frontend"
+
+[0] 
+[0] > kanban-board@1.0.0 dev:backend
+[0] > node server.js
+[0] 
+[1] 
+[1] > kanban-board@1.0.0 dev:frontend
+[1] > cd frontend && npm run dev
+[1] 
+[1] 
+[1] > frontend@1.0.0 dev
+[1] > vite
+[1] 
+[0] Created PGLite data directory at /tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/pglite-data
+[0] Error initializing database: TypeError: f?.startsWith is not a function
+[0]     at ru (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/chunk-EKNQE2HU.js:1:36644)
+[0]     at new Dt (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/chunk-OVRU7FYL.js:1:22182)
+[0]     at initDB (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/server.js:47:10)
+[0] node:internal/process/promises:288
+[0]             triggerUncaughtException(err, true /* fromPromise */);
+[0]             ^
+[0] 
+[0] TypeError: f?.startsWith is not a function
+[0]     at ru (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/chunk-EKNQE2HU.js:1:36644)
+[0]     at new Dt (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/chunk-OVRU7FYL.js:1:22182)
+[0]     at initDB (file:///tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/server.js:47:10)
+[0] 
+[0] Node.js v18.20.8
+[0] npm run dev:backend exited with code 1
+[1] You are using Node.js 18.20.8. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+[1] file:///usr/local/lib/node_modules/vite/dist/node/cli.js:541
+[1] 				this.dispatchEvent(new CustomEvent("command:!", { detail: command }));
+[1] 				                       ^
+[1] 
+[1] ReferenceError: CustomEvent is not defined
+[1]     at CAC.parse (file:///usr/local/lib/node_modules/vite/dist/node/cli.js:541:28)
+[1]     at file:///usr/local/lib/node_modules/vite/dist/node/cli.js:834:5
+[1]     at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+[1]     at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+[1] 
+[1] Node.js v18.20.8
+[1] npm run dev:frontend exited with code 1

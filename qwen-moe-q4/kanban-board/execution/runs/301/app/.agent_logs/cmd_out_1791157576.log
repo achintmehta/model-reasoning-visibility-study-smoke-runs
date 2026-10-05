@@ -1,0 +1,28 @@
+
+> kanban-board@1.0.0 dev
+> concurrently "npm run dev:server" "npm run dev:client"
+
+[1] 
+[1] > kanban-board@1.0.0 dev:client
+[1] > npm run dev --prefix client
+[1] 
+[0] 
+[0] > kanban-board@1.0.0 dev:server
+[0] > node server/server.js
+[0] 
+[1] 
+[1] > kanban-board-client@1.0.0 dev
+[1] > vite
+[1] 
+[1] [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[1] 
+[1]   VITE v5.4.21  ready in 120 ms
+[1] 
+[1]   ➜  Local:   http://localhost:3000/
+[1]   ➜  Network: use --host to expose
+[0] Failed to start server: TypeError: Cannot read properties of undefined (reading '0')
+[0]     at initializeSchema (file:///tmp/runs/smokes/qwen-moe-q4/kanban-board/execution/runs/301/app/server/db.js:50:17)
+[0]     at async getDb (file:///tmp/runs/smokes/qwen-moe-q4/kanban-board/execution/runs/301/app/server/db.js:24:3)
+[0]     at async start (file:///tmp/runs/smokes/qwen-moe-q4/kanban-board/execution/runs/301/app/server/server.js:324:3)
+[0] npm run dev:server exited with code 1
+[1] npm run dev:client exited with code SIGTERM

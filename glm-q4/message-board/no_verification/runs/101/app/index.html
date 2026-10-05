@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Message Board</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .messages-container {
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .message {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .message:last-child {
+      border-bottom: none;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .message-time {
+      font-weight: 500;
+      color: #667eea;
+    }
+
+    .message-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state p {
+      margin-bottom: 8px;
+    }
+
+    .input-container {
+      padding: 20px;
+      background: #fafafa;
+    }
+
+    .input-container textarea {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .input-container textarea:focus {
+      border-color: #667eea;
+    }
+
+    .input-container textarea:disabled {
+      background: #f5f5f5;
+    }
+
+    .submit-btn {
+      margin-top: 12px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-dot.connected {
+      background: #4caf50;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.disconnected {
+      background: #f44336;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .error {
+      color: #f44336;
+      text-align: center;
+      padding: 12px;
+      background: #ffebee;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+
+    /* Custom scrollbar */
+    .messages-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Real-Time Message Board</h1>
+      <p>Post messages and see them appear instantly on all connected clients</p>
+    </header>
+
+    <div class="status-indicator">
+      <span class="status-dot disconnected" id="statusDot"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+
+    <div class="messages-container" id="messagesContainer">
+      <div class="empty-state">
+        <p>Loading messages...</p>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <textarea
+        id="messageInput"
+        placeholder="Write your message..."
+        maxlength="500"
+      ></textarea>
+      <button class="submit-btn" id="submitBtn">Post Message</button>
+    </div>
+  </div>
+
+  <script type="module">
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+
+    let eventSource = null;
+
+    // Format message for display
+    function formatMessage(message) {
+      return `
+        <div class="message">
+          <div class="message-header">
+            <span class="message-time">${message.display_time}</span>
+          </div>
+          <div class="message-text">${escapeHtml(message.text)}</div>
+        </div>
+      `;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Add message to the UI
+    function addMessage(message) {
+      const messageHtml = formatMessage(message);
+      messagesContainer.insertAdjacentHTML('afterbegin', messageHtml);
+    }
+
+    // Render initial messages
+    async function loadMessages() {
+      try {
+        const response = await fetch('/api/messages');
+        const messages = await response.json();
+
+        messagesContainer.innerHTML = '';
+        messages.forEach(message => {
+          addMessage(message);
+        });
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        messagesContainer.innerHTML = `
+          <div class="error">
+            Failed to load messages. Please refresh the page.
+          </div>
+        `;
+      }
+    }
+
+    // Connect to SSE stream
+    function connectToStream() {
+      eventSource = new EventSource('/api/stream');
+
+      eventSource.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        addMessage(message);
+      });
+
+      eventSource.addEventListener('error', (error) => {
+        console.error('SSE error:', error);
+        updateStatus('disconnected', 'Disconnected');
+      });
+
+      eventSource.onopen = () => {
+        updateStatus('connected', 'Connected');
+      };
+    }
+
+    // Handle form submission
+    async function handleSubmit() {
+      const text = messageInput.value.trim();
+
+      if (!text) {
+        messageInput.focus();
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Posting...';
+
+        const response = await fetch('/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to post message');
+        }
+
+        const message = await response.json();
+        addMessage(message);
+
+        messageInput.value = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post Message';
+      } catch (error) {
+        console.error('Error posting message:', error);
+        messageInput.value = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post Message';
+
+        alert('Failed to post message. Please try again.');
+      }
+    }
+
+    // Update status indicator
+    function updateStatus(status, text) {
+      statusDot.className = `status-dot ${status}`;
+      statusText.textContent = text;
+    }
+
+    // Event listeners
+    submitBtn.addEventListener('click', handleSubmit);
+
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    });
+
+    messageInput.addEventListener('input', () => {
+      submitBtn.disabled = messageInput.value.trim() === '';
+    });
+
+    // Initialize
+    loadMessages();
+    connectToStream();
+  </script>
+</body>
+</html>

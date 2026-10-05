@@ -1,0 +1,32 @@
+Database initialized.
+Backend server running on http://localhost:3000
+SSE broadcast error: TypeError: msg._implicitHeader is not a function
+    at write_ (node:_http_outgoing:922:9)
+    at Object.write (node:_http_outgoing:841:15)
+    at broadcast (file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:117:14)
+    at file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:84:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+SSE broadcast error: TypeError: msg._implicitHeader is not a function
+    at write_ (node:_http_outgoing:922:9)
+    at Object.write (node:_http_outgoing:841:15)
+    at broadcast (file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:117:14)
+    at file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:84:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+SSE broadcast error: TypeError: msg._implicitHeader is not a function
+    at write_ (node:_http_outgoing:922:9)
+    at Object.write (node:_http_outgoing:841:15)
+    at broadcast (file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:117:14)
+    at file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:84:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+SSE broadcast error: TypeError: msg._implicitHeader is not a function
+    at write_ (node:_http_outgoing:922:9)
+    at Object.write (node:_http_outgoing:841:15)
+    at broadcast (file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:117:14)
+    at file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:84:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+SSE broadcast error: TypeError: msg._implicitHeader is not a function
+    at write_ (node:_http_outgoing:922:9)
+    at Object.write (node:_http_outgoing:841:15)
+    at broadcast (file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:117:14)
+    at file:///tmp/runs/smokes/qwen-moe-q4/message-board/interactive/runs/101/app/server.js:84:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

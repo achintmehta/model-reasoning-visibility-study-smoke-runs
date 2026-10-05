@@ -1,0 +1,38 @@
+
+> kanban-board@1.0.0 dev
+> concurrently "npm run dev:backend" "npm run dev:frontend"
+
+[0] 
+[0] > kanban-board@1.0.0 dev:backend
+[0] > node src/server.js
+[0] 
+[1] 
+[1] > kanban-board@1.0.0 dev:frontend
+[1] > http-server frontend/public -p 8080 -c-1
+[1] 
+[1] node:events:495
+[1]       throw er; // Unhandled 'error' event
+[1]       ^
+[1] 
+[1] Error: listen EADDRINUSE: address already in use 0.0.0.0:8080
+[1]     at Server.setupListenHandle [as _listen2] (node:net:1817:16)
+[1]     at listenInCluster (node:net:1865:12)
+[1]     at doListen (node:net:2014:7)
+[1]     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+[1] Emitted 'error' event on Server instance at:
+[1]     at emitErrorNT (node:net:1844:8)
+[1]     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+[1]   code: 'EADDRINUSE',
+[1]   errno: -98,
+[1]   syscall: 'listen',
+[1]   address: '0.0.0.0',
+[1]   port: 8080
+[1] }
+[1] 
+[1] Node.js v18.20.8
+[1] npm run dev:frontend exited with code 1
+[0] Failed to start server: TypeError: db.oneFirst is not a function
+[0]     at seedDefaultColumns (file:///tmp/runs/smokes/seed-q4/kanban-board/interactive/runs/201/app/kanban-board/src/db.js:48:26)
+[0]     at initDB (file:///tmp/runs/smokes/seed-q4/kanban-board/interactive/runs/201/app/kanban-board/src/db.js:21:9)
+[0]     at async startServer (file:///tmp/runs/smokes/seed-q4/kanban-board/interactive/runs/201/app/kanban-board/src/server.js:24:10)
+[0] npm run dev:backend exited with code 1

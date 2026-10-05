@@ -1,0 +1,13 @@
+{
+  "name": "message-board-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for message board",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "message-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A real-time message board using PGLite and Server-Sent Events",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "node server/index.js",
+    "dev:client": "cd client && npx vite --host",
+    "build": "cd client && npx vite build",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.4",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

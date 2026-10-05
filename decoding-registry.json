@@ -1,0 +1,113 @@
+{
+  "_comment": "Per-model, per-thinking-mode sampling, taken from each vendor's own documentation. Read by run_one_with_server.sh (which passes the values to the harness as explicit flags) and by verify_smokes.py (which gates every run against it). The HARNESS ITSELF KNOWS NOTHING ABOUT MODELS: it accepts sampler values and records what it was given, so this file is the single place a decoding decision lives. Keyed by model alias, matching quant-registry.json. See plan section 4.4.1.",
+  "_schema": {
+    "<alias>": {
+      "_source": "URL the values were read from",
+      "_retrieved": "YYYY-MM-DD",
+      "_note": "anything a reader needs to interpret the numbers",
+      "thinking": "sampler dict used by the UNSEEN and SEEN arms",
+      "non_thinking": "sampler dict used by the OFF arm; ABSENT when the model has no documented non-thinking mode, in which case requesting it is a hard error rather than a silent fallback"
+    },
+    "_sampler_keys": ["temperature", "top_p", "top_k", "min_p", "presence_penalty"],
+    "_top_k_note": "0 means DISABLED. A vendor that does not specify top_k is written as 0 here, never omitted: llama.cpp applies its own default (40) to anything the request leaves out, so 'unspecified' would silently become the engine's choice rather than the vendor's.",
+    "_max_tokens_note": "NOT in this file. The 32,768-token per-reply cap is a harness guard applied identically to every model and arm, not a sampler (plan section 4.4)."
+  },
+
+  "gemma-4-31b": {
+    "_source": "https://ollama.com/library/gemma4:31b",
+    "_source_2": "https://build.nvidia.com/google/gemma-4-31b-it/modelcard",
+    "_retrieved": "2026-09-23",
+    "_note": "One configuration, stated as standard 'across all use cases'. No mode split, so thinking and non_thinking are identical and the OFF arm is on-label.",
+    "thinking":     {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "qwen3.6-27b": {
+    "_source": "https://huggingface.co/Qwen/Qwen3.6-27B",
+    "_retrieved": "2026-09-23",
+    "_note": "THE ONLY MODEL IN THE ROSTER WITH A MODE SPLIT, and therefore the only one whose OFF->UNSEEN contrast varies decoding as well as thinking. The card gives two thinking profiles: general (temperature 1.0) and precise coding (0.6). The tasks are coding, so 0.6 is used. Note presence_penalty 1.5 in non_thinking against 0.0 in thinking -- a strong anti-repetition intervention sitting in the one arm whose looping the study also measures, which is why Qwen's generation contrast is registered as an effectiveness comparison rather than an isolation of thinking (plan section 4.4.1). Its mixture-of-experts twin, qwen3.6-35b-a3b (proposed in plan v2.5.2), takes the same values and so carries the same split.",
+    "thinking":     {"temperature": 0.6, "top_p": 0.95, "top_k": 20, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.7, "top_p": 0.80, "top_k": 20, "min_p": 0.0, "presence_penalty": 1.5}
+  },
+
+  "seed-oss-36b": {
+    "_source": "https://huggingface.co/ByteDance-Seed/Seed-OSS-36B-Instruct",
+    "_retrieved": "2026-09-23",
+    "_note": "temperature 1.1 / top_p 0.95 is the card's general recommendation; its 1.0/0.7 variant is Taubench-specific and not used here. No sampling split by thinking budget is documented, so the OFF arm (thinking_budget 0) uses the same values.",
+    "thinking":     {"temperature": 1.1, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 1.1, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "magistral-small-2509": {
+    "_source": "https://huggingface.co/mistralai/Magistral-Small-2509",
+    "_retrieved": "2026-09-23",
+    "_note": "Card: 'Please make sure to use: top_p: 0.95, temperature: 0.7'. Mistral documents no non-thinking mode for this model -- the study's OFF arm is the absence of the registered reasoning preamble, which is the study's construct, not the vendor's -- so the same values are used for both.",
+    "thinking":     {"temperature": 0.7, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.7, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "gpt-oss-20b": {
+    "_source": "https://huggingface.co/openai/gpt-oss-120b/discussions/21",
+    "_retrieved": "2026-09-23",
+    "_note": "OpenAI: 'The recommended sampling parameters are temp = 1.0 and top_p = 1'. Guidance is to disable top_k. NON_THINKING IS DELIBERATELY ABSENT: gpt-oss has no thinking off-switch and runs two arms, so asking for its non-thinking profile is a configuration error and must fail rather than fall back.",
+    "thinking":     {"temperature": 1.0, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "granite-4.2-30b": {
+    "_source": "https://huggingface.co/ibm-granite/granite-4.2-30b",
+    "_retrieved": "2026-09-23",
+    "_note": "The only card that states the values apply identically whether enable_thinking is true or false -- 'across all tasks and serving backends, including general chat, reasoning, and tool calling'. Standby model (plan section 5).",
+    "thinking":     {"temperature": 1.0, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 1.0, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "nemotron-3-nano-30b-a3b": {
+    "_source": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+    "_source_2": "https://unsloth.ai/docs/models/nemotron-3",
+    "_retrieved": "2026-09-25",
+    "_note": "The card gives three profiles, verbatim: 'temperature=1.0 and top_p=1.0 are recommended for reasoning tasks', 'temperature=0.6 and top_p=0.95 are recommended for tool calling', and 'Use Greedy Search for reasoning off'. Every step in this study is a tool call, so the TOOL-CALLING profile is used in both modes -- the same task-over-general choice Qwen's entry makes. For the OFF arm this is a REGISTERED DEVIATION from the card, which says greedy: greedy is the operating point section 4.4.1 abandoned (a model that enters a repetition loop at temperature 0 has no mechanism to leave it, and replicates cannot differ except through numerical noise), and a greedy OFF beside sampled thinking arms would make this a second mode-split model whose generation contrast varies decoding as well as thinking. One profile keeps Qwen the only split in the roster. NVIDIA gives no top_k, so 0 (disabled) per the rule above. MoE, 30B total / ~3.5B active. RETIRED in plan v2.5.1 (section 5); kept so the runs behind that decision can be re-made.",
+    "thinking":     {"temperature": 0.6, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.6, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "glm-4.7-flash": {
+    "_source": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+    "_source_2": "https://unsloth.ai/docs/models/tutorials/glm-4.7-flash",
+    "_retrieved": "2026-09-25",
+    "_note": "Z.ai's card gives a default for most tasks (temperature 1.0, top_p 0.95) and the settings it used for its own agentic-coding evaluations, Terminal-Bench and SWE-bench Verified (temperature 0.7, top_p 1.0); unsloth labels the same 0.7 / 1.0 'tool-calling / agentic'. This study's tasks are agentic coding, so the agentic-coding profile is used -- the same task-over-general choice Qwen's and Nemotron's entries make. It is not the case Seed's entry rejects: Seed's alternative was tuned to Taubench, a customer-service tool-use benchmark, while these are the benchmarks nearest this study's own tasks. No mode split is documented, so the OFF arm uses the same values. min_p is 0.0 because the vendor sets none; unsloth suggests 0.01 for llama.cpp, whose default (0.05) is higher, but that is unsloth's advice rather than Z.ai's, and pinning 0.0 already overrides the engine default. top_k is unspecified, so 0 (disabled). Only the post-2026-01-21 GGUFs: the launch files looped from a llama.cpp bug. MoE, 31B total / ~3B active. In the roster since plan v2.5.0: live probe +158 chars, smoked, registered.",
+    "thinking":     {"temperature": 0.7, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.7, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "qwen3.6-35b-a3b": {
+    "_source": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+    "_retrieved": "2026-09-25",
+    "_note": "Mixture-of-experts twin of qwen3.6-27b, proposed in plan v2.5.2: 35B total / 3B active, 8 of 256 routed experts + 1 shared. Its card's precise-coding thinking profile (temperature 0.6, top_p 0.95, top_k 20, min_p 0.0, presence_penalty 0.0) and its instruct profile (0.7, 0.80, 20, 0.0, presence_penalty 1.5) are exactly the values qwen3.6-27b's entry uses, so this entry is the 27B's: precise coding for the thinking arms, instruct for OFF. It therefore inherits the 27B's mode split and its caveat -- the OFF->UNSEEN contrast varies decoding as well as thinking (plan section 4.4.1). UNVERIFIED until its probe and smoke pass.",
+    "thinking":     {"temperature": 0.6, "top_p": 0.95, "top_k": 20, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.7, "top_p": 0.80, "top_k": 20, "min_p": 0.0, "presence_penalty": 1.5}
+  },
+
+  "gemma-4-26b-a4b": {
+    "_source": "https://huggingface.co/google/gemma-4-26B-A4B-it",
+    "_retrieved": "2026-09-25",
+    "_note": "Mixture-of-experts twin of gemma-4-31b, proposed in plan v2.5.2: 25.2B total / 3.8B active, 8 of 128 routed experts + 1 shared. The card gives one configuration -- temperature 1.0, top_p 0.95, top_k 64, the 31B's values -- and no mode split, so thinking and non_thinking are identical, as they are for the 31B. UNVERIFIED until its probe and smoke pass.",
+    "thinking":     {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "muse-glimmer-30b": {
+    "_source": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
+    "_source_2": "https://unsloth.ai/docs/models/muse-glimmer",
+    "_retrieved": "2026-09-30",
+    "_note": "Meta's recommended settings, the same on the model card and in unsloth's guide: temperature 1.0, top_p 0.95, top_k 64. Neither gives min_p or a presence penalty, so both are 0.0, which overrides llama.cpp's defaults. NON_THINKING IS DELIBERATELY ABSENT: reasoning strength (low/medium/high/xhigh) has no off level, so Muse runs two arms and asking for a non-thinking profile is a configuration error, as it is for gpt-oss. Reasoning strength is a template kwarg, not a sampler: it lives in the wrapper's request body, at 'high', the template default and Meta's advice for agentic coding. Wired in plan v2.5.19; probed, piloted and in the grid since plan v2.5.20.",
+    "thinking":     {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "min_p": 0.0, "presence_penalty": 0.0}
+  },
+
+  "exaone-4.0-32b": {
+    "_source": "https://huggingface.co/LGAI-EXAONE/EXAONE-4.0-32B",
+    "_retrieved": "2026-09-23",
+    "_note": "NOT IN THE ROSTER and not in the batch driver's arm map (plan section 5, worked near-miss). Kept here only so that naming it deliberately resolves rather than fails for the wrong reason. Its card recommends temperature 0.6 / top_p 0.95 for reasoning mode.",
+    "thinking":     {"temperature": 0.6, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0},
+    "non_thinking": {"temperature": 0.6, "top_p": 0.95, "top_k": 0, "min_p": 0.0, "presence_penalty": 0.0}
+  }
+}

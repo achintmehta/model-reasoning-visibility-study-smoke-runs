@@ -1,0 +1,33 @@
+
+> kanban-board@1.0.0 dev
+> concurrently "npm run dev:backend" "npm run dev:frontend"
+
+[0] 
+[0] > kanban-board@1.0.0 dev:backend
+[0] > node backend/server.js
+[0] 
+[1] 
+[1] > kanban-board@1.0.0 dev:frontend
+[1] > vite
+[1] 
+[0] /tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/backend/server.js:14
+[0] const pg = new PGLite({ location: './data' });
+[0]            ^
+[0] 
+[0] ReferenceError: PGLite is not defined
+[0]     at Object.<anonymous> (/tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/backend/server.js:14:12)
+[0]     at Module._compile (node:internal/modules/cjs/loader:1364:14)
+[0]     at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+[0]     at Module.load (node:internal/modules/cjs/loader:1203:32)
+[0]     at Module._load (node:internal/modules/cjs/loader:1019:12)
+[0]     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+[0]     at node:internal/main/run_main_module:28:49
+[0] 
+[0] Node.js v18.20.8
+[0] npm run dev:backend exited with code 1
+[1] 
+[1]   VITE v5.4.21  ready in 88 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] npm run dev:frontend exited with code SIGTERM

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message Board</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      color: #1a1a2e;
+    }
+
+    header p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 0.8rem;
+      margin-bottom: 16px;
+      color: #888;
+    }
+
+    .status.connected {
+      color: #2ecc71;
+    }
+
+    .status.disconnected {
+      color: #e74c3c;
+    }
+
+    #message-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      min-height: 100px;
+    }
+
+    #message-list.empty::after {
+      content: 'No messages yet. Be the first to post!';
+      text-align: center;
+      color: #999;
+      padding: 40px 0;
+    }
+
+    .message {
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message .meta {
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    .message .text {
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .form-container {
+      position: sticky;
+      bottom: 0;
+      background: #f5f5f5;
+      padding: 16px 0 0;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    #message-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #message-input:focus {
+      border-color: #4a90d9;
+    }
+
+    #submit-btn {
+      padding: 12px 24px;
+      background: #4a90d9;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #submit-btn:hover {
+      background: #3a7bc8;
+    }
+
+    #submit-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 Message Board</h1>
+      <p>Real-time collaborative messaging</p>
+    </header>
+
+    <div id="status" class="status disconnected">Connecting...</div>
+
+    <ul id="message-list" class="empty"></ul>
+
+    <div class="form-container">
+      <form id="message-form">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Type a message..."
+          maxlength="500"
+          autocomplete="off"
+        />
+        <button type="submit" id="submit-btn">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/src/main.js"></script>
+</body>
+</html>

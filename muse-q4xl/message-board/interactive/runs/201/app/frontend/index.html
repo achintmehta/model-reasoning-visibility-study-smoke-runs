@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message Board</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; }
+    #messages { list-style: none; padding: 0; }
+    #messages li { padding: 8px 12px; border-bottom: 1px solid #eee; }
+    #messages li time { color: #666; font-size: 0.8em; margin-left: 8px; }
+    form { display: flex; gap: 8px; margin-top: 16px; }
+    input { flex: 1; padding: 8px; }
+    button { padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h1>Message Board</h1>
+  <ul id="messages"></ul>
+  <form id="form">
+    <input id="text" placeholder="Type a message..." autocomplete="off" required />
+    <button type="submit">Post</button>
+  </form>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

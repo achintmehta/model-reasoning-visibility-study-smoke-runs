@@ -1,0 +1,9 @@
+Backend listening on http://localhost:3001
+DEBUG maxRes { maxpos: '-1' } position NaN
+DEBUG insertRes {
+  id: 1,
+  column_id: 1,
+  text: 'Fresh',
+  position: 'NaN',
+  created_at: 2026-10-04T23:04:51.368Z
+}

@@ -1,0 +1,173 @@
+{
+  "model": "glm-4.7-flash",
+  "base_url": "http://192.168.1.110:7777/v1",
+  "condition": "execution",
+  "quantization": "Q4_K_M",
+  "reasoning_replayed": true,
+  "replay_format": "field",
+  "quantization_detail": {
+    "status": "ok",
+    "registry": "/mnt/d/eval-coding-agent/quant-registry.json",
+    "registry_sha": "44d03c589e00bed6",
+    "model_key": "glm-4.7-flash",
+    "quantization": "Q4_K_M",
+    "publisher": "Unsloth",
+    "repo": "https://huggingface.co/unsloth",
+    "architecture": "deepseek2",
+    "gguf_file_type": "Q4_K_M",
+    "gguf_file_type_raw": 15,
+    "method": "PTQ",
+    "method_source": "assumed",
+    "imatrix": true,
+    "imatrix_file": "GLM-4.7-Flash-GGUF/imatrix_unsloth.gguf",
+    "imatrix_dataset": "unsloth_calibration_GLM-4.7-Flash.txt",
+    "imatrix_chunks": 85,
+    "file": "/mnt/d/llm_models/LM Studio/unsloth/GLM-4.7-Flash-GGUF/GLM-4.7-Flash-Q4_K_M.gguf",
+    "file_name": "GLM-4.7-Flash-Q4_K_M.gguf",
+    "file_size_bytes": 18312339808,
+    "tensor_count": 844,
+    "recorded_by": "tools/hash_quants.py",
+    "file_sha256": "29837ed2c0fc5f51981adf8ac8083fcf80743c598381f13e9f06cbad0498b174"
+  },
+  "serving_probe": {
+    "endpoint": "http://192.168.1.110:7777/props",
+    "keys_seen": [
+      "bos_token",
+      "build_info",
+      "chat_template",
+      "chat_template_caps",
+      "cors_proxy_enabled",
+      "default_generation_settings",
+      "endpoint_metrics",
+      "endpoint_props",
+      "endpoint_slots",
+      "eos_token",
+      "is_sleeping",
+      "media_marker",
+      "modalities",
+      "model_alias",
+      "model_ftype",
+      "model_path",
+      "total_slots",
+      "ui",
+      "ui_settings"
+    ],
+    "model_path": "D:\\llm_models\\LM Studio\\unsloth\\GLM-4.7-Flash-GGUF\\GLM-4.7-Flash-Q4_K_M.gguf",
+    "n_ctx": 202752,
+    "total_slots": 1,
+    "build_info": "b10964-b29c606e2",
+    "chat_template_sha": "d63ad536c3c81880",
+    "chat_template_chars": 3120,
+    "probe_note": "served file matches the registry entry (GLM-4.7-Flash-Q4_K_M.gguf)"
+  },
+  "allowed_tools": [
+    "read_file",
+    "write_file",
+    "edit_file",
+    "list_dir",
+    "finish",
+    "run_command",
+    "run_background_command",
+    "run_command_and_capture_output",
+    "list_background_commands",
+    "stop_background_command"
+  ],
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "max_tokens": 32768,
+    "top_k": 0.0,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "seed": 1
+  },
+  "decoding_profile": "thinking",
+  "decoding_source": "registry",
+  "decoding_registry_sha": "d3149737912ebbde",
+  "extra_body": {
+    "chat_template_kwargs": {
+      "enable_thinking": true,
+      "clear_thinking": false
+    }
+  },
+  "decoding_overridden": {},
+  "decoding_overridden_basis": "registry",
+  "max_steps": 10000,
+  "max_total_tokens": 20000000,
+  "loop_guards": {
+    "max_same_calls": 500,
+    "max_blocked_calls": 3,
+    "max_cycle_repeats": 3,
+    "max_repeat_steps": 30
+  },
+  "vision": false,
+  "browser": {
+    "headed": false,
+    "slow_mo_ms": 0,
+    "executable_path": null
+  },
+  "interactive": false,
+  "briefing_mode": "universal",
+  "no_briefing": false,
+  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "system_prompt_sha": "90f2c6a384569c71",
+  "base_prompt_sha": "a1b949af9e7bda1c",
+  "condition_briefing_sha": "c988f43155c49538",
+  "think_preamble_key": "none",
+  "think_preamble_sha": "e3b0c44298fc1c14",
+  "task_sha": "01d2615d510ad8b1",
+  "workspace": "/tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app",
+  "workspace_git": "none",
+  "seed_workspace": null,
+  "seed_fingerprint": null,
+  "started_at": 1791143122.095013,
+  "ended_at": 1791144915.6107185,
+  "status": "token_budget_exhausted",
+  "steps": 418,
+  "tokens_to_first_finish": {
+    "prompt_tokens": 20020093,
+    "completion_tokens": 39673,
+    "total_tokens": 20059766
+  },
+  "total_tokens_used": {
+    "prompt_tokens": 20020093,
+    "completion_tokens": 39673,
+    "total_tokens": 20059766
+  },
+  "human_turns": 0,
+  "finish_nudges": 0,
+  "finish_nudge_steps": [],
+  "verification_unlocked_at_step": null,
+  "loop_guard_fired": null,
+  "truncation_detected": null,
+  "reasoning_turns": 418,
+  "reasoning_chars": 80588,
+  "reasoning_replayed_turns": 417,
+  "reasoning_replayed_chars": 80537,
+  "tool_calls": {
+    "attempts": 417,
+    "malformed": 0,
+    "malformation_rate": 0.0,
+    "unparseable_arguments": 0,
+    "invalid_arguments": 0,
+    "unparsed_in_content": 0,
+    "tool_errors_other": 1
+  },
+  "file_state_repeats": {
+    "count": 3,
+    "writes": 0,
+    "edits": 3,
+    "reverts": 1,
+    "max_times": 2
+  },
+  "workspace_fingerprint": {
+    "n_files": 4908,
+    "sha": "5616d0e1bbaec902"
+  },
+  "decoding_dropped_params": [],
+  "api_retries": {
+    "count": 0,
+    "timeouts": 0,
+    "events": []
+  }
+}

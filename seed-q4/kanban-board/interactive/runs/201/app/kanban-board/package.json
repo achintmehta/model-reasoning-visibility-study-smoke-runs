@@ -1,0 +1,24 @@
+{
+  "name": "kanban-board",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:backend": "node src/server.js",
+    "dev:frontend": "http-server frontend/public -p 8080 -c-1",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4",
+    "http-server": "^14.1.1"
+  }
+}

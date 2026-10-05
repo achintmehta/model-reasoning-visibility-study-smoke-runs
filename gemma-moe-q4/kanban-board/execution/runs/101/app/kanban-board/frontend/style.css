@@ -1,0 +1,89 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f5f7;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #172b4d;
+}
+
+.board {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.column {
+    background-color: #ebecf0;
+    border-radius: 3px;
+    width: 300px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.column h2 {
+    font-size: 16px;
+    color: #5e6c84;
+    margin: 0 0 10px 0;
+}
+
+.card-list {
+    min-height: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(9,30,66,.25);
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: grab;
+    user-select: none;
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+.card.dragging {
+    opacity: 0.5;
+}
+
+.card-form {
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.card-form input {
+    flex-grow: 1;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+.card-form button {
+    background-color: #0052cc;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.card-form button:hover {
+    background-color: #0065ff;
+}
+
+.drop-indicator {
+    height: 4px;
+    background-color: #0052cc;
+    margin-bottom: 8px;
+    border-radius: 2px;
+}

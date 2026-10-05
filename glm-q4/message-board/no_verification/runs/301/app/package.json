@@ -1,0 +1,17 @@
+{
+  "name": "message-board",
+  "version": "1.0.0",
+  "description": "A simple real-time message board with embedded PGLite",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:frontend\"",
+    "dev:server": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": ["message-board", "pglite", "sse", "realtime"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

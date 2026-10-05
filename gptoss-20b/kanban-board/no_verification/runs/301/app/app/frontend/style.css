@@ -1,0 +1,9 @@
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
+.board{display:flex;gap:8px;padding:16px;overflow-x:auto;}
+.column{background:#f4f4f4;border-radius:4px;padding:8px;width:240px;}
+.column-title{font-weight:bold;}
+.card{background:white;border-radius:4px;padding:8px;margin:4px 0;cursor:grab;}
+.card.dragging{opacity:0.5;}
+.add-card{margin-top:8px;display:flex;}
+.add-card input{flex:1;padding:4px;}
+.add-card button{margin-left:4px;}

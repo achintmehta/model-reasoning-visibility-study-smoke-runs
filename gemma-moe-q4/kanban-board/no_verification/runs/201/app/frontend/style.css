@@ -1,0 +1,72 @@
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.board {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.column {
+  background-color: #ebedf0;
+  border-radius: 8px;
+  width: 300px;
+  min-height: 400px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.column h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card-list {
+  min-height: 100px;
+  flex-grow: 1;
+}
+
+.card {
+  background-color: white;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.dragging {
+  opacity: 0.5;
+}
+
+.add-card-form {
+  display: flex;
+  margin-top: 10px;
+}
+
+.add-card-form input {
+  flex-grow: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-card-form button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

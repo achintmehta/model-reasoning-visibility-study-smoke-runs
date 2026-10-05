@@ -1,0 +1,12 @@
+
+> backend@1.0.0 dev
+> node server.js
+
+Backend server running at http://localhost:3000
+Database initialized
+Client 1791148508492 connected. Total clients: 1
+Client 1791148508493 connected. Total clients: 2
+Client 1791148508492 disconnected.
+Client 1791148509449 connected. Total clients: 2
+Client 1791148508493 disconnected.
+Client 1791148509449 disconnected.

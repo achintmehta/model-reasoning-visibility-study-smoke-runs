@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Board</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f4f8;
+    }
+    
+    .kanban-board {
+      display: flex;
+      gap: 20px;
+      height: 80vh;
+      overflow-x: auto;
+      padding-bottom: 20px;
+    }
+    
+    .column {
+      flex: 0 0 300px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .column-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eeeeee;
+    }
+    
+    .card {
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: move;
+      transition: background-color 0.2s;
+    }
+    
+    .card:hover {
+      background-color: #e9ecef;
+    }
+    
+    .card.dragging {
+      opacity: 0.5;
+    }
+    
+    .add-card {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .add-card input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+    
+    .add-card button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .add-card button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kanban Board</h1>
+  <div class="kanban-board" id="kanban-board"></div>
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

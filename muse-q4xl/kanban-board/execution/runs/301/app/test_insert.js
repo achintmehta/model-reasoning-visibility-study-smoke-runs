@@ -1,0 +1,11 @@
+import { PGlite } from '@electric-sql/pglite';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const db = await PGlite.create(path.join(__dirname, 'data/kanban.db'));
+const position = 0;
+await db.exec('INSERT INTO cards (column_id, text, position) VALUES (1, $1, $2)', ['test', position]);
+const res = await db.query('SELECT id, position FROM cards WHERE text = $1', ['test']);
+console.log(res.rows);
+await db.close();

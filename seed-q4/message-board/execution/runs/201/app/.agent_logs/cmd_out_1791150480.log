@@ -1,0 +1,22 @@
+
+> realtime-message-board-backend@1.0.0 dev
+> nodemon src/server.mjs
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node src/server.mjs`[39m
+CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        text TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+Database initialized successfully
+Server running on port 3000
+SELECT * FROM messages ORDER BY created_at DESC
+INSERT INTO messages (text) VALUES ('Hello World')
+SELECT * FROM messages WHERE id = 1.0
+SELECT * FROM messages ORDER BY created_at DESC
+SSE client connected (total: 1)
+SSE client disconnected (total: 0)

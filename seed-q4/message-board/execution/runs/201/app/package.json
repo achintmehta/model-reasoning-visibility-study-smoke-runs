@@ -1,0 +1,14 @@
+{
+  "name": "realtime-message-board",
+  "version": "1.0.0",
+  "description": "A real-time message board using PGLite and Server-Sent Events",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "install": "cd backend && npm install && cd frontend && npm install",
+    "start": "cd backend && npm run start"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

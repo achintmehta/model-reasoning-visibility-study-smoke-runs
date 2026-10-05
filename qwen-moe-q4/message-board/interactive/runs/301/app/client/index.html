@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realtime Message Board</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #2563eb;
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    header p {
+      opacity: 0.85;
+      margin-top: 5px;
+      font-size: 0.9rem;
+    }
+
+    .connection-status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .connection-status.connected {
+      background: #22c55e;
+    }
+
+    .connection-status.disconnected {
+      background: #ef4444;
+    }
+
+    .message-form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .message-form textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s;
+    }
+
+    .message-form textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .message-form button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .message-form button:hover {
+      background: #1d4ed8;
+    }
+
+    .message-form button:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    .messages-list {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .messages-list-header {
+      padding: 15px 20px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    .message-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .message-item:last-child {
+      border-bottom: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-text {
+      font-size: 1rem;
+      color: #1f2937;
+      word-wrap: break-word;
+    }
+
+    .message-time {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 5px;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #9ca3af;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Message Board</h1>
+      <p>
+        <span class="connection-status disconnected" id="status-dot"></span>
+        <span id="status-text">Connecting...</span>
+      </p>
+    </header>
+
+    <div class="error-message" id="error-message"></div>
+
+    <form class="message-form" id="message-form">
+      <textarea
+        id="message-input"
+        placeholder="Type your message..."
+        required
+      ></textarea>
+      <button type="submit" id="submit-btn">Post Message</button>
+    </form>
+
+    <div class="messages-list">
+      <div class="messages-list-header">
+        Messages
+      </div>
+      <div id="messages-container">
+        <div class="empty-state">
+          <p>No messages yet. Be the first to post!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

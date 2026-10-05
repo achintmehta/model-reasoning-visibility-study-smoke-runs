@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtime Message Board</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Message Board</h1>
+
+    <form id="message-form">
+      <input
+        type="text"
+        id="message-input"
+        placeholder="Type a message..."
+        autocomplete="off"
+      />
+      <button type="submit">Send</button>
+    </form>
+
+    <div id="message-list"></div>
+  </div>
+
+  <script src="/src/main.js" type="module"></script>
+</body>
+</html>

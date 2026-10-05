@@ -1,0 +1,23 @@
+{
+  "name": "realtime-message-board",
+  "version": "1.0.0",
+  "description": "A real-time message board using PGLite and Server-Sent Events",
+  "main": "server.js",
+  "scripts": {
+    "test:install": "node test-install.js",
+    "dev:backend": "node server.js",
+    "dev:frontend": "cd frontend && vite",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd frontend && vite build",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "vite": "^4.4.9"
+  }
+}

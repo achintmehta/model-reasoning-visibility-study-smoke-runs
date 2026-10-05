@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .board { display: flex; gap: 20px; }
+        .column { flex: 1; background: #f5f5f5; padding: 20px; border-radius: 8px; }
+        .column h2 { margin-top: 0; }
+        .card { background: white; padding: 10px; margin: 10px 0; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .add-card { margin-top: 20px; }
+        .add-card input { padding: 8px; width: 70%; }
+        .add-card button { padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Kanban Board</h1>
+    <div class="board" id="board"></div>
+
+    <script>
+        async function initBoard() {
+            const response = await fetch('/api/board');
+            const data = await response.json();
+            renderBoard(data.columns);
+            
+            // Set up SSE
+            const eventSource = new EventSource('/api/stream');
+            eventSource.onmessage = (e) => console.log('Message:', e.data);
+            eventSource.addEventListener('card-created', (e) => {
+                const data = JSON.parse(e.data);
+                console.log('Card created:', data);
+                initBoard(); // Refresh the board
+            });
+            eventSource.addEventListener('card-moved', (e) => {
+                const data = JSON.parse(e.data);
+                console.log('Card moved:', data);
+                initBoard(); // Refresh the board
+            });
+        }
+
+        function renderBoard(columns) {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            
+            columns.forEach(column => {
+                const columnElement = document.createElement('div');
+                columnElement.className = 'column';
+                
+                const columnTitle = document.createElement('h2');
+                columnTitle.textContent = column.title;
+                
+                const cardList = document.createElement('div');
+                
+                column.cards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.textContent = card.text;
+                    cardElement.draggable = true;
+                    
+                    cardElement.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', card.id);
+                        cardElement.style.opacity = '0.5';
+                    });
+                    
+                    cardElement.addEventListener('dragend', (e) => {
+                        cardElement.style.opacity = '1';
+                    });
+                    
+                    cardList.appendChild(cardElement);
+                });
+                
+                const addCardDiv = document.createElement('div');
+                addCardDiv.className = 'add-card';
+                
+                const addCardInput = document.createElement('input');
+                addCardInput.type = 'text';
+                addCardInput.placeholder = 'Add a new card...';
+                
+                const addCardButton = document.createElement('button');
+                addCardButton.textContent = 'Add';
+                addCardButton.addEventListener('click', async () => {
+                    if (addCardInput.value.trim()) {
+                        await createCard(column.id, addCardInput.value.trim());
+                        addCardInput.value = '';
+                    }
+                });
+                
+                addCardDiv.appendChild(addCardInput);
+                addCardDiv.appendChild(addCardButton);
+                
+                columnElement.appendChild(columnTitle);
+                columnElement.appendChild(cardList);
+                columnElement.appendChild(addCardDiv);
+                
+                boardElement.appendChild(columnElement);
+                
+                // Set up drop zone
+                cardList.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                cardList.addEventListener('drop', async (e) => {
+                    e.preventDefault();
+                    const cardId = e.dataTransfer.getData('text/plain');
+                    await moveCard(cardId, column.id);
+                });
+            });
+        }
+
+        async function createCard(columnId, text) {
+            const response = await fetch('/api/cards', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ columnId, text })
+            });
+            return response.json();
+        }
+
+        async function moveCard(cardId, columnId) {
+            const response = await fetch(`/api/cards/${cardId}/move`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ columnId })
+            });
+            return response.json();
+        }
+
+        // Initialize the board when the page loads
+        document.addEventListener('DOMContentLoaded', initBoard);
+    </script>
+</body>
+</html>

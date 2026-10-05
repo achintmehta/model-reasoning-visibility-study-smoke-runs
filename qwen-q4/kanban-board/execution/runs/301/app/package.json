@@ -1,0 +1,15 @@
+{
+  "name": "kanban-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time collaborative Kanban board with PGLite and SSE",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "install:all": "npm install --prefix server && npm install --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Board</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Message Board</h1>
+    <div class="message-list" id="messageList">
+      <!-- Messages will be loaded here -->
+    </div>
+    <form class="message-form" id="messageForm">
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type your message..."
+        required
+        autocomplete="off"
+      />
+      <button type="submit">Post</button>
+    </form>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

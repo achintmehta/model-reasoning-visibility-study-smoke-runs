@@ -1,0 +1,14 @@
+{
+  "name": "realtime-message-board-backend",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@electric-sql/pglite": "^0.1.6",
+    "cors": "^2.8.5"
+  }
+}

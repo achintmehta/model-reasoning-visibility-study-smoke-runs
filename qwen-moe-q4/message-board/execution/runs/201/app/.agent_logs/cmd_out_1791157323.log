@@ -1,0 +1,5 @@
+Failed to start server: ExitStatus {
+  name: 'ExitStatus',
+  message: 'Program terminated with exit(1)',
+  status: 1
+}

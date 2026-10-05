@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Message Board</title>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg">
+</head>
+<body>
+  <div id="app">
+    <h1>Real-time Message Board</h1>
+    <div class="message-container">
+      <div id="message-list">
+        <!-- Messages will be rendered here -->
+        <p class="loading">Loading messages...</p>
+      </div>
+    </div>
+    <div class="input-container">
+      <form id="message-form">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Type a message..."
+          autocomplete="off"
+          required
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

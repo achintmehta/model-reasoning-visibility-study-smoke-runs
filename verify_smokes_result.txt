@@ -1,0 +1,79 @@
+66 runs under .
+
+pass  G1  arm ↔ reasoning_replayed
+pass  G2  OFF canary: no reasoning step > 200 chars   (18 OFF runs; longest stub seen 134 chars)
+pass  G3  ON canary: a step > 200 chars and ≥ 20% of steps reasoning   (48 thinking-arm runs)
+pass  G4  no opening think marker in content
+pass  G5  preamble: none in OFF, identical across thinking arms
+pass  G6  frozen inputs identical across the set   (harness_git=600a8d2565226c220b3db6c5e44511fc78277fca)
+pass  G7  quantization resolved from the registry
+pass  G8  request body identical across thinking arms
+
+WAIVE G9  token budget 20,000,000
+      peak 20,059,766 (100% of budget) in glm-q4/kanban-board/execution/301 [SEEN]
+      - glm-q4/kanban-board/execution/301 [SEEN]: 20,059,766 tokens, reached while looping -- each of its last 30 calls repeats one it had already made, once numbers are masked (4 distinct; plan v2.5.34: an outcome, not a censored run)
+pass  G11 request body matches the frozen per-model, per-arm spec   (66 runs checked against EXPECTED_BODY)
+pass  G12 replay_format matches the frozen per-model spec   (66 runs checked against EXPECTED_REPLAY_FORMAT)
+pass  G13 thinking preamble matches the frozen per-model spec   (66 runs checked against EXPECTED_PREAMBLE)
+pass  G10 runs were made with max_total_tokens = 20,000,000   (recorded values: ['20000000'])
+pass  G14 unparseable-output voids attributed and under the ceiling   (1 void(s) across 66 runs; per arm: gptoss-20b/SEEN=1)
+pass  G15 decoding matches the registered per-model, per-mode profile   (registry ./decoding-registry.json; sha(s) recorded: ['d3149737912ebbde'])
+pass  G16 no timed-out model call was re-rolled (api_retries)   (0 retried call(s) across 66 runs)
+pass  G17 serving flags match the frozen spec exactly   (66 runs checked against -np 1 -ngl 999 -fa on -b 2048 --cache-type-k f16 --cache-type-v f16 --jinja --swa-full --seed 0 --host 0.0.0.0 -lv 5)
+pass  G18 a context overflow is kept as an outcome, never re-run   (0 context_overflow run(s))
+
+--- registered descriptives (not gates) ---
+model           arm      runs  steps  noTool  empty  callTxt   rsn% parseVoid  median rsn chars   terminal status
+gemma-moe-q4    OFF         3    102       0      0        0     2%         0                77   3x finished
+gemma-moe-q4    SEEN        3    104       1      0        0    99%         0               162   3x finished
+gemma-moe-q4    UNSEEN      3    131       1      0        0    92%         0               491   3x finished
+gemma-q4        OFF         3    127       0      0        0     0%         0                 0   3x finished
+gemma-q4        SEEN        3     72       0      0        0   100%         0               124   3x finished
+gemma-q4        UNSEEN      3     93       1      0        1    98%         0               358   3x finished
+glm-q4          OFF         3    119       0      0        0     0%         0                 0   2x stuck_looping, 1x finished
+glm-q4          SEEN        3    552       1      1        0   100%         0               134   1x token_budget_exhausted, 1x runaway_no_tool_call, 1x stuck_looping
+glm-q4          UNSEEN      3    285       1      1        1    98%         0               146   3x finished
+gptoss-20b      SEEN        3     49       3      0        0    98%         1                90   1x api_error, 1x stopped_no_tool_call, 1x finished
+gptoss-20b      UNSEEN      3     29       0      0        0   100%         0              2436   3x finished
+muse-q4xl       SEEN        3    210       0      0        0    85%         0                83   3x finished
+muse-q4xl       UNSEEN      3    106       0      0        0    38%         0               136   3x finished
+qwen-moe-q4     OFF         3    211       0      0        0     0%         0                 0   2x finished, 1x stuck_looping
+qwen-moe-q4     SEEN        3    148       0      0        0   100%         0               101   3x finished
+qwen-moe-q4     UNSEEN      3    239      10     10        9    97%         0               194   1x stopped_no_tool_call, 1x runaway_no_tool_call, 1x finished
+qwen-q4         OFF         3    202       0      0        0     0%         0                 0   3x finished
+qwen-q4         SEEN        3    238       0      0        0   100%         0                90   3x finished
+qwen-q4         UNSEEN      3    151      13     13        2    68%         0               168   2x finished, 1x stopped_no_tool_call
+seed-q4         OFF         3     23       0      0        0   100%         0               134   3x finished
+seed-q4         SEEN        3    128       0      0        0   100%         0               592   2x finished, 1x stuck_looping
+seed-q4         UNSEEN      3    131       0      0        0    42%         0               368   3x finished
+
+--- every attempt, failed ones included (plan v2.5.9, v2.5.11; not a gate) ---
+model           arm      slots attempts failed distinct unparse crash other void
+gemma-moe-q4    OFF          3        3      0        0       0     0     0    0
+gemma-moe-q4    SEEN         3        3      0        0       0     0     0    0
+gemma-moe-q4    UNSEEN       3        3      0        0       0     0     0    0
+gemma-q4        OFF          3        3      0        0       0     0     0    0
+gemma-q4        SEEN         3        3      0        0       0     0     0    0
+gemma-q4        UNSEEN       3        3      0        0       0     0     0    0
+glm-q4          OFF          3        3      0        0       0     0     0    0
+glm-q4          SEEN         3        3      0        0       0     0     0    0
+glm-q4          UNSEEN       3        3      0        0       0     0     0    0
+gptoss-20b      SEEN         3        5      3        1       3     0     0    1
+gptoss-20b      UNSEEN       3        3      0        0       0     0     0    0
+muse-q4xl       SEEN         3        3      0        0       0     0     0    0
+muse-q4xl       UNSEEN       3        3      0        0       0     0     0    0
+qwen-moe-q4     OFF          3        3      0        0       0     0     0    0
+qwen-moe-q4     SEEN         3        3      0        0       0     0     0    0
+qwen-moe-q4     UNSEEN       3        3      0        0       0     0     0    0
+qwen-q4         OFF          3        3      0        0       0     0     0    0
+qwen-q4         SEEN         3        3      0        0       0     0     0    0
+qwen-q4         UNSEEN       3        3      0        0       0     0     0    0
+seed-q4         OFF          3        3      0        0       0     0     0    0
+seed-q4         SEEN         3        3      0        0       0     0     0    0
+seed-q4         UNSEEN       3        3      0        0       0     0     0    0
+  gptoss-20b/kanban-board/execution/301 [SEEN] attempt 1: unparseable -- <|channel|>final <|constrain|>finish<|channel|>commentary<|message|>{"summary":"Implemented a full forked Kanban board application with PGLite backend
+  gptoss-20b/kanban-board/execution/301 [SEEN] attempt 2: unparseable, REPLAY -- <|channel|>final <|constrain|>finish<|channel|>commentary<|message|>{"summary":"Implemented a full forked Kanban board application with PGLite backend
+  gptoss-20b/kanban-board/execution/301 [SEEN] attempt 3 (last), VOID: unparseable, REPLAY -- <|channel|>final <|constrain|>finish<|channel|>commentary<|message|>{"summary":"Implemented a full forked Kanban board application with PGLite backend
+  2 attempt(s) are REPLAYS -- byte-identical, response for response, to an earlier attempt of the same slot: the same prompt and the same per-replicate seed gave the same tokens. Each is one failure seen again; 'distinct' counts the failures.
+
+all gates passed; 1 passed only by a registered waiver (WAIVE above)

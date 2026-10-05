@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collaborative Kanban</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f5f7;
+        margin: 0;
+        padding: 20px;
+      }
+      .board {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+        overflow-x: auto;
+        padding-bottom: 20px;
+      }
+      .column {
+        background-color: #ebecf0;
+        border-radius: 8px;
+        width: 300px;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+      }
+      .column-header {
+        padding: 12px;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .card-list {
+        padding: 8px;
+        flex-grow: 1;
+        min-height: 50px;
+        overflow-y: auto;
+      }
+      .card {
+        background-color: white;
+        border-radius: 4px;
+        padding: 8px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        cursor: grab;
+        user-select: none;
+        word-wrap: break-word;
+      }
+      .card.dragging {
+        opacity: 0.5;
+      }
+      .add-card-form {
+        padding: 8px;
+        display: flex;
+        gap: 4px;
+      }
+      .add-card-form input {
+        flex-grow: 1;
+        padding: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .add-card-form button {
+        cursor: pointer;
+        padding: 4px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="board"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

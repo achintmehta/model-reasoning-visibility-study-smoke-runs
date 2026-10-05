@@ -1,0 +1,42 @@
+[
+  {
+    "step": 1,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"kanban-board\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Multi"
+  },
+  {
+    "step": 2,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"kanban-server\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Serv"
+  },
+  {
+    "step": 3,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"kanban-client\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Fron"
+  },
+  {
+    "step": 4,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"import { PGlite } from '@electric-sql/pglite';\\nimport path from 'path';\\nimport { file"
+  },
+  {
+    "step": 5,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"import express from 'express';\\nimport cors from 'cors';\\nimport { v4 as uuidv4 } from "
+  },
+  {
+    "step": 6,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"export default {\\n  server: {\\n    proxy: {\\n      '/api': 'http://localhost:3000'\\n   "
+  },
+  {
+    "step": 7,
+    "tool": "write_file",
+    "args_head": "{\"content\": \"<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n  <meta charset=\\\"UTF-8\\\">\\n  <meta name=\\"
+  },
+  {
+    "step": 8,
+    "tool": "finish",
+    "args_head": "{}"
+  }
+]

@@ -1,0 +1,84 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f4f5f7;
+  margin: 0;
+  padding: 20px;
+}
+
+.board {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+.column {
+  background-color: #ebecf0;
+  border-radius: 8px;
+  width: 300px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.column-header {
+  padding: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #5e6c84;
+  text-transform: uppercase;
+}
+
+.card-list {
+  padding: 8px;
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 50px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 0 rgba(9,30,66,.25);
+  cursor: grab;
+  font-size: 14px;
+  user-select: none;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.dragging {
+  opacity: 0.5;
+}
+
+.card-form {
+  padding: 8px;
+  display: flex;
+  gap: 4px;
+}
+
+.card-form input {
+  flex-grow: 1;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.card-form button {
+  padding: 6px 12px;
+  background-color: #0079bf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card-form button:hover {
+  background-color: #026aa8;
+}

@@ -1,0 +1,21 @@
+
+> kanban-backend@1.0.0 dev
+> node --watch index.js
+
+(node:513687) ExperimentalWarning: Watch mode is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+file:///tmp/runs/smokes/gemma-moe-q4/kanban-board/interactive/runs/201/app/kanban-board/backend/index.js:20
+const db = new PGLite(path.join(DATA_DIR, 'kanban.db'));
+           ^
+
+ReferenceError: PGLite is not defined
+    at file:///tmp/runs/smokes/gemma-moe-q4/kanban-board/interactive/runs/201/app/kanban-board/backend/index.js:20:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+    at async loadESM (node:internal/process/esm_loader:34:7)
+    at async handleMainPromise (node:internal/modules/run_main:106:12)
+
+Node.js v18.20.8
+Failed running 'index.js'
+Restarting 'index.js'
+Server running on port 3000

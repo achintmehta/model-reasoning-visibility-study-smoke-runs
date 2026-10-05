@@ -1,0 +1,143 @@
+{
+  "model": "gpt-oss-20b",
+  "base_url": "http://192.168.1.110:7777/v1",
+  "condition": "execution",
+  "quantization": "F16",
+  "reasoning_replayed": true,
+  "replay_format": "field",
+  "quantization_detail": {
+    "status": "ok",
+    "registry": "/mnt/d/eval-coding-agent/quant-registry.json",
+    "registry_sha": "44d03c589e00bed6",
+    "model_key": "gpt-oss-20b",
+    "quantization": "F16",
+    "publisher": "Unsloth",
+    "repo": "https://huggingface.co/unsloth",
+    "architecture": "gpt-oss",
+    "gguf_file_type": "F16",
+    "gguf_file_type_raw": 1,
+    "method": "PTQ",
+    "method_source": "assumed",
+    "imatrix": false,
+    "imatrix_file": null,
+    "imatrix_dataset": null,
+    "imatrix_chunks": null,
+    "file": "/mnt/d/llm_models/LM Studio/unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-F16.gguf",
+    "file_name": "gpt-oss-20b-F16.gguf",
+    "file_size_bytes": 13792639168,
+    "tensor_count": 459,
+    "recorded_by": "tools/hash_quants.py",
+    "file_sha256": "4e4f9cd88d6456e4f389e7262eca4a8d565211e2b22ece9ca7a8556168ff3c66"
+  },
+  "serving_probe": {
+    "endpoint": "http://192.168.1.110:7777/props",
+    "keys_seen": [
+      "bos_token",
+      "build_info",
+      "chat_template",
+      "chat_template_caps",
+      "cors_proxy_enabled",
+      "default_generation_settings",
+      "endpoint_metrics",
+      "endpoint_props",
+      "endpoint_slots",
+      "eos_token",
+      "is_sleeping",
+      "media_marker",
+      "modalities",
+      "model_alias",
+      "model_ftype",
+      "model_path",
+      "total_slots",
+      "ui",
+      "ui_settings"
+    ],
+    "model_path": "D:\\llm_models\\LM Studio\\unsloth\\gpt-oss-20b-GGUF\\gpt-oss-20b-F16.gguf",
+    "n_ctx": 131072,
+    "total_slots": 1,
+    "build_info": "b10964-b29c606e2",
+    "chat_template_sha": "70da0d2348e40aaf",
+    "chat_template_chars": 17221,
+    "probe_note": "served file matches the registry entry (gpt-oss-20b-F16.gguf)"
+  },
+  "allowed_tools": [
+    "read_file",
+    "write_file",
+    "edit_file",
+    "list_dir",
+    "finish",
+    "run_command",
+    "run_background_command",
+    "run_command_and_capture_output",
+    "list_background_commands",
+    "stop_background_command"
+  ],
+  "decoding": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "max_tokens": 32768,
+    "top_k": 0.0,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "seed": 1
+  },
+  "decoding_profile": "thinking",
+  "decoding_source": "registry",
+  "decoding_registry_sha": "d3149737912ebbde",
+  "extra_body": {
+    "chat_template_kwargs": {
+      "reasoning_effort": "medium"
+    }
+  },
+  "decoding_overridden": {},
+  "decoding_overridden_basis": "registry",
+  "max_steps": 10000,
+  "max_total_tokens": 20000000,
+  "loop_guards": {
+    "max_same_calls": 500,
+    "max_blocked_calls": 3,
+    "max_cycle_repeats": 3,
+    "max_repeat_steps": 30
+  },
+  "vision": false,
+  "browser": {
+    "headed": false,
+    "slow_mo_ms": 0,
+    "executable_path": null
+  },
+  "interactive": false,
+  "briefing_mode": "universal",
+  "no_briefing": false,
+  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "system_prompt_sha": "dc860fd85abe74dd",
+  "base_prompt_sha": "a1b949af9e7bda1c",
+  "condition_briefing_sha": "c988f43155c49538",
+  "think_preamble_key": "none",
+  "think_preamble_sha": "e3b0c44298fc1c14",
+  "task_sha": "01d2615d510ad8b1",
+  "workspace": "/tmp/runs/smokes/gptoss-20b/kanban-board/execution/runs/301/app",
+  "workspace_git": "none",
+  "seed_workspace": null,
+  "seed_fingerprint": null,
+  "started_at": 1791153354.9480867,
+  "ended_at": 1791153404.3951945,
+  "status": "api_error",
+  "steps": 18,
+  "workspace_fingerprint": {
+    "n_files": 9,
+    "sha": "a85f1183c527bb5e"
+  },
+  "decoding_dropped_params": [],
+  "api_retries": {
+    "count": 0,
+    "timeouts": 0,
+    "events": []
+  },
+  "api_error": {
+    "exception": "HTTPError",
+    "code": 500,
+    "body": "{\"error\":{\"code\":500,\"message\":\"The model produced output that does not match the expected peg-native format\",\"type\":\"server_error\"}}",
+    "server_model_crash": false,
+    "model_output_unparseable": true
+  }
+}

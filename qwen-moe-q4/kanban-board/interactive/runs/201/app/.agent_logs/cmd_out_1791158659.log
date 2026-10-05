@@ -1,0 +1,12 @@
+
+> kanban-board-client@0.0.1 dev
+> vite
+
+
+  VITE v6.4.3  ready in 127 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+7:04:44 PM [vite] (client) page reload src/main.js
+7:08:08 PM [vite] vite.config.js changed, restarting server...
+7:08:08 PM [vite] server restarted.

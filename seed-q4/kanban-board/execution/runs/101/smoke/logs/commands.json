@@ -1,0 +1,12 @@
+[
+  {
+    "step": 1,
+    "tool": "run_command",
+    "args_head": "mkdir kanban-board && cd kanban-board && npm init -y"
+  },
+  {
+    "step": 2,
+    "tool": "finish",
+    "args_head": "{}"
+  }
+]

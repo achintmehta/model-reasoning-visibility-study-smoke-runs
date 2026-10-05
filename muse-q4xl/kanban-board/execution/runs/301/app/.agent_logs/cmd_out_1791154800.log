@@ -1,0 +1,11 @@
+Failed to init DB RuntimeError: Aborted(). Build with -sASSERTIONS for more info.
+    at abort (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:1:78499)
+    at __abort_js (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:2:64310)
+    at wasm://wasm/01edd1ba:wasm-function[10860]:0x58f85f
+    at wasm://wasm/01edd1ba:wasm-function[3144]:0x23ea56
+    at wasm://wasm/01edd1ba:wasm-function[3636]:0x265f6a
+    at wasm://wasm/01edd1ba:wasm-function[7801]:0x3e354e
+    at wasm://wasm/01edd1ba:wasm-function[2533]:0x1c1034
+    at Module._pg_initdb (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:3:124284)
+    at pe.qe (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:3:243608)
+    at async pe.create (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:3:238148)

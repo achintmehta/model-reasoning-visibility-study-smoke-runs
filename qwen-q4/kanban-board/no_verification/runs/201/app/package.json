@@ -1,0 +1,15 @@
+{
+  "name": "kanban-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time collaborative Kanban board with PGLite and SSE",
+  "scripts": {
+    "dev:backend": "node backend/server.js",
+    "dev:frontend": "cd frontend && npx vite --host",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

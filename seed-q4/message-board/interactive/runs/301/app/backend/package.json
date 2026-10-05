@@ -1,0 +1,15 @@
+{
+  "name": "realtime-message-board-backend",
+  "version": "1.0.0",
+  "description": "Backend for real-time message board using PGLite and SSE",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}

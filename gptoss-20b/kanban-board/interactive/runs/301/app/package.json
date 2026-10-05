@@ -1,0 +1,13 @@
+{
+  "name": "kanban-board",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend --prefix server\" \"npm run dev:frontend --prefix client\"",
+    "dev:backend": "node server/index.js",
+    "dev:frontend": "vite"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "vite": "^4.5.0"
+  }
+}
