@@ -1,0 +1,26 @@
+{
+  "title": "Certifying smoke runs of the study: does a coding agent's model need to re-read its own reasoning?",
+  "upload_type": "dataset",
+  "description": "<p>The certifying smoke set of study for model reasoning visibility, a pre-registered study of whether an AI coding agent's model needs to see its own earlier reasoning again. Each of eight open-weight models (Gemma-4-31B-it, Qwen3.6-27B, Seed-OSS-36B-Instruct, gpt-oss-20b, GLM-4.7-Flash, Qwen3.6-35B-A3B, Gemma-4-26B-A4B-it, Muse Glimmer 30B) builds two small web apps under three tool conditions, in up to three arms: thinking OFF, thinking on with past reasoning discarded (UNSEEN), and thinking on with past reasoning replayed (SEEN).</p><p>The set holds 66 agent runs made on 2026-10-07 from harness commit 5ac366f4175dc0929c28ad45e1560d26760f83fa (tag model-reasoning-visibility-study-freeze-100826), served by llama.cpp b10964. For each run it keeps the workspace the agent built, the full request/response trace, the run manifest, the console log, the command list, the toolchain record and the model server's log at its most detailed level (zstd-compressed). It also includes the gate script that certified the set (verify_smokes.py), its output, the decoding registry it checks against, and the batch runner's schedule and progress records.</p><p><strong>These runs are not study data.</strong> The protocol excludes every smoke and probe run from analysis; they are published so that the frozen settings can be checked against what the runs actually did. See README.md for the layout and how to re-run the gates.</p>",
+  "creators": [
+    {
+      "name": "Mehta, Achint",
+      "orcid": "0009-0004-4192-8750"
+    }
+  ],
+  "keywords": [
+    "coding agents",
+    "reasoning models",
+    "chain of thought",
+    "reasoning replay",
+    "LLM evaluation",
+    "pre-registration",
+    "smoke test",
+    "llama.cpp",
+    "open-weight models"
+  ],
+  "license": "cc-by-4.0",
+  "access_right": "open",
+  "language": "eng",
+  "notes": "Smoke runs of a pre-registered study; excluded from its analysis by design. Harness commit 5ac366f4175dc0929c28ad45e1560d26760f83fa; node_modules folders are not included and are rebuilt from each package-lock.json with npm ci."
+}

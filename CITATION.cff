@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use these runs, please cite them as below."
+type: dataset
+title: "Certifying smoke runs of study: does a coding agent's model need to re-read its own reasoning?"
+authors:
+  - family-names: Mehta
+    given-names: Achint
+    orcid: "https://orcid.org/0009-0004-4192-8750"
+license: CC-BY-4.0
+repository-code: "https://github.com/achintmehta/model-reasoning-visibility-study-smoke-runs"
+abstract: >-
+  The certifying smoke set of study: 66 agent runs by eight open-weight models,
+  made on 2026-10-07 from harness commit 5ac366f4175dc0929c28ad45e1560d26760f83fa,
+  with the gate script that certified them. Not study data: the protocol excludes
+  every smoke run from analysis.
+keywords:
+  - coding agents
+  - reasoning models
+  - chain of thought
+  - reasoning replay
+  - LLM evaluation
+  - pre-registration
