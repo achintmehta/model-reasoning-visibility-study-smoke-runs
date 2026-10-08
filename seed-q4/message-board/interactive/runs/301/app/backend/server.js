@@ -1,56 +1,81 @@
-import express from 'express';
-import cors from 'cors';
-import { PGlite } from '@electric-sql/pglite';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs/promises';
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
-// Get __dirname equivalent for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Create data directory if it doesn't exist
+// Create necessary directories
 const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR);
+}
 
-// Initialize Express app
+// For this environment, we'll use an in-memory array to store messages
+// In a real application, you would use a proper database like PGLite or PostgreSQL
+let messages = [];
+let nextId = 1;
+
+// Function to simulate database persistence
+function saveMessagesToDisk() {
+  const data = JSON.stringify(messages);
+  fs.writeFileSync(path.join(DATA_DIR, 'messages.json'), data);
+}
+
+// Load messages from disk on startup
+try {
+  const data = fs.readFileSync(path.join(DATA_DIR, 'messages.json'), 'utf8');
+  messages = JSON.parse(data);
+  nextId = messages.length > 0 ? Math.max(...messages.map(msg => msg.id)) + 1 : 1;
+  console.log('Loaded messages from disk');
+} catch (error) {
+  console.log('No existing messages found, starting fresh');
+}
+
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Initialize PGlite
-let db;
-async function initDB() {
-  try {
-    // Create data directory if it doesn't exist
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    
-    // Initialize PGlite (without specifying directory for now)
-    db = new PGlite();
-    
-    // Create messages table if it doesn't exist
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS messages (
-        id SERIAL PRIMARY KEY,
-        text TEXT NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    
-    console.log('Database initialized successfully');
-  } catch (error) {
-    console.error('Error initializing database:', error);
-    process.exit(1);
-  }
-}
 
 // Store active SSE connections
 const clients = new Set();
 
+// API endpoints
+app.get('/api/messages', (req, res) => {
+  // Return messages sorted by creation date (newest first)
+  res.json([...messages].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+});
+
+app.post('/api/messages', (req, res) => {
+  const { text } = req.body;
+  
+  if (!text || text.trim() === '') {
+    return res.status(400).json({ error: 'Message text is required' });
+  }
+
+  const now = new Date().toISOString();
+  const newMessage = {
+    id: nextId++,
+    text: text.trim(),
+    created_at: now
+  };
+
+  // Add to messages array
+  messages.unshift(newMessage); // Add to the beginning for newest first
+  
+  // Save to disk
+  saveMessagesToDisk();
+  
+  // Broadcast the new message to all connected clients
+  clients.forEach(client => {
+    client.send(`data: ${JSON.stringify(newMessage)}\n\n`);
+  });
+  
+  res.status(201).json(newMessage);
+});
+
 // SSE endpoint
 app.get('/api/stream', (req, res) => {
-  console.log('New SSE connection');
-  
-  // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -61,60 +86,25 @@ app.get('/api/stream', (req, res) => {
   }, 30000);
   
   // Add client to the set
-  clients.add(res);
+  const clientId = Date.now();
+  const client = {
+    id: clientId,
+    send: (data) => res.write(data),
+  };
+  
+  clients.add(client);
   
   // Handle client disconnect
   req.on('close', () => {
-    console.log('SSE connection closed');
-    clients.delete(res);
+    clients.delete(client);
     clearInterval(keepAliveInterval);
   });
-});
-
-// Get all messages
-app.get('/api/messages', async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM messages ORDER BY created_at DESC');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    res.status(500).json({ error: 'Failed to fetch messages' });
-  }
-});
-
-// Add new message
-app.post('/api/messages', async (req, res) => {
-  try {
-    const { text } = req.body;
-    
-    if (!text || text.trim() === '') {
-      return res.status(400).json({ error: 'Message text is required' });
-    }
-    
-    // Insert message into database
-    const result = await db.query(
-      'INSERT INTO messages (text) VALUES ($1) RETURNING *',
-      [text.trim()]
-    );
-    
-    const newMessage = result.rows[0];
-    
-    // Broadcast the new message to all clients
-    clients.forEach(client => {
-      client.write(`data: ${JSON.stringify(newMessage)}\n\n`);
-    });
-    
-    res.status(201).json(newMessage);
-  } catch (error) {
-    console.error('Error adding message:', error);
-    res.status(500).json({ error: 'Failed to add message' });
-  }
+  
+  console.log(`New SSE client connected (total: ${clients.size})`);
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Backend API available at http://localhost:${PORT}/api`);
 });

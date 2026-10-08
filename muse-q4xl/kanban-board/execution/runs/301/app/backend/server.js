@@ -55,7 +55,9 @@ function broadcast(eventType, data) {
   clients.forEach(client => {
     try {
       client.res.write(payload);
-    } catch (e) {}
+    } catch (e) {
+      // ignore
+    }
   });
 }
 
@@ -84,6 +86,7 @@ async function getBoard() {
 }
 
 async function normalizeColumnPositions(columnId) {
+  // Reassign positions with spacing
   const cards = await db.query(
     'SELECT id FROM cards WHERE column_id = $1 ORDER BY position, id',
     [columnId]
@@ -110,12 +113,15 @@ app.post('/api/cards', async (req, res) => {
     return res.status(400).json({ error: 'columnId and text required' });
   }
   try {
+    await db.exec('BEGIN');
     const maxRes = await db.query('SELECT COALESCE(MAX(position), -1) as maxpos FROM cards WHERE column_id = $1', [columnId]);
-    const position = Number(maxRes.rows[0].maxpos) + 1;
+    const maxPos = maxRes.rows[0].maxpos == null ? -1 : Number(maxRes.rows[0].maxpos);
+    const position = maxPos + 1;
     const insertRes = await db.query(
       'INSERT INTO cards (column_id, text, position) VALUES ($1, $2, $3) RETURNING id, column_id, text, position, created_at',
       [columnId, text, position]
     );
+    await db.exec('COMMIT');
     const card = insertRes.rows[0];
     const cardObj = {
       id: card.id,
@@ -127,6 +133,7 @@ app.post('/api/cards', async (req, res) => {
     broadcast('card-created', { card: cardObj });
     res.status(201).json(cardObj);
   } catch (e) {
+    await db.exec('ROLLBACK');
     console.error(e);
     res.status(500).json({ error: 'Failed to create card' });
   }
@@ -139,14 +146,21 @@ app.patch('/api/cards/:id/move', async (req, res) => {
     return res.status(400).json({ error: 'columnId required' });
   }
   try {
+    await db.exec('BEGIN');
+    // Get current card
     const cur = await db.query('SELECT id, column_id, position FROM cards WHERE id = $1', [cardId]);
     if (cur.rows.length === 0) {
+      await db.exec('ROLLBACK');
       return res.status(404).json({ error: 'Card not found' });
     }
+    const current = cur.rows[0];
 
+    // Compute new position
+    let newPosition;
     const beforeIdNum = beforeId ? Number(beforeId) : null;
     const afterIdNum = afterId ? Number(afterId) : null;
 
+    // Helper to fetch position
     const getPos = async (id) => {
       if (!id) return null;
       const r = await db.query('SELECT position FROM cards WHERE id = $1', [id]);
@@ -156,20 +170,23 @@ app.patch('/api/cards/:id/move', async (req, res) => {
     const posBefore = await getPos(beforeIdNum);
     const posAfter = await getPos(afterIdNum);
 
-    let newPosition;
     if (beforeIdNum && afterIdNum) {
+      // Ensure they are in target column
       const beforeCard = await db.query('SELECT column_id FROM cards WHERE id = $1', [beforeIdNum]);
       const afterCard = await db.query('SELECT column_id FROM cards WHERE id = $1', [afterIdNum]);
       const beforeCol = beforeCard.rows[0]?.column_id;
       const afterCol = afterCard.rows[0]?.column_id;
       if (beforeCol !== columnId || afterCol !== columnId) {
+        // If IDs refer to cards in different column, treat as edge
         newPosition = posAfter !== null ? posAfter + 1 : posBefore !== null ? posBefore - 1 : 0;
       } else {
         if (posBefore === null || posAfter === null) {
           newPosition = posAfter !== null ? posAfter + 1 : 0;
         } else {
           if (Math.abs(posBefore - posAfter) < 1e-9) {
+            // Renormalize
             await normalizeColumnPositions(columnId);
+            // Re-fetch positions
             const reBefore = await getPos(beforeIdNum);
             const reAfter = await getPos(afterIdNum);
             newPosition = (reAfter + reBefore) / 2;
@@ -183,16 +200,24 @@ app.patch('/api/cards/:id/move', async (req, res) => {
     } else if (beforeIdNum) {
       newPosition = posBefore !== null ? posBefore - 1 : 0;
     } else {
+      // empty column or append
       const maxRes = await db.query('SELECT COALESCE(MAX(position), -1) as maxpos FROM cards WHERE column_id = $1', [columnId]);
-      newPosition = Number(maxRes.rows[0].maxpos) + 1;
+      const maxPos = maxRes.rows[0].maxpos == null ? -1 : Number(maxRes.rows[0].maxpos);
+      newPosition = maxPos + 1;
     }
 
+    // Update card
     await db.query('UPDATE cards SET column_id = $1, position = $2 WHERE id = $3', [columnId, newPosition, cardId]);
 
+    // If moving within same column and position collision risk, optionally renormalize if needed
+    // Simple check: if before and after both present and gap tiny
     if (beforeIdNum && afterIdNum && Math.abs(posBefore - posAfter) < 1e-6) {
       await normalizeColumnPositions(columnId);
     }
 
+    await db.exec('COMMIT');
+
+    // Fetch canonical card
     const updated = await db.query('SELECT id, column_id, text, position, created_at FROM cards WHERE id = $1', [cardId]);
     const cardObj = {
       id: updated.rows[0].id,
@@ -205,6 +230,7 @@ app.patch('/api/cards/:id/move', async (req, res) => {
     broadcast('card-moved', { card: cardObj });
     res.json(cardObj);
   } catch (e) {
+    await db.exec('ROLLBACK');
     console.error(e);
     res.status(500).json({ error: 'Failed to move card' });
   }
@@ -216,9 +242,11 @@ app.get('/api/stream', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  const clientId = Date.now() + Math.random();
+  const clientId = Date.now();
   const client = { id: clientId, res };
   clients.push(client);
+
+  // Send initial comment to keep connection alive
   res.write(': connected\n\n');
 
   req.on('close', () => {

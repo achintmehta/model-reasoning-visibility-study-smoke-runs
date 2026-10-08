@@ -16,7 +16,7 @@ const sseClients = new Set();
 function broadcast(event, data) {
   const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
   for (const client of sseClients) {
-    if (client.readyState === 1) {
+    if (!client.writableEnded) {
       try {
         client.write(message);
       } catch (e) {
@@ -63,11 +63,11 @@ async function getBoardState(db) {
 // ---- Helper: Calculate end position for a column ----
 
 async function getEndPosition(db, columnId, excludeCardId = null) {
-  const query = excludeCardId
-    ? 'SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = $1 AND id != $2'
-    : 'SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = $1';
-  const params = excludeCardId ? [columnId, excludeCardId] : [columnId];
-  const res = await db.query(query, params);
+  const res = await db.query(
+    'SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = $1' +
+      (excludeCardId ? ' AND id != $2' : ''),
+    excludeCardId ? [columnId, excludeCardId] : [columnId]
+  );
   return parseFloat(res.rows[0].max_pos) + 50;
 }
 

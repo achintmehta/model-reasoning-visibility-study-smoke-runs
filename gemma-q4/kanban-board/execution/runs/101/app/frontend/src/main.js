@@ -6,250 +6,166 @@ let boardState = [];
 async function fetchBoard() {
   const res = await fetch(`${API_BASE}/board`);
   boardState = await res.json();
-  renderBoard();
+  render();
 }
 
-function renderBoard() {
+function render() {
   app.innerHTML = '';
-  
-  boardState.forEach(column => {
+  boardState.forEach(col => {
     const colEl = document.createElement('div');
     colEl.className = 'column';
-    colEl.dataset.id = column.id;
-    
-    colEl.innerHTML = `
-      <div class="column-header">${column.title}</div>
-      <div class="card-list" data-column-id="${column.id}"></div>
-      <div class="add-card-form">
-        <input type="text" placeholder="Add card..." id="input-${column.id}">
-        <button id="btn-${column.id}">Add</button>
-      </div>
-    `;
-    
-    const cardList = colEl.querySelector('.card-list');
-    
-    // Sort cards by position
-    const sortedCards = [...column.cards].sort((a, b) => a.position - b.position);
-    
-    sortedCards.forEach(card => {
-      const cardEl = createCardElement(card);
+    colEl.dataset.id = col.id;
+
+    const header = document.createElement('div');
+    header.className = 'column-header';
+    header.innerText = col.title;
+    colEl.appendChild(header);
+
+    const cardList = document.createElement('div');
+    cardList.className = 'card-list';
+    cardList.dataset.id = col.id;
+    cardList.addEventListener('dragover', handleDragOver);
+    cardList.addEventListener('drop', handleDrop);
+
+    col.cards.sort((a, b) => a.position - b.position).forEach(card => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card';
+      cardEl.draggable = true;
+      cardEl.id = `card-${card.id}`;
+      cardEl.innerText = card.text;
+      cardEl.dataset.id = card.id;
+      cardEl.addEventListener('dragstart', handleDragStart);
+      cardEl.addEventListener('dragend', handleDragEnd);
       cardList.appendChild(cardEl);
     });
+
+    colEl.appendChild(cardList);
+
+    const form = document.createElement('div');
+    form.className = 'add-card-form';
+    const input = document.createElement('input');
+    input.placeholder = 'New card...';
+    const button = document.createElement('button');
+    button.innerText = 'Add';
+    button.onclick = () => addCard(col.id, input.value);
     
+    form.appendChild(input);
+    form.appendChild(button);
+    colEl.appendChild(form);
+
     app.appendChild(colEl);
-    
-    // Setup add card event
-    const input = colEl.querySelector(`#input-${column.id}`);
-    const btn = colEl.querySelector(`#btn-${column.id}`);
-    
-    const addCard = async () => {
-      const text = input.value.trim();
-      if (!text) return;
-      
-      // Optimistic update
-      const tempId = 'temp-' + Date.now();
-      const tempCard = { id: tempId, text, position: 999999, column_id: column.id };
-      
-      // Add to local state
-      const col = boardState.find(c => c.id === column.id);
-      col.cards.push(tempCard);
-      renderBoard();
-      
-      try {
-        const res = await fetch(`${API_BASE}/cards`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ columnId: column.id, text })
-        });
-        const newCard = await res.json();
-        
-        // Replace temp card with real card
-        const cardIdx = col.cards.findIndex(c => c.id === tempId);
-        if (cardIdx !== -1) col.cards[cardIdx] = newCard;
-        renderBoard();
-      } catch (e) {
-        alert('Error adding card');
-        col.cards = col.cards.filter(c => c.id !== tempId);
-        renderBoard();
-      }
-      input.value = '';
-    };
-    
-    btn.onclick = addCard;
-    input.onkeypress = (e) => { if (e.key === 'Enter') addCard(); };
   });
-  
-  setupDragAndDrop();
 }
 
-function createCardElement(card) {
-  const el = document.createElement('div');
-  el.className = 'card';
-  el.draggable = true;
-  el.id = `card-${card.id}`;
-  el.textContent = card.text;
-  el.dataset.id = card.id;
-  
-  el.addEventListener('dragstart', (e) => {
-    e.target.classList.add('dragging');
-    e.dataTransfer.setData('text/plain', card.id);
+async function addCard(columnId, text) {
+  if (!text) return;
+  const res = await fetch(`${API_BASE}/cards`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columnId, text })
   });
+  const newCard = await res.json();
   
-  el.addEventListener('dragend', (e) => {
-    e.target.classList.remove('dragging');
-  });
-  
-  return el;
+  // Optimistic update
+  const col = boardState.find(c => c.id === columnId);
+  col.cards.push(newCard);
+  render();
 }
 
-function setupDragAndDrop() {
-  const cardLists = document.querySelectorAll('.card-list');
-  
-  cardLists.forEach(list => {
-    list.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const draggingEl = document.querySelector('.dragging');
-      if (!draggingEl) return;
-      
-      const afterElement = getDragAfterElement(list, e.clientY);
-      if (afterElement == null) {
-        list.appendChild(draggingEl);
-      } else {
-        list.insertBefore(draggingEl, afterElement);
-      }
-    });
-    
-    list.addEventListener('drop', async (e) => {
-      e.preventDefault();
-      const cardId = e.dataTransfer.getData('text/plain');
-      const columnId = list.dataset.columnId;
-      
-      const cards = Array.from(list.querySelectorAll('.card'));
-      const cardIdx = cards.findIndex(el => el.dataset.id === cardId);
-      
-      const beforeEl = cards[cardIdx - 1];
-      const afterEl = cards[cardIdx + 1];
-      
-      const beforeId = beforeEl ? beforeEl.dataset.id : null;
-      const afterId = afterEl ? afterEl.dataset.id : null;
-      
-      // Optimistic update: find and move card in local state
-      let cardToMove = null;
-      boardState.forEach(col => {
-        const idx = col.cards.findIndex(c => c.id === cardId);
-        if (idx !== -1) {
-          cardToMove = col.cards.splice(idx, 1)[0];
-        }
-      });
-      
-      if (cardToMove) {
-        const targetCol = boardState.find(col => col.id === columnId);
-        // This is a rough optimistic position. The server will fix it.
-        cardToMove.column_id = columnId;
-        
-        // Simple optimistic insertion: 
-        // we don't have actual positions for before/after easily without re-fetching
-        // but we can just push it into the array in the right place.
-        // However, the renderBoard sorts by position, so we need a temporary position.
-        
-        // Find positions of neighbors
-        const beforeCard = targetCol.cards.find(c => c.id === beforeId);
-        const afterCard = targetCol.cards.find(c => c.id === afterId);
-        
-        let optPos = 1000;
-        if (beforeCard && afterCard) {
-          optPos = (beforeCard.position + afterCard.position) / 2;
-        } else if (beforeCard) {
-          optPos = beforeCard.position + 1000;
-        } else if (afterCard) {
-          optPos = afterCard.position - 1000;
-        }
-        
-        cardToMove.position = optPos;
-        
-        // Insert into array at correct position to avoid immediate render jitter
-        // Actually, the easiest way is just to let renderBoard sort it.
-        targetCol.cards.push(cardToMove);
-        
-        // We don't call renderBoard immediately because the DOM already reflects the drop
-        // but we want to keep state in sync.
-      }
-      
-      try {
-        const res = await fetch(`${API_BASE}/cards/${cardId}/move`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ columnId, beforeId, afterId })
-        });
-        const canonicalCard = await res.json();
-        
-        // Update state with canonical data
-        const targetCol = boardState.find(col => col.id === columnId);
-        const idx = targetCol.cards.findIndex(c => c.id === canonicalCard.id);
-        if (idx !== -1) {
-          targetCol.cards[idx] = canonicalCard;
-        } else {
-          targetCol.cards.push(canonicalCard);
-        }
-        
-        // Re-render to ensure canonical order
-        renderBoard();
-      } catch (e) {
-        alert('Error moving card');
-        fetchBoard();
-      }
-    });
-  });
+let draggedCardId = null;
+
+function handleDragStart(e) {
+  draggedCardId = e.target.dataset.id;
+  e.target.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  const list = e.currentTarget;
+  const afterElement = getDragAfterElement(list, e.clientY);
+  const dragging = document.querySelector('.dragging');
+  if (!dragging) return;
+  if (afterElement == null) {
+    list.appendChild(dragging);
+  } else {
+    list.insertBefore(dragging, afterElement);
+  }
 }
 
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
-  
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
     if (offset < 0 && offset > closest.offset) {
       return { offset: offset, element: child };
     } else {
-      return { offset: closest.offset, element: child };
+      return closest;
     }
-  }, { offset: Infinity });
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
-// SSE Connection
+async function handleDrop(e) {
+  e.preventDefault();
+  const columnId = e.currentTarget.dataset.id;
+  const cardEl = document.querySelector('.dragging');
+  if (!cardEl) return;
+  const cardId = cardEl.dataset.id;
+
+  const cardList = e.currentTarget;
+  const cards = [...cardList.querySelectorAll('.card')];
+  const index = cards.indexOf(cardEl);
+  
+  const beforeId = index > 0 ? cards[index - 1].dataset.id : null;
+  const afterId = index < cards.length - 1 ? cards[index + 1].dataset.id : null;
+
+  // Optimistic: the DOM is already updated by handleDragOver
+  
+  await fetch(`${API_BASE}/cards/${cardId}/move`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columnId, beforeId, afterId })
+  });
+}
+
 function setupSSE() {
   const eventSource = new EventSource(`${API_BASE}/stream`);
   
   eventSource.addEventListener('cardCreated', (e) => {
-    const newCard = JSON.parse(e.data);
-    const col = boardState.find(c => c.id === newCard.column_id);
+    const card = JSON.parse(e.data);
+    const col = boardState.find(c => c.id === card.columnId);
     if (col) {
-      col.cards.push(newCard);
-      renderBoard();
+      col.cards.push(card);
+      render();
     }
   });
-  
+
   eventSource.addEventListener('cardMoved', (e) => {
-    const updatedCard = JSON.parse(e.data);
-    const colId = updatedCard.column_id;
+    const card = JSON.parse(e.data);
     
-    // Remove from all columns
+    // Remove from any column it might be in
     boardState.forEach(col => {
-      col.cards = col.cards.filter(c => c.id !== updatedCard.id);
+      col.cards = col.cards.filter(c => c.id !== card.id);
     });
     
     // Add to target column
-    const targetCol = boardState.find(col => col.id === colId);
-    if (targetCol) {
-      targetCol.cards.push(updatedCard);
-      renderBoard();
+    const col = boardState.find(c => c.id === card.columnId);
+    if (col) {
+      // We need the full card data to render correctly (text)
+      // For simplicity, we can either refetch board or find the card's old text
+      // Let's try to find the text from existing state before we remove it
+      const oldCard = boardState.flatMap(c => c.cards).find(c => c.id === card.id);
+      const cardWithText = oldCard ? { ...card, text: oldCard.text } : card;
+      
+      col.cards.push(cardWithText);
+      render();
     }
   });
 }
 
-async function init() {
-  await fetchBoard();
-  setupSSE();
-}
-
-init();
+fetchBoard();
+setupSSE();

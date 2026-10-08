@@ -24,6 +24,11 @@ GATES
                             the arguments of one of the harness's tools, or nothing but
                             tool-call markup, is a call filed in the wrong field, not
                             thinking. It is set aside, listed, and counted as callTxt.
+                            Nor, since v2.5.37, are Seed-OSS's budget reports: a
+                            `<seed:cot_budget_reflect>` block is the template's report of
+                            the thinking budget, not thought, and once reasoning left in the
+                            reply text is counted (G4) a report split between the field and
+                            the text measured 229 chars. G2 measures without them.
                             WAIVED for Gemma-4-26B-A4B (plan v2.5.12, v2.5.14): its OFF
                             arm is kept and watched, so its over-length OFF runs are
                             listed under the waiver; any other model's fail the gate.
@@ -32,11 +37,24 @@ GATES
                             its steps. The rate floor is deliberately low: a model that
                             reasons on only a third of its UNSEEN steps is showing a
                             real downstream effect, not a broken manipulation.
-  G4  no reasoning leak     No step may carry an OPENING think marker in its content.
-                            That means the parser failed to split the turn and the chain
-                            of thought is sitting in the visible text, where the UNSEEN
-                            arm cannot strip it and the manipulation is null. Trailing
-                            CLOSING markers are a known Magistral artifact and pass.
+  G4  no reasoning leak     No step's reply text, as the harness kept and replayed it,
+                            may carry a think or channel marker -- opening OR closing
+                            (plan v2.5.37) -- or, since v2.5.38, any roster template's
+                            turn-structure marker (<|im_end|>, <turn|>, <|end|>, ...),
+                            which would mean the server mis-split the output. A marker there means reasoning sits in the
+                            visible text, where the UNSEEN arm cannot strip it and the
+                            manipulation is null. Since v2.5.37 the harness moves reasoning
+                            the server left in the text (a closing tag with no opening one,
+                            Seed-OSS's habit in UNSEEN) to the reasoning field, so a marker
+                            still in the kept text is a split the harness missed. A run made
+                            before v2.5.37 fails here wherever that happened. The recovered
+                            reasoning is recomputed here, independently of the harness, and
+                            counted as reasoning by G2, G3 and the descriptives (`recov`).
+                            A split made at an OPENING tag never closed assumes the
+                            thought ran to the end of the reply -- the one case where
+                            where it ended is inferred, not marked -- so those steps are
+                            counted apart (`atOpen`) and listed for checking by hand
+                            (v2.5.38).
   G5  preamble ↔ arm        think_preamble_key must be "none" in OFF and identical
                             across a model's two thinking arms — the primary contrast
                             must not vary the system prompt.
@@ -53,6 +71,9 @@ GATES
                             masked, a call it had already made earlier in the run -- the
                             harness's no-progress definition, with pids and timestamps
                             masked. That run is an outcome, not one the budget cut short.
+                            And (plan v2.5.39) for a run the study lead JUDGED stuck, listed
+                            in G9_JUDGED with its evidence: the waiver holds only for the same
+                            trajectory (trace fingerprint); a different one is judged again.
   G17 server flags         (plan v2.5.24, v2.5.26, v2.5.27) every run's llama-server.log
                             banner carries EXACTLY the frozen serving flags, FROZEN_SERVER_ARGS
                             (--swa-full and -lv 5 included), plus any per-model flags in
@@ -126,6 +147,20 @@ G14_WAIVED = {"gptoss-20b": "gpt-oss's unparseable-output voids are waived and w
                             "(plan v2.5.32): in a smoke a retry replays the failure"}
 G2_WAIVED = {"gemma-moe-q4": "Gemma-4-26B-A4B's OFF arm is waived and watched "
                              "(plan v2.5.12, v2.5.14)"}
+# plan v2.5.39: JUDGED G9 waivers -- a run that reached the budget without meeting either
+# looping rule, judged by the study lead to have been stuck, on the evidence recorded here.
+# Keyed by slot; it holds only for the SAME trajectory (trace_fingerprint): a run of that slot
+# that went differently must be judged again, so the gate fails it and says so.
+G9_JUDGED = {
+    "glm-q4/message-board/execution/201": {
+        "fingerprint": "983e9b6b92b0ba8d",
+        "judged": "2026-10-06 (plan v2.5.39): stuck from about step 100 -- in every 25-step block "
+                  "after it, 56-92% of calls repeat a call already made (numbers masked); about "
+                  "250 steps alternating between two PGlite import forms, restarting the server "
+                  "and probing /health (41 times); its last reasoning reports the same import "
+                  "error; 27 of its last 30 calls are repeats, so the automatic rule missed it",
+    },
+}
 LOOP_TAIL = 30         # G9: the calls examined at the end of a run that reached the budget,
 LOOP_DISTINCT = 3      # and at most this many distinct among them, numbers masked, is a loop
 _NUM = re.compile(r"\d+")
@@ -312,7 +347,13 @@ def _zst_text(packed: Path):
         reached_end = fh.read(1) == ""     # False when the reader stopped early on purpose
     finally:
         if proc.poll() is None:
-            proc.kill()
+            if reached_end:            # all output read: let zstd exit on its own
+                try:
+                    proc.wait(timeout=60)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+            else:                      # the reader stopped early, or raised
+                proc.kill()
         fh.close()
         err = proc.stderr.read().decode(errors="replace").strip()
         proc.stderr.close()
@@ -427,6 +468,65 @@ EXPECTED_BODY = {
 # model writes it, so it can only fire on Muse. What G4 should look for in general is still
 # open (plan section 9, item 3b).
 OPENERS = ("[THINK]", "<think>", "<seed:think>", "to=self")
+# plan v2.5.37: G4 looks for every think marker, opening or closing, and the channel markers
+# of Gemma 4 and gpt-oss, in the reply text as the harness KEPT it (the trace row's `text`,
+# which is what was replayed). Stated here independently of the harness, as the other
+# expectations are.
+LEAK_MARKERS = OPENERS + ("[/THINK]", "</think>", "</seed:think>",
+                          "<|channel>thought", "<channel|>", "<|channel|>", "<|message|>")
+# plan v2.5.38: and each roster template's TURN-STRUCTURE markers. They are not reasoning,
+# but one in the reply text means the server mis-split the model's output, which nothing
+# else would notice. Qwen: <|im_start|> <|im_end|>; Gemma 4: <|turn> <turn|>; gpt-oss:
+# <|start|> <|end|> <|return|> <|call|>; Muse Glimmer: <|start|> <|eot|> <|eom|>;
+# GLM: <|system|> <|user|> <|assistant|> <|observation|>; Seed-OSS: <seed:bos> <seed:eos>.
+TURN_MARKERS = ("<|im_start|>", "<|im_end|>", "<|turn>", "<turn|>",
+                "<|start|>", "<|end|>", "<|return|>", "<|call|>", "<|eot|>", "<|eom|>",
+                "<|system|>", "<|user|>", "<|assistant|>", "<|observation|>",
+                "<seed:bos>", "<seed:eos>")
+LEAK_MARKERS = LEAK_MARKERS + TURN_MARKERS
+# plan v2.5.38: and Gemma 4's thought channel, `<|channel>thought ... <channel|>` (gpt-oss's
+# channels are not split by the harness; G4 fails on them).
+_THINK_CLOSE = ("</seed:think>", "</think>", "[/THINK]", "<channel|>")
+# plan v2.5.37: Seed-OSS's thinking-budget report, which G2 does not count as reasoning.
+_BUDGET_REPORT = re.compile(r"<seed:cot_budget_reflect>.*?</seed:cot_budget_reflect>", re.S)
+# plan v2.5.39: Gemma's opening tag only WITH its name -- a bare `<|channel>` was a tool call
+# with the wrong opener (2026-10-06), which stays in the reply and is counted as callTxt.
+_THINK_OPEN = ("<seed:think>", "<think>", "[THINK]", "<|channel>thought")
+_GEMMA_CHANNEL_OPEN = re.compile(r"<\|channel>(?:thought[ \t]*\n?)?")
+
+
+def reasoning_split(text):
+    """(recovered, kind, marker) for a reply's TEXT: the reasoning it carries -- everything
+    before its last closing think tag, or after an opening tag never closed, tags removed --
+    with kind "close" or "open" by which tag the split was made at, and that tag. All None
+    when there is no tag. This is the rule the harness applies from v2.5.37
+    (agent.split_reasoning_from_text), written out again here so the gate does not take the
+    harness's word for it. A "close" split is marked by the model; an "open" split assumes
+    the thought ran to the end of the reply (v2.5.38 counts those apart)."""
+    if not text:
+        return None, None, None
+    end, mk = -1, None
+    for m in _THINK_CLOSE:
+        i = text.rfind(m)
+        if i >= 0 and i + len(m) > end:
+            end, mk = i + len(m), m
+    if mk is not None:
+        head, kind = text[:end - len(mk)], "close"
+    else:
+        found = [(text.find(m), m) for m in _THINK_OPEN if m in text]
+        if not found:
+            return None, None, None
+        start, mk = min(found)
+        head, kind = text[start:], "open"
+    head = _GEMMA_CHANNEL_OPEN.sub("", head)
+    for m in _THINK_OPEN + _THINK_CLOSE:
+        head = head.replace(m, "")
+    return head.strip(), kind, mk
+
+
+def recovered_reasoning(text):
+    """The reasoning a reply's text carries, or None (see reasoning_split)."""
+    return reasoning_split(text)[0]
 
 # ---- tool calls written as text (plan v2.5.5, §9 item 2 and §10) -------------------------
 # A model sometimes writes a tool call as TEXT instead of making it, and the server files that
@@ -589,7 +689,9 @@ def load_runs(root: Path):
             man = json.loads(man_path.read_text(encoding="utf-8", errors="replace"))
         except (OSError, json.JSONDecodeError):
             man = {}
-        steps, lengths, empty, no_tool, reasoned, leaks = 0, [], 0, 0, 0, []
+        steps, lengths, empty, no_tool, reasoned, leaks, recov = 0, [], 0, 0, 0, [], 0
+        recov_open = []                  # splits at an opening tag: (step, chars, tag)
+        off_lengths = []                 # G2's measure: budget reports not counted (v2.5.37)
         call_fields, call_txt = [], []   # reasoning fields set aside; steps that lost a call
         calls = []                       # every call, numbers masked (plan v2.5.14, G9)
         with open_log(trace) as fh:
@@ -604,8 +706,19 @@ def load_runs(root: Path):
                 if row.get("kind") != "response":
                     continue
                 raw = row.get("raw") or {}
-                text = raw.get("content") or ""
+                # plan v2.5.37: `text` is the reply as the harness KEPT it -- the trace row's
+                # own `text`, which is what was replayed -- and the reasoning includes any the
+                # server left in its reply text (recomputed here, see recovered_reasoning()).
+                text = row.get("text") if "text" in row else raw.get("content")
+                text = text or ""
                 rsn = raw.get("reasoning_content") or ""
+                rec, rec_kind, rec_tag = reasoning_split(raw.get("content") or "")
+                if rec is not None:
+                    recov += 1
+                    if rec_kind == "open":
+                        recov_open.append((row.get("step"), len(rec), rec_tag))
+                    if rec:
+                        rsn = (rsn.rstrip() + "\n\n" + rec) if rsn.strip() else rec
                 steps += 1
                 # A reasoning field that IS a tool call is a call in the wrong field, not
                 # thinking (plan v2.5.5): it counts as no reasoning in every measure below,
@@ -614,8 +727,10 @@ def load_runs(root: Path):
                     call_fields.append((row.get("step", steps), len(rsn),
                                         json_call(rsn) or "markup"))
                     lengths.append(0)
+                    off_lengths.append(0)
                 else:
                     lengths.append(len(rsn))
+                    off_lengths.append(len(_BUDGET_REPORT.sub("", rsn).strip()))
                     if rsn.strip():
                         reasoned += 1
                 for c in row.get("tool_calls") or []:
@@ -641,9 +756,9 @@ def load_runs(root: Path):
                     no_tool += 1
                     if not text.strip():
                         empty += 1
-                for opener in OPENERS:
-                    if opener in text:
-                        leaks.append((row.get("step"), opener))
+                for marker in LEAK_MARKERS:
+                    if marker in text:
+                        leaks.append((row.get("step"), marker))
         # Everything above `runs/<id>` is the layout's context, and how much of it there
         # is tells you which layout this run was made in.
         ctx = run_dir.relative_to(root).parts[:-2]
@@ -657,7 +772,8 @@ def load_runs(root: Path):
         runs.append({
             "model": model, "task": task, "condition": condition, "id": rid, "arm": arm,
             "path": run_dir, "man": man, "steps": steps, "empty": empty, "no_tool": no_tool,
-            "reasoned": reasoned, "lengths": lengths or [0], "leaks": leaks,
+            "reasoned": reasoned, "lengths": lengths or [0], "leaks": leaks, "recov": recov, "recov_open": recov_open,
+            "off_lengths": off_lengths or [0],
             "call_fields": call_fields, "call_txt": call_txt,
             "rate": reasoned / steps if steps else 0.0,
             "tail_calls": calls[-LOOP_TAIL:],
@@ -847,14 +963,15 @@ def main():
     offs = [r for r in runs if r["arm"] == "OFF"]
     set_aside = [f"{tag(r)} step {s}: {n} chars were a `{what}` call, not reasoning"
                  for r in offs for s, n, what in r["call_fields"] if n > OFF_MAX]
-    long_offs = [r for r in offs if max(r["lengths"]) > OFF_MAX]
+    long_offs = [r for r in offs if max(r["off_lengths"]) > OFF_MAX]
     g.gate(f"G2  OFF canary: no reasoning step > {OFF_MAX} chars",
-           [f"{tag(r)}: longest reasoning {max(r['lengths'])} chars" for r in long_offs
+           [f"{tag(r)}: longest reasoning {max(r['off_lengths'])} chars" for r in long_offs
             if r["model"] not in G2_WAIVED],
-           f"{len(offs)} OFF runs; longest stub seen {max((max(r['lengths']) for r in offs), default=0)} chars"
+           f"{len(offs)} OFF runs; longest stub seen {max((max(r['off_lengths']) for r in offs), default=0)} chars"
+           " (Seed-OSS budget reports not counted)"
            + (f"; set aside as tool calls filed in the reasoning field (v2.5.5): "
               + "; ".join(set_aside) if set_aside else ""),
-           waived=[f"{tag(r)}: longest reasoning {max(r['lengths'])} chars -- "
+           waived=[f"{tag(r)}: longest reasoning {max(r['off_lengths'])} chars -- "
                    f"{G2_WAIVED[r['model']]}" for r in long_offs if r["model"] in G2_WAIVED])
 
     # G3 ON canary
@@ -869,8 +986,13 @@ def main():
            on_fail, f"{len(ons)} thinking-arm runs")
 
     # G4 leakage
-    g.gate("G4  no opening think marker in content",
-           [f"{tag(r)}: {mark} in content at step {step}" for r in runs for step, mark in r["leaks"]])
+    g.gate("G4  no think, channel or turn marker in the reply text as kept",
+           [f"{tag(r)}: {mark} in the reply text at step {step}"
+            for r in runs for step, mark in r["leaks"]],
+           f"{sum(r['recov'] for r in runs)} step(s) had reasoning in the reply text "
+           f"({sum(r['recov'] - len(r['recov_open']) for r in runs)} split at a closing tag, "
+           f"{sum(len(r['recov_open']) for r in runs)} at an opening tag only), "
+           f"moved to the reasoning field (plan v2.5.37)")
 
     # G5 preamble
     pre_fail = []
@@ -943,6 +1065,16 @@ def main():
                           f"last {LOOP_TAIL} calls repeats one it had already made, once "
                           f"numbers are masked ({distinct} distinct; plan v2.5.34: an "
                           f"outcome, not a censored run)")
+        elif at_budget and f"{r['model']}/{r['task']}/{r['condition']}/{r['id']}" in G9_JUDGED:
+            j = G9_JUDGED[f"{r['model']}/{r['task']}/{r['condition']}/{r['id']}"]
+            fp = trace_fingerprint(r["path"])
+            if fp == j["fingerprint"]:
+                looped.append(f"{tag(r)}: {t:,} tokens, JUDGED stuck -- {j['judged']} "
+                              f"(trace {fp})")
+            else:
+                over.append(f"{tag(r)}: {t:,} tokens -- a judged waiver is recorded for this "
+                            f"slot's trajectory {j['fingerprint']}, but this run's is {fp}: "
+                            f"judge it again")
         elif t > budget:
             over.append(f"{tag(r)}: {t:,} tokens")
         else:
@@ -1139,8 +1271,8 @@ def main():
     # Descriptives the plan registers (§10) — reported, never gated.
     print("\n--- registered descriptives (not gates) ---")
     print(f"{'model':16}{'arm':8}{'runs':>5}{'steps':>7}{'noTool':>8}{'empty':>7}{'callTxt':>9}"
-          f"{'rsn%':>7}{'parseVoid':>10}{'median rsn chars':>18}   terminal status")
-    agg = defaultdict(lambda: [0, 0, 0, 0, [], [], 0, 0])
+          f"{'recov':>7}{'atOpen':>8}{'rsn%':>7}{'parseVoid':>10}{'median rsn chars':>18}   terminal status")
+    agg = defaultdict(lambda: [0, 0, 0, 0, [], [], 0, 0, 0, 0])
     for r in runs:
         a = agg[(r["model"], r["arm"])]
         a[0] += 1; a[1] += r["steps"]; a[2] += r["no_tool"]; a[3] += r["empty"]
@@ -1153,8 +1285,13 @@ def main():
         # never made (plan §10, v2.5.5). A subset of noTool, reported per arm for the same
         # reason as parseVoid: if it differs between UNSEEN and SEEN it is part of the result.
         a[7] += len(r["call_txt"])
+        # plan v2.5.37: steps whose reasoning was in the reply text (moved by the harness).
+        a[8] += r["recov"]
+        # v2.5.38: of those, the splits at an opening tag never closed -- the thought is
+        # assumed to run to the end of the reply, so they are counted apart.
+        a[9] += len(r["recov_open"])
     for k in sorted(agg):
-        n, steps, no_tool, empty, lens, stats, nvoid, ncall = agg[k]
+        n, steps, no_tool, empty, lens, stats, nvoid, ncall, nrecov, nopen = agg[k]
         thinking = [x for x in lens if x]
         # Median over REASONING steps only. Over all steps it collapses to 0 the moment a
         # model reasons on fewer than half of them, which reads as "no reasoning" when the
@@ -1162,7 +1299,7 @@ def main():
         med = int(statistics.median(thinking)) if thinking else 0
         tally = ", ".join(f"{c}x {st}" for st, c in
                           sorted(Counter(stats).items(), key=lambda kv: -kv[1]))
-        print(f"{k[0]:16}{k[1]:8}{n:5}{steps:7}{no_tool:8}{empty:7}{ncall:9}"
+        print(f"{k[0]:16}{k[1]:8}{n:5}{steps:7}{no_tool:8}{empty:7}{ncall:9}{nrecov:7}{nopen:8}"
               f"{100*len(thinking)/max(steps,1):6.0f}%{nvoid:10}{med:18}   {tally}")
 
     # Every attempt, the failed ones included (plan v2.5.9) -- reported, never gated.
@@ -1221,6 +1358,15 @@ def main():
                              f"attempt {n}: {e['cause']}" + (", REPLAY" if rep else "")
                              + f" -- {e['detail'][:150]}")
         tally[(s[0], ARM_OF.get(s[3][:1], "?"))]["distinct"] += len(distinct)
+    # v2.5.38: every split made at an opening tag that was never closed. Where such a thought
+    # ended is inferred (the end of the reply), not marked, so each is listed to be checked.
+    opens = [(r, st, n, tg) for r in runs for st, n, tg in r["recov_open"]]
+    print("\n--- reasoning moved at an OPENING tag never closed (v2.5.38; not a gate) ---")
+    if not opens:
+        print("none: every split was made at a closing tag")
+    for r, st, n, tg in opens:
+        print(f"  {tag(r)} step {st}: {tg}, {n:,} chars moved, status {r['man'].get('status', '?')}")
+
     print("\n--- every attempt, failed ones included (plan v2.5.9, v2.5.11; not a gate) ---")
     if not any(c["failed"] for c in tally.values()):
         print("no failed attempt kept and no slot voided")

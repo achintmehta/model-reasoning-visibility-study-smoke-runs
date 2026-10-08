@@ -1,16 +1,38 @@
 # Realtime Message Board
 
-A simple message board application with real-time updates using PGLite (embedded PostgreSQL) and Server-Sent Events (SSE).
+A simple message board with real-time updates using PGLite (embedded PostgreSQL) and Server-Sent Events (SSE).
 
 ## Features
 
 - Post and view text messages
-- Real-time updates via Server-Sent Events
-- Persistent storage using PGLite
-- Lightweight, vanilla JavaScript frontend
-- No external database dependencies
+- Real-time updates via Server-Sent Events (SSE)
+- Persistent storage using PGLite (embedded PostgreSQL)
+- Simple, lightweight frontend with vanilla JavaScript
+- No external database required - runs entirely in Node.js
 
-## Quick Start
+## Project Structure
+
+```
+.
+├── backend/
+│   └── server.js          # Express server with PGLite and SSE
+├── frontend/
+│   ├── index.html         # Main HTML file
+│   ├── src/
+│   │   └── main.js        # Client-side JavaScript
+│   └── vite.config.js     # Vite configuration
+├── data/                  # PGLite data directory (auto-created)
+├── dist/                  # Build output (auto-created)
+└── package.json           # Root package.json
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or higher
+
+### Installation
 
 1. Install dependencies:
 ```bash
@@ -23,124 +45,60 @@ npm run dev
 ```
 
 This will:
-- Start the backend server on port 3001 with PGLite database
-- Start the frontend dev server on port 5173
+- Start the backend server on port 3001
+- Start the frontend development server on port 5173
 
-3. Open your browser to:
-```
-http://localhost:5173
-```
+### Usage
 
-## Project Structure
+1. Open your browser and navigate to [http://localhost:5173](http://localhost:5173)
+2. Enter a message in the input field and click "Send"
+3. Watch messages appear in real-time as they're posted
 
-```
-.
-├── backend/
-│   └── server.js          # Express server with PGLite and SSE
-├── frontend/
-│   ├── src/
-│   │   ├── main.js        # Frontend logic for message board
-│   │   ├── style.css      # Styling for the message board
-│   │   └── index.html     # Main HTML template
-│   ├── index.html         # Entry point for Vite
-│   └── vite.config.js     # Vite configuration
-├── package.json           # Root package.json
-└── README.md              # This file
-```
+### API Endpoints
 
-## API Endpoints
+- `GET /health` - Health check endpoint
+- `GET /api/messages` - Fetch all messages
+- `POST /api/messages` - Create a new message
+- `GET /api/stream` - SSE endpoint for real-time updates
 
-### GET /api/messages
-Fetch all messages from the database.
+## Technologies Used
 
-**Response:** Array of message objects
-```json
-[
-  {
-    "id": 1,
-    "text": "Hello, World!",
-    "created_at": "2026-10-04T19:44:32.156Z"
-  }
-]
+- **Backend**: Node.js with Express.js
+- **Database**: PGLite (embedded PostgreSQL via WASM)
+- **Real-time**: Server-Sent Events (SSE)
+- **Frontend**: Vanilla JavaScript with Vite
+
+## Building for Production
+
+```bash
+npm run build
 ```
 
-### GET /api/stream
-Server-Sent Events endpoint for real-time updates.
-- Sends all messages on connection
-- Sends new messages as they are inserted
-- Automatically closes after sending all initial messages
-
-### POST /api/messages
-Create a new message.
-
-**Request Body:**
-```json
-{
-  "text": "Your message here"
-}
-```
-
-**Response:** Created message object
-```json
-{
-  "id": 2,
-  "text": "Your message here",
-  "created_at": "2026-10-04T19:45:00.000Z"
-}
-```
-
-### GET /health
-Health check endpoint.
-
-**Response:**
-```json
-{
-  "status": "ok"
-}
-```
-
-## Tech Stack
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express** - Web framework
-- **@electric-sql/pglite** - Embedded PostgreSQL database
-- **cors** - CORS middleware
-
-### Frontend
-- **Vite** - Build tool and dev server
-- **Vanilla JavaScript** - No framework overhead
-- **CSS** - Modern styling with gradients and animations
-
-## How It Works
-
-1. **Backend**: The Express server initializes PGLite with persistent storage in the `./data` directory. It creates a `messages` table with `id`, `text`, and `created_at` columns.
-
-2. **SSE**: When a client connects to `/api/stream`, the server:
-   - Sends connection acknowledgment
-   - Sends all existing messages
-   - Keeps the connection open to push new messages
-   - Closes the connection after sending initial messages
-
-3. **Frontend**: The client:
-   - Fetches initial messages on page load
-   - Connects to SSE stream for real-time updates
-   - Appends new messages to the DOM automatically
-   - Sends new messages via POST request
+This will create a production build in the `dist/` directory.
 
 ## Development
 
-### Backend Scripts
-- `npm run dev:server` - Start backend server with auto-reload
-- `node backend/server.js` - Start backend server without auto-reload
+The application uses file watching for development:
 
-### Frontend Scripts
-- `npm run dev:client` - Start frontend dev server
-- `npm run build` - Build frontend for production
-- `npm run preview` - Preview production build
+- Backend: Auto-restarts when `backend/server.js` changes
+- Frontend: Auto-reloads when frontend files change
 
-## Notes
+## Architecture
 
-- PGLite data is stored in the `./data` directory
-- SSE connections are closed after initial data is sent to avoid keeping connections open indefinitely
-- The application is designed for local development and single-instance deployment
+### Backend (Express + PGLite)
+
+1. Initializes PGLite with persistent storage to `./data` directory
+2. Creates a `messages` table with `id`, `text`, and `created_at` columns
+3. Provides REST API endpoints for CRUD operations
+4. Maintains SSE connections for real-time broadcasting
+
+### Frontend (Vanilla JS + Vite)
+
+1. Fetches initial messages on page load
+2. Connects to SSE stream for real-time updates
+3. Renders messages with timestamps
+4. Submits new messages via HTTP POST
+
+## License
+
+MIT

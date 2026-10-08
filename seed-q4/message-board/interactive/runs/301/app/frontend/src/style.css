@@ -22,7 +22,7 @@ h1 {
   text-align: center;
 }
 
-.messages-container {
+.messages {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -39,14 +39,15 @@ h1 {
   margin-bottom: 15px;
 }
 
-.message-text {
+.message-content {
+  margin-bottom: 8px;
   color: #333;
-  margin-bottom: 6px;
 }
 
 .message-meta {
   font-size: 0.85em;
   color: #666;
+  text-align: right;
 }
 
 .message-form {
@@ -54,43 +55,41 @@ h1 {
   gap: 10px;
 }
 
-.message-input {
+.message-form input {
   flex: 1;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 1em;
+  font-size: 16px;
 }
 
-.message-submit {
+.message-form button {
   padding: 12px 24px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.2s;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-.message-submit:hover {
+.message-form button:hover {
   background-color: #0056b3;
 }
 
-/* Scrollbar styling */
-.messages-container::-webkit-scrollbar {
-  width: 8px;
+@media (max-width: 600px) {
+  .message-form {
+    flex-direction: column;
+  }
 }
 
-.messages-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
+/* Animation for new messages */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.messages-container::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-.messages-container::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+.new-message {
+  animation: fadeIn 0.3s ease-out forwards;
 }

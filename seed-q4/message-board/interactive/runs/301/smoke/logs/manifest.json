@@ -113,7 +113,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "37aedb08533e8e03",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -124,19 +124,19 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791152524.7193484,
-  "ended_at": 1791153070.0273328,
+  "started_at": 1791407276.3096912,
+  "ended_at": 1791407702.7162507,
   "status": "finished",
-  "steps": 39,
+  "steps": 50,
   "tokens_to_first_finish": {
-    "prompt_tokens": 510800,
-    "completion_tokens": 14596,
-    "total_tokens": 525396
+    "prompt_tokens": 765715,
+    "completion_tokens": 16363,
+    "total_tokens": 782078
   },
   "total_tokens_used": {
-    "prompt_tokens": 510800,
-    "completion_tokens": 14596,
-    "total_tokens": 525396
+    "prompt_tokens": 765715,
+    "completion_tokens": 16363,
+    "total_tokens": 782078
   },
   "human_turns": 0,
   "finish_nudges": 0,
@@ -144,12 +144,15 @@
   "verification_unlocked_at_step": null,
   "loop_guard_fired": null,
   "truncation_detected": null,
-  "reasoning_turns": 39,
-  "reasoning_chars": 28774,
-  "reasoning_replayed_turns": 39,
-  "reasoning_replayed_chars": 28774,
+  "reasoning_turns": 50,
+  "reasoning_chars": 24813,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
+  "reasoning_replayed_turns": 50,
+  "reasoning_replayed_chars": 24813,
   "tool_calls": {
-    "attempts": 39,
+    "attempts": 50,
     "malformed": 0,
     "malformation_rate": 0.0,
     "unparseable_arguments": 0,
@@ -158,15 +161,15 @@
     "tool_errors_other": 0
   },
   "file_state_repeats": {
-    "count": 0,
+    "count": 1,
     "writes": 0,
-    "edits": 0,
-    "reverts": 0,
-    "max_times": 0
+    "edits": 1,
+    "reverts": 1,
+    "max_times": 2
   },
   "workspace_fingerprint": {
-    "n_files": 10,
-    "sha": "15b9e2e1663324c9"
+    "n_files": 13,
+    "sha": "916806a73cbc0f5a"
   },
   "decoding_dropped_params": [],
   "api_retries": {

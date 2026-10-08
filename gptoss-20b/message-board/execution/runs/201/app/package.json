@@ -1,11 +1,18 @@
 {
-  "name": "realtime-message-board",
-  "private": true,
+  "name": "realtime-board",
+  "version": "0.1.0",
+  "description": "A simple message board with real-time updates using SSE and PGLite.",
+  "main": "server.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "build": "npm run build --prefix backend && npm run build --prefix frontend"
+    "dev:backend": "node server.js",
+    "dev:frontend": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd client && npm run build && node server.js --build"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+  "dependencies": {
+    "@electric-sql/pglite": "^1.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "concurrently": "^8.2.1"
   }
 }

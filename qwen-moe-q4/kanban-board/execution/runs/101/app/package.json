@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "node server.js",
-    "dev:frontend": "cd frontend && npx vite"
+    "dev:frontend": "cd frontend && vite"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.12",

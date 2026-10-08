@@ -1,3 +1,5 @@
+import { PGlite } from '@electric-sql/pglite';
+import { NodeFS } from '@electric-sql/pglite/nodefs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,18 +15,10 @@ export async function initializeDatabase() {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 
-  // Dynamic import to work around ESM circular dependency issues with this PGLite version.
-  // Direct property access (pglite.PGLite) returns undefined due to circular deps,
-  // but Object.getOwnPropertyDescriptor retrieves the actual value.
-  const pglite = await import('@electric-sql/pglite');
-  const nodefsModule = await import('@electric-sql/pglite/nodefs');
+  const nodefs = new NodeFS(DATA_DIR);
 
-  const PGLite = Object.getOwnPropertyDescriptor(pglite, 'PGlite').value;
-  const NodeFS = nodefsModule.NodeFS;
-
-  // Use static create() method which handles initialization internally
-  db = await PGLite.create({
-    fs: new NodeFS(DATA_DIR)
+  db = new PGlite({
+    fs: nodefs
   });
 
   // Create tables

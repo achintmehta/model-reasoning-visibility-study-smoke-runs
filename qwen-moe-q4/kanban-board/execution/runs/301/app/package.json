@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "node server/server.js",
-    "dev:client": "npm run dev --prefix client"
+    "dev:client": "cd client && npx vite"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.0",

@@ -1,22 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-time Message Board</title>
-  <link rel="stylesheet" href="./src/style.css">
-</head>
-<body>
-  <div id="app">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-time Message Board</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing: border-box;
+      }
+      #message-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+      .message {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+      }
+      .message-text {
+        font-weight: bold;
+      }
+      .message-time {
+        font-size: 0.8em;
+        color: #666;
+        margin-left: 10px;
+      }
+      #form-container {
+        display: flex;
+        gap: 10px;
+      }
+      #message-input {
+        flex-grow: 1;
+        padding: 8px;
+      }
+      #send-btn {
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
     <h1>Message Board</h1>
-    <div id="messages-container">
-      <ul id="messages-list"></ul>
-    </div>
-    <form id="message-form">
-      <input type="text" id="message-input" placeholder="Type a message..." required>
-      <button type="submit">Send</button>
+    <div id="message-container"></div>
+    <form id="form-container">
+      <input type="text" id="message-input" placeholder="Type a message..." required />
+      <button type="submit" id="send-btn">Send</button>
     </form>
-  </div>
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <script type="module" src="/main.js"></script>
+  </body>
 </html>

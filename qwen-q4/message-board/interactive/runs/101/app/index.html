@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Message Board</title>
-  <link rel="stylesheet" href="/style.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>Message Board</h1>
-
-    <form id="message-form">
-      <input
-        type="text"
-        id="message-input"
-        placeholder="Type a message..."
-        autocomplete="off"
-      />
-      <button type="submit">Post</button>
-    </form>
-
-    <div id="message-list"></div>
-  </div>
-
-  <script src="/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Board</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>📋 Message Board</h1>
+      <form id="message-form">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Type a message..."
+          maxlength="500"
+          autocomplete="off"
+        />
+        <button type="submit" id="send-btn">Send</button>
+      </form>
+      <div id="message-list"></div>
+    </div>
+    <script src="/main.js"></script>
+  </body>
 </html>

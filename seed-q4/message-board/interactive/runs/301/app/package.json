@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "build": "cd frontend && npm run build",
-    "start": "NODE_ENV=production node backend/server.js",
-    "postinstall": "cd backend && npm install && cd frontend && npm install"
+    "start": "cd backend && node server.js"
   },
   "dependencies": {
     "concurrently": "^8.2.0"

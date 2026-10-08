@@ -108,7 +108,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "dc860fd85abe74dd",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -119,25 +119,57 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791153477.1890779,
-  "ended_at": 1791153526.1031148,
-  "status": "api_error",
-  "steps": 18,
+  "started_at": 1791407849.3198102,
+  "ended_at": 1791407883.1301546,
+  "status": "finished",
+  "steps": 12,
+  "tokens_to_first_finish": {
+    "prompt_tokens": 75041,
+    "completion_tokens": 6797,
+    "total_tokens": 81838
+  },
+  "total_tokens_used": {
+    "prompt_tokens": 75041,
+    "completion_tokens": 6797,
+    "total_tokens": 81838
+  },
+  "human_turns": 0,
+  "finish_nudges": 0,
+  "finish_nudge_steps": [],
+  "verification_unlocked_at_step": null,
+  "loop_guard_fired": null,
+  "truncation_detected": null,
+  "reasoning_turns": 12,
+  "reasoning_chars": 12198,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
+  "reasoning_replayed_turns": 12,
+  "reasoning_replayed_chars": 12198,
+  "tool_calls": {
+    "attempts": 12,
+    "malformed": 0,
+    "malformation_rate": 0.0,
+    "unparseable_arguments": 0,
+    "invalid_arguments": 0,
+    "unparsed_in_content": 0,
+    "tool_errors_other": 0
+  },
+  "file_state_repeats": {
+    "count": 0,
+    "writes": 0,
+    "edits": 0,
+    "reverts": 0,
+    "max_times": 0
+  },
   "workspace_fingerprint": {
-    "n_files": 9,
-    "sha": "a85f1183c527bb5e"
+    "n_files": 6,
+    "sha": "dc067e380d97fb08"
   },
   "decoding_dropped_params": [],
   "api_retries": {
     "count": 0,
     "timeouts": 0,
     "events": []
-  },
-  "api_error": {
-    "exception": "HTTPError",
-    "code": 500,
-    "body": "{\"error\":{\"code\":500,\"message\":\"The model produced output that does not match the expected peg-native format\",\"type\":\"server_error\"}}",
-    "server_model_crash": false,
-    "model_output_unparseable": true
   }
 }

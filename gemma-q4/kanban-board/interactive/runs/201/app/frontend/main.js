@@ -1,123 +1,169 @@
 const API_BASE = 'http://localhost:3000/api';
-const boardEl = document.getElementById('board');
 
 let boardState = [];
 
 async function fetchBoard() {
-  const res = await fetch(`${API_BASE}/board`);
-  boardState = await res.json();
+  const response = await fetch(`${API_BASE}/board`);
+  boardState = await response.json();
   renderBoard();
 }
 
 function renderBoard() {
+  const boardEl = document.getElementById('board');
   boardEl.innerHTML = '';
-  boardState.forEach(col => {
+
+  boardState.forEach(column => {
     const colEl = document.createElement('div');
     colEl.className = 'column';
-    colEl.dataset.id = col.id;
-    
+    colEl.dataset.id = column.id;
+
     colEl.innerHTML = `
-      <div class="column-header">${col.title}</div>
-      <div class="card-list" data-column-id="${col.id}"></div>
+      <div class="column-header">${column.title}</div>
+      <div class="cards-container" data-column-id="${column.id}"></div>
       <div class="add-card-form">
         <input type="text" placeholder="Add card..." class="card-input">
         <button class="add-btn">Add</button>
       </div>
     `;
+
+    const cardsContainer = colEl.querySelector('.cards-container');
     
-    const listEl = colEl.querySelector('.card-list');
-    col.cards.sort((a, b) => a.position - b.position).forEach(card => {
-      listEl.appendChild(createCardElement(card));
+    // Sort cards by position
+    const sortedCards = [...column.cards].sort((a, b) => a.position - b.position);
+
+    sortedCards.forEach(card => {
+      const cardEl = createCardElement(card);
+      cardsContainer.appendChild(cardEl);
     });
-    
-    const form = colEl.querySelector('.add-card-form');
-    const input = form.querySelector('.card-input');
-    const btn = form.querySelector('.add-btn');
+
+    // Setup add card event
+    const input = colEl.querySelector('.card-input');
+    const btn = colEl.querySelector('.add-btn');
     
     const addCard = async () => {
       const text = input.value.trim();
       if (!text) return;
       
-      // Optimistic update: add to end of column locally
+      // Optimistic add
       const tempId = 'temp-' + Date.now();
-      const tempCard = { id: tempId, text, position: (col.cards[col.cards.length-1]?.position || 0) + 1000 };
-      col.cards.push(tempCard);
-      listEl.appendChild(createCardElement(tempCard));
-      input.value = '';
+      const tempCard = { id: tempId, text, position: 999999, column_id: column.id };
       
+      // Add to state and render
+      const col = boardState.find(c => c.id === column.id);
+      col.cards.push(tempCard);
+      renderBoard();
+      input.value = '';
+
       try {
-        const res = await fetch(`${API_BASE}/cards`, {
+        const response = await fetch(`${API_BASE}/cards`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ columnId: col.id, text })
+          body: JSON.stringify({ columnId: column.id, text })
         });
-        const serverCard = await res.json();
+        const newCard = await response.json();
         
         // Replace temp card with server card
         const index = col.cards.findIndex(c => c.id === tempId);
-        if (index !== -1) col.cards[index] = serverCard;
-        
-        // Update DOM
-        const tempEl = listEl.querySelector(`[data-id="${tempId}"]`);
-        if (tempEl) {
-          const serverEl = createCardElement(serverCard);
-          listEl.replaceChild(serverEl, tempEl);
+        if (index !== -1) {
+          col.cards[index] = newCard;
         }
+        renderBoard();
       } catch (err) {
         console.error('Error adding card:', err);
-        // Remove optimistic card on error
-        col.cards = col.cards.filter(c => c.id !== tempId);
-        const tempEl = listEl.querySelector(`[data-id="${tempId}"]`);
-        if (tempEl) tempEl.remove();
+        // Rollback optimistic add
+        const index = col.cards.findIndex(c => c.id === tempId);
+        if (index !== -1) col.cards.splice(index, 1);
+        renderBoard();
       }
     };
-    
+
     btn.onclick = addCard;
-    input.onkeydown = (e) => { if (e.key === 'Enter') addCard(); };
-    
+    input.onkeypress = (e) => { if (e.key === 'Enter') addCard(); };
+
     boardEl.appendChild(colEl);
   });
+
+  setupDragAndDrop();
 }
 
 function createCardElement(card) {
   const el = document.createElement('div');
   el.className = 'card';
   el.draggable = true;
-  el.dataset.id = card.id;
+  el.id = `card-${card.id}`;
   el.textContent = card.text;
-  
-  el.ondragstart = (e) => {
+  el.dataset.id = card.id;
+  el.dataset.columnId = card.column_id;
+
+  el.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text/plain', card.id);
     el.classList.add('dragging');
-  };
-  
-  el.ondragend = () => {
+  });
+
+  el.addEventListener('dragend', () => {
     el.classList.remove('dragging');
-  };
-  
+  });
+
   return el;
 }
 
-// Drag and Drop Handling
-boardEl.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  const cardList = e.target.closest('.card-list');
-  if (!cardList) return;
-  
-  const draggingEl = document.querySelector('.dragging');
-  if (!draggingEl) return;
-  
-  const afterElement = getDragAfterElement(cardList, e.clientY);
-  if (afterElement == null) {
-    cardList.appendChild(draggingEl);
-  } else {
-    cardList.insertBefore(draggingEl, afterElement);
-  }
-});
+function setupDragAndDrop() {
+  const containers = document.querySelectorAll('.cards-container');
+
+  containers.forEach(container => {
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const draggingEl = document.querySelector('.dragging');
+      if (!draggingEl) return;
+
+      const afterElement = getDragAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(draggingEl);
+      } else {
+        container.insertBefore(draggingEl, afterElement);
+      }
+    });
+
+    container.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      const cardId = e.dataTransfer.getData('text/plain');
+      const columnId = container.dataset.columnId;
+      
+      const draggingEl = document.getElementById(`card-${cardId}`);
+      if (!draggingEl) return;
+
+      const cards = [...container.querySelectorAll('.card')];
+      const index = cards.indexOf(draggingEl);
+      
+      const beforeId = index > 0 ? cards[index - 1].dataset.id : null;
+      const afterId = index < cards.length - 1 ? cards[index + 1].dataset.id : null;
+
+      // Optimistic state update
+      updateLocalState(cardId, columnId, beforeId, afterId);
+
+      try {
+        const response = await fetch(`${API_BASE}/cards/${cardId}/move`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ columnId, beforeId, afterId })
+        });
+        const updatedCard = await response.json();
+        
+        // Sync local state with server's authoritative data
+        syncCardInState(updatedCard);
+        // Re-render to ensure correct order based on server position
+        renderBoard();
+      } catch (err) {
+        console.error('Error moving card:', err);
+        fetchBoard(); // Rollback to server state
+      }
+    });
+  });
+}
 
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
-  
+
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
@@ -129,82 +175,82 @@ function getDragAfterElement(container, y) {
   }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
-boardEl.addEventListener('drop', async (e) => {
-  e.preventDefault();
-  const cardId = e.dataTransfer.getData('text/plain');
-  const cardList = e.target.closest('.card-list');
-  if (!cardList) return;
-  
-  const columnId = cardList.dataset.columnId;
-  const draggingEl = document.querySelector(`[data-id="${cardId}"]`);
-  if (!draggingEl) return;
-  
-  const children = [...cardList.children];
-  const index = children.indexOf(draggingEl);
-  const beforeEl = children[index - 1];
-  const afterEl = children[index + 1];
-  
-  const beforeId = beforeEl ? beforeEl.dataset.id : null;
-  const afterId = afterEl ? afterEl.dataset.id : null;
-  
-  try {
-    const res = await fetch(`${API_BASE}/cards/${cardId}/move`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ columnId, beforeId, afterId })
-    });
-    const updatedCard = await res.json();
-    
-    // Update local state
-    const col = boardState.find(c => c.id === columnId);
-    const cardIdx = boardState.flatMap(c => c.cards).findIndex(c => c.id === cardId);
-    if (cardIdx !== -1) {
-      const oldCol = boardState.find(c => c.cards.some(card => card.id === cardId));
-      if (oldCol) oldCol.cards = oldCol.cards.filter(c => c.id !== cardId);
-      col.cards.push(updatedCard);
+function updateLocalState(cardId, columnId, beforeId, afterId) {
+  // Move card between columns in local state
+  let cardToMove = null;
+  boardState.forEach(col => {
+    const index = col.cards.findIndex(c => c.id === cardId);
+    if (index !== -1) {
+      cardToMove = col.cards.splice(index, 1)[0];
     }
-  } catch (err) {
-    console.error('Error moving card:', err);
-    fetchBoard(); // Revert to server state
-  }
-});
+  });
 
-function initSSE() {
-  const eventSource = new EventSource(`${API_BASE}/stream`);
-  
-  eventSource.addEventListener('cardCreated', (e) => {
-    const card = JSON.parse(e.data);
-    const col = boardState.find(c => c.id === card.columnId);
-    if (col) {
-      col.cards.push(card);
-      renderBoard();
+  if (cardToMove) {
+    const targetCol = boardState.find(col => col.id === columnId);
+    // We don't know the exact position yet, but we can put it in the array
+    // based on beforeId/afterId for a rough optimistic render.
+    if (!beforeId && !afterId) {
+      targetCol.cards.push(cardToMove);
+    } else if (beforeId) {
+      const index = targetCol.cards.findIndex(c => c.id === beforeId);
+      targetCol.cards.splice(index, 0, cardToMove);
+    } else if (afterId) {
+      const index = targetCol.cards.findIndex(c => c.id === afterId);
+      targetCol.cards.splice(index, 0, cardToMove);
     } else {
-      fetchBoard();
+      targetCol.cards.push(cardToMove);
     }
-  });
-  
-  eventSource.addEventListener('cardMoved', (e) => {
-    const card = JSON.parse(e.data);
-    
-    // Remove card from all columns
-    boardState.forEach(col => {
-      col.cards = col.cards.filter(c => c.id !== card.id);
-    });
-    
-    // Add to target column
-    const targetCol = boardState.find(col => col.id === card.columnId);
-    if (targetCol) {
-      targetCol.cards.push(card);
-    } else {
-      return fetchBoard();
-    }
-    
-    renderBoard();
-  });
-  
-  eventSource.addEventListener('boardUpdated', (e) => {
-    fetchBoard();
-  });
+  }
 }
 
-fetchBoard().then(initSSE);
+function syncCardInState(updatedCard) {
+  // Remove card from all columns
+  boardState.forEach(col => {
+    col.cards = col.cards.filter(c => c.id !== updatedCard.id);
+  });
+
+  // Add to the correct column
+  const col = boardState.find(c => c.id === updatedCard.column_id);
+  if (col) {
+    col.cards.push(updatedCard);
+  }
+}
+
+function setupSSE() {
+  const eventSource = new EventSource(`${API_BASE}/stream`);
+
+  eventSource.addEventListener('cardCreated', (e) => {
+    const newCard = JSON.parse(e.data);
+    const col = boardState.find(c => c.id === newCard.column_id);
+    if (col) {
+      if (!col.cards.find(c => c.id === newCard.id)) {
+        col.cards.push(newCard);
+        renderBoard();
+      }
+    }
+  });
+
+  eventSource.addEventListener('cardMoved', (e) => {
+    const updatedCard = JSON.parse(e.data);
+    syncCardInState(updatedCard);
+    renderBoard();
+  });
+
+  eventSource.addEventListener('columnRenormalized', (e) => {
+    const { columnId, cards } = JSON.parse(e.data);
+    const col = boardState.find(c => c.id === columnId);
+    if (col) {
+      col.cards = cards;
+      renderBoard();
+    }
+  });
+
+  eventSource.onerror = (err) => {
+
+    console.error('SSE Error:', err);
+  };
+}
+
+// Initial load
+fetchBoard();
+setupSSE();

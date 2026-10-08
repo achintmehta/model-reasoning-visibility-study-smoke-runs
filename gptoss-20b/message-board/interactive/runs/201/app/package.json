@@ -1,12 +1,21 @@
 {
-  "name": "realtime-message-board",
+  "name": "realtime-board",
   "version": "0.1.0",
-  "main": "index.js",
-  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "@electric-sql/pglite": "^0.6.2"
+  },
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+    "dev": "concurrently \"npm run server:dev --prefix server\" \"npm run frontend:dev --prefix frontend\"",
+    "server:dev": "node server/index.js",
+    "frontend:dev": "vite",
+    "build": "npm run build:frontend --prefix frontend"
   },
   "devDependencies": {
-    "concurrently": "^8.2.5"
-  }
+    "concurrently": "^8.2.2",
+    "vite": "^5.1.0"
+  },
+  "dependencies": {}
 }

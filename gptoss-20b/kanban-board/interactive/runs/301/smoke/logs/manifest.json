@@ -117,7 +117,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "a861e2b0efe85613",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -128,39 +128,40 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791153602.5449245,
-  "ended_at": 1791153632.6214797,
-  "status": "stopped_no_tool_call",
-  "steps": 12,
+  "started_at": 1791407970.5027597,
+  "ended_at": 1791408001.5910523,
+  "status": "finished",
+  "steps": 13,
   "tokens_to_first_finish": {
-    "prompt_tokens": 71647,
-    "completion_tokens": 5828,
-    "total_tokens": 77475
+    "prompt_tokens": 79702,
+    "completion_tokens": 6207,
+    "total_tokens": 85909
   },
   "total_tokens_used": {
-    "prompt_tokens": 78629,
-    "completion_tokens": 5900,
-    "total_tokens": 84529
+    "prompt_tokens": 79702,
+    "completion_tokens": 6207,
+    "total_tokens": 85909
   },
   "human_turns": 0,
-  "finish_nudges": 1,
-  "finish_nudge_steps": [
-    11
-  ],
+  "finish_nudges": 0,
+  "finish_nudge_steps": [],
   "verification_unlocked_at_step": null,
   "loop_guard_fired": null,
   "truncation_detected": null,
-  "reasoning_turns": 11,
-  "reasoning_chars": 9347,
-  "reasoning_replayed_turns": 11,
-  "reasoning_replayed_chars": 9347,
+  "reasoning_turns": 13,
+  "reasoning_chars": 11179,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
+  "reasoning_replayed_turns": 13,
+  "reasoning_replayed_chars": 11179,
   "tool_calls": {
-    "attempts": 11,
-    "malformed": 1,
-    "malformation_rate": 0.09090909090909091,
+    "attempts": 13,
+    "malformed": 0,
+    "malformation_rate": 0.0,
     "unparseable_arguments": 0,
     "invalid_arguments": 0,
-    "unparsed_in_content": 1,
+    "unparsed_in_content": 0,
     "tool_errors_other": 0
   },
   "file_state_repeats": {
@@ -171,8 +172,8 @@
     "max_times": 0
   },
   "workspace_fingerprint": {
-    "n_files": 7,
-    "sha": "c977aa22210d5c53"
+    "n_files": 11,
+    "sha": "6649a35a4140cdc4"
   },
   "decoding_dropped_params": [],
   "api_retries": {

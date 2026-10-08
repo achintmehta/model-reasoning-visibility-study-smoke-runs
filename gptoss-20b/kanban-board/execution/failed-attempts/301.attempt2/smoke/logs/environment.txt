@@ -1,9 +1,0 @@
-recorded_at: 2026-10-04T17:36:45-05:00
-node: v18.20.8  (/home/achintmehta/.nvm/versions/node/v18.20.8/bin/node)
-npm: 10.8.2
-npm_before: Mon Sep 21 2026 19:00:00 GMT-0500 (Central Daylight Time)   # registry freeze date; 'null'/'unset' = live resolution
-python3: Python 3.14.4
-playwright: ?; chromium: 148.0.7778.96
-llama-server: version: 0.4.1-dev (build 10964, commit b29c606e2) built with Clang 20.1.8 for Windows x86_64 
-gpu: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 596.86, 97887 MiB
-wsl: Linux 6.6.87.2-microsoft-standard-WSL2 x86_64

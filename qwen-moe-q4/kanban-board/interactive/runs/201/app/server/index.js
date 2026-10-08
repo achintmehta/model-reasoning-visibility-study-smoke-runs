@@ -4,7 +4,6 @@ import { PGlite } from '@electric-sql/pglite';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
-import { randomUUID } from 'crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -33,11 +32,6 @@ function broadcast(event, data) {
   });
 }
 
-// Helper: get rows from a db.sql result (returns array of objects)
-function rows(result) {
-  return result.rows;
-}
-
 // Initialize database
 async function initDb() {
   db = await PGlite.create({
@@ -63,37 +57,43 @@ async function initDb() {
   `);
 
   // Seed default columns if empty
-  const countResult = await db.sql`SELECT COUNT(*) as count FROM columns`;
-  const count = parseInt(countResult.rows[0].count, 10);
+  const countResult = await db.exec(`SELECT COUNT(*) as count FROM columns`);
+  const count = parseInt(countResult[0].rows[0].count, 10);
   if (count === 0) {
     const cols = [
-      { id: randomUUID(), title: 'To Do', position: 1 },
-      { id: randomUUID(), title: 'In Progress', position: 2 },
-      { id: randomUUID(), title: 'Done', position: 3 },
+      { id: crypto.randomUUID(), title: 'To Do', position: 1 },
+      { id: crypto.randomUUID(), title: 'In Progress', position: 2 },
+      { id: crypto.randomUUID(), title: 'Done', position: 3 },
     ];
     for (const col of cols) {
-      await db.sql`INSERT INTO columns (id, title, position) VALUES (${col.id}, ${col.title}, ${col.position})`;
+      await db.exec(
+        `INSERT INTO columns (id, title, position) VALUES ('${col.id}', '${col.title}', ${col.position})`
+      );
     }
   }
+}
+
+// Helper: safely escape text for SQL
+function sqlEscape(str) {
+  return str.replace(/'/g, "''");
 }
 
 // GET /api/board - return full board state
 app.get('/api/board', async (_req, res) => {
   try {
-    const colResult = await db.sql`SELECT id, title, position FROM columns ORDER BY position`;
-    const columns = rows(colResult);
+    const colResult = await db.exec(`SELECT id, title, position FROM columns ORDER BY position`);
+    const columns = colResult[0].rows;
 
     const result = [];
     for (const col of columns) {
-      const cardResult = await db.sql`
-        SELECT id, column_id, text, position, created_at
-        FROM cards WHERE column_id = ${col.id} ORDER BY position
-      `;
+      const cardResult = await db.exec(
+        `SELECT id, column_id, text, position, created_at FROM cards WHERE column_id = '${sqlEscape(col.id)}' ORDER BY position`
+      );
       result.push({
         id: col.id,
         title: col.title,
         position: col.position,
-        cards: rows(cardResult).map((c) => ({
+        cards: cardResult[0].rows.map((c) => ({
           id: c.id,
           column_id: c.column_id,
           text: c.text,
@@ -119,29 +119,28 @@ app.post('/api/cards', async (req, res) => {
   }
 
   // Check column exists
-  const colCheck = await db.sql`SELECT id FROM columns WHERE id = ${columnId}`;
-  if (rows(colCheck).length === 0) {
+  const colCheck = await db.exec(`SELECT id FROM columns WHERE id = '${sqlEscape(columnId)}'`);
+  if (colCheck[0].rows.length === 0) {
     return res.status(404).json({ error: 'Column not found' });
   }
 
   // Get max position in column
-  const maxPosResult = await db.sql`
-    SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = ${columnId}
-  `;
-  const maxPos = Number(maxPosResult.rows[0].max_pos);
+  const maxPosResult = await db.exec(
+    `SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = '${sqlEscape(columnId)}'`
+  );
+  const maxPos = Number(maxPosResult[0].rows[0].max_pos);
 
   const newCard = {
-    id: randomUUID(),
+    id: crypto.randomUUID(),
     column_id: columnId,
     text,
     position: maxPos + 1,
     created_at: new Date().toISOString(),
   };
 
-  await db.sql`
-    INSERT INTO cards (id, column_id, text, position, created_at)
-    VALUES (${newCard.id}, ${newCard.column_id}, ${newCard.text}, ${newCard.position}, ${newCard.created_at})
-  `;
+  await db.exec(
+    `INSERT INTO cards (id, column_id, text, position, created_at) VALUES ('${newCard.id}', '${sqlEscape(newCard.column_id)}', '${sqlEscape(newCard.text)}', ${newCard.position}, '${newCard.created_at}')`
+  );
 
   // Broadcast
   broadcast('card-created', newCard);
@@ -159,14 +158,14 @@ app.patch('/api/cards/:id/move', async (req, res) => {
   }
 
   // Check card exists
-  const cardCheck = await db.sql`SELECT id, column_id FROM cards WHERE id = ${id}`;
-  if (rows(cardCheck).length === 0) {
+  const cardCheck = await db.exec(`SELECT id, column_id FROM cards WHERE id = '${sqlEscape(id)}'`);
+  if (cardCheck[0].rows.length === 0) {
     return res.status(404).json({ error: 'Card not found' });
   }
 
   // Check target column exists
-  const colCheck = await db.sql`SELECT id FROM columns WHERE id = ${columnId}`;
-  if (rows(colCheck).length === 0) {
+  const colCheck = await db.exec(`SELECT id FROM columns WHERE id = '${sqlEscape(columnId)}'`);
+  if (colCheck[0].rows.length === 0) {
     return res.status(404).json({ error: 'Column not found' });
   }
 
@@ -174,22 +173,22 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 
   if (beforeId) {
     // Move before a specific card
-    const beforeCard = await db.sql`SELECT position FROM cards WHERE id = ${beforeId}`;
-    if (rows(beforeCard).length > 0) {
-      newPosition = Number(beforeCard.rows[0].position) - 1;
+    const beforeCard = await db.exec(`SELECT position FROM cards WHERE id = '${sqlEscape(beforeId)}'`);
+    if (beforeCard[0].rows.length > 0) {
+      newPosition = Number(beforeCard[0].rows[0].position) - 1;
     }
   } else if (afterId) {
     // Move after a specific card
-    const afterCard = await db.sql`SELECT position FROM cards WHERE id = ${afterId}`;
-    if (rows(afterCard).length > 0) {
-      newPosition = Number(afterCard.rows[0].position) + 1;
+    const afterCard = await db.exec(`SELECT position FROM cards WHERE id = '${sqlEscape(afterId)}'`);
+    if (afterCard[0].rows.length > 0) {
+      newPosition = Number(afterCard[0].rows[0].position) + 1;
     }
   } else {
     // No anchor, place at end
-    const maxPosResult = await db.sql`
-      SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = ${columnId}
-    `;
-    newPosition = Number(maxPosResult.rows[0].max_pos) + 1;
+    const maxPosResult = await db.exec(
+      `SELECT COALESCE(MAX(position), 0) as max_pos FROM cards WHERE column_id = '${sqlEscape(columnId)}'`
+    );
+    newPosition = Number(maxPosResult[0].rows[0].max_pos) + 1;
   }
 
   // If new position is <= 0, set to 1
@@ -199,24 +198,23 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 
   // Atomic transaction: update column_id and position
   const now = new Date().toISOString();
-  await db.exec('BEGIN');
-  try {
-    await db.sql`UPDATE cards SET column_id = ${columnId}, position = ${newPosition}, created_at = ${now} WHERE id = ${id}`;
-    await db.exec('COMMIT');
-  } catch (e) {
-    await db.exec('ROLLBACK');
-    throw e;
-  }
+  await db.exec(`
+    BEGIN;
+    UPDATE cards SET column_id = '${sqlEscape(columnId)}', position = ${newPosition}, created_at = '${now}' WHERE id = '${sqlEscape(id)}';
+    COMMIT;
+  `);
 
   // Read back the updated card
-  const updatedCardResult = await db.sql`SELECT id, column_id, text, position, created_at FROM cards WHERE id = ${id}`;
+  const updatedCardResult = await db.exec(
+    `SELECT id, column_id, text, position, created_at FROM cards WHERE id = '${sqlEscape(id)}'`
+  );
 
   const card = {
-    id: updatedCardResult.rows[0].id,
-    column_id: updatedCardResult.rows[0].column_id,
-    text: updatedCardResult.rows[0].text,
-    position: Number(updatedCardResult.rows[0].position),
-    created_at: updatedCardResult.rows[0].created_at,
+    id: updatedCardResult[0].rows[0].id,
+    column_id: updatedCardResult[0].rows[0].column_id,
+    text: updatedCardResult[0].rows[0].text,
+    position: Number(updatedCardResult[0].rows[0].position),
+    created_at: updatedCardResult[0].rows[0].created_at,
   };
 
   // Check for position collisions and renormalize if needed
@@ -230,10 +228,10 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 
 // Renormalize positions in a column to avoid precision exhaustion
 async function renormalizeColumn(columnId) {
-  const cardsResult = await db.sql`
-    SELECT id, position FROM cards WHERE column_id = ${columnId} ORDER BY position
-  `;
-  const cards = rows(cardsResult);
+  const cardsResult = await db.exec(
+    `SELECT id, position FROM cards WHERE column_id = '${sqlEscape(columnId)}' ORDER BY position`
+  );
+  const cards = cardsResult[0].rows;
 
   // Check for duplicate positions
   const positions = cards.map((c) => Number(c.position));
@@ -244,17 +242,18 @@ async function renormalizeColumn(columnId) {
 
   // Renormalize: assign sequential positions 1, 2, 3, ...
   for (let i = 0; i < cards.length; i++) {
-    await db.sql`UPDATE cards SET position = ${i + 1} WHERE id = ${cards[i].id} AND column_id = ${columnId}`;
+    await db.exec(
+      `UPDATE cards SET position = ${i + 1} WHERE id = '${sqlEscape(cards[i].id)}' AND column_id = '${sqlEscape(columnId)}'`
+    );
   }
 
   // Broadcast the corrected order
-  const updatedCardsResult = await db.sql`
-    SELECT id, column_id, text, position, created_at
-    FROM cards WHERE column_id = ${columnId} ORDER BY position
-  `;
+  const updatedCardsResult = await db.exec(
+    `SELECT id, column_id, text, position, created_at FROM cards WHERE column_id = '${sqlEscape(columnId)}' ORDER BY position`
+  );
   broadcast('column-renormalized', {
     columnId,
-    cards: rows(updatedCardsResult).map((c) => ({
+    cards: updatedCardsResult[0].rows.map((c) => ({
       id: c.id,
       column_id: c.column_id,
       text: c.text,
@@ -275,20 +274,19 @@ app.get('/api/stream', (req, res) => {
   // Send initial full board state
   (async () => {
     try {
-      const colResult = await db.sql`SELECT id, title, position FROM columns ORDER BY position`;
-      const columns = rows(colResult);
+      const colResult = await db.exec(`SELECT id, title, position FROM columns ORDER BY position`);
+      const columns = colResult[0].rows;
 
       const boardState = [];
       for (const col of columns) {
-        const cardResult = await db.sql`
-          SELECT id, column_id, text, position, created_at
-          FROM cards WHERE column_id = ${col.id} ORDER BY position
-        `;
+        const cardResult = await db.exec(
+          `SELECT id, column_id, text, position, created_at FROM cards WHERE column_id = '${sqlEscape(col.id)}' ORDER BY position`
+        );
         boardState.push({
           id: col.id,
           title: col.title,
           position: col.position,
-          cards: rows(cardResult).map((c) => ({
+          cards: cardResult[0].rows.map((c) => ({
             id: c.id,
             column_id: c.column_id,
             text: c.text,
@@ -317,4 +315,7 @@ initDb().then(() => {
   app.listen(PORT, () => {
     console.log(`Kanban server running on port ${PORT}`);
   });
+}).catch((err) => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
 });

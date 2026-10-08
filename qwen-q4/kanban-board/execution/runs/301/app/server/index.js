@@ -1,11 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import { PGlite } from '@electric-sql/pglite';
-import { NodeFS } from '@electric-sql/pglite/nodefs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { randomUUID } from 'crypto';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, 'pglite-data');
@@ -15,10 +13,9 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// --- PGLite Initialization ---
+// --- PGlite Initialization ---
 const db = new PGlite({
   dataDir: DATA_DIR,
-  fs: new NodeFS(DATA_DIR)
 });
 
 // --- Database Schema & Seeding ---
@@ -58,7 +55,8 @@ async function initDatabase() {
 const sseClients = new Set();
 
 function broadcast(event, data) {
-  const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  const formattedData = JSON.stringify(data);
+  const message = `event: ${event}\ndata: ${formattedData}\n\n`;
   for (const client of sseClients) {
     try {
       client.write(message);
@@ -70,13 +68,13 @@ function broadcast(event, data) {
 
 // --- Utility ---
 function generateId() {
-  return randomUUID();
+  return crypto.randomUUID();
 }
 
 function mid(a, b) {
   if (a === undefined && b === undefined) return 0.5;
-  if (a === undefined) return b - 0.5;
-  if (b === undefined) return a + 0.5;
+  if (a === undefined) return b + 0.5;
+  if (b === undefined) return a - 0.5;
   return (a + b) / 2;
 }
 
@@ -89,16 +87,24 @@ async function renormalizeColumn(columnId) {
 
   if (rows.length === 0) return;
 
+  const updateQueries = [];
   for (let i = 0; i < rows.length; i++) {
+    updateQueries.push({
+      id: rows[i].id,
+      position: i
+    });
+  }
+
+  for (const { id, position } of updateQueries) {
     await db.query(
       'UPDATE cards SET position = $1 WHERE id = $2',
-      [i, rows[i].id]
+      [position, id]
     );
   }
 
   // Broadcast the corrected order
   const { rows: updatedCards } = await db.query(
-    'SELECT c.* FROM cards c WHERE c.column_id = $1 ORDER BY c.position',
+    'SELECT c.*, col.id as column_id FROM cards c JOIN columns col ON c.column_id = col.id WHERE c.column_id = $1 ORDER BY c.position',
     [columnId]
   );
   broadcast('renormalize', { columnId, cards: updatedCards });
@@ -170,9 +176,9 @@ app.post('/api/cards', async (req, res) => {
       [id, column_id, text, newPosition, now]
     );
 
-    // Fetch the created card
+    // Fetch the created card with column info
     const { rows } = await db.query(
-      'SELECT c.* FROM cards c WHERE c.id = $1',
+      'SELECT c.*, col.id as column_id FROM cards c JOIN columns col ON c.column_id = col.id WHERE c.id = $1',
       [id]
     );
     const card = rows[0];
@@ -231,8 +237,8 @@ app.patch('/api/cards/:id/move', async (req, res) => {
         );
         const beforePos = rangeRows[0].position;
         const { rows: prevRows } = await db.query(
-          'SELECT position FROM cards WHERE column_id = $1 AND position < $2 AND id != $3 ORDER BY position DESC LIMIT 1',
-          [column_id, beforePos, id]
+          'SELECT position FROM cards WHERE column_id = $1 AND position < $2 ORDER BY position DESC LIMIT 1',
+          [column_id, beforePos]
         );
         const prevPos = prevRows.length > 0 ? prevRows[0].position : undefined;
         newPosition = mid(prevPos, beforePos);
@@ -243,8 +249,8 @@ app.patch('/api/cards/:id/move', async (req, res) => {
         );
         const afterPos = rangeRows[0].position;
         const { rows: nextRows } = await db.query(
-          'SELECT position FROM cards WHERE column_id = $1 AND position > $2 AND id != $3 ORDER BY position ASC LIMIT 1',
-          [column_id, afterPos, id]
+          'SELECT position FROM cards WHERE column_id = $1 AND position > $2 ORDER BY position ASC LIMIT 1',
+          [column_id, afterPos]
         );
         const nextPos = nextRows.length > 0 ? nextRows[0].position : undefined;
         newPosition = mid(afterPos, nextPos);
@@ -276,6 +282,7 @@ app.patch('/api/cards/:id/move', async (req, res) => {
           'SELECT position FROM cards WHERE column_id = $1 AND id != $2',
           [column_id, id]
         );
+        const newPositionList = newPositions.map(r => r.position);
         
         if (before_id && after_id) {
           const { rows: rangeRows } = await db.query(
@@ -291,8 +298,8 @@ app.patch('/api/cards/:id/move', async (req, res) => {
           );
           const beforePos = rangeRows[0].position;
           const { rows: prevRows } = await db.query(
-            'SELECT position FROM cards WHERE column_id = $1 AND position < $2 AND id != $3 ORDER BY position DESC LIMIT 1',
-            [column_id, beforePos, id]
+            'SELECT position FROM cards WHERE column_id = $1 AND position < $2 ORDER BY position DESC LIMIT 1',
+            [column_id, beforePos]
           );
           const prevPos = prevRows.length > 0 ? prevRows[0].position : undefined;
           newPosition = mid(prevPos, beforePos);
@@ -303,8 +310,8 @@ app.patch('/api/cards/:id/move', async (req, res) => {
           );
           const afterPos = rangeRows[0].position;
           const { rows: nextRows } = await db.query(
-            'SELECT position FROM cards WHERE column_id = $1 AND position > $2 AND id != $3 ORDER BY position ASC LIMIT 1',
-            [column_id, afterPos, id]
+            'SELECT position FROM cards WHERE column_id = $1 AND position > $2 ORDER BY position ASC LIMIT 1',
+            [column_id, afterPos]
           );
           const nextPos = nextRows.length > 0 ? nextRows[0].position : undefined;
           newPosition = mid(afterPos, nextPos);
@@ -329,7 +336,7 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 
       // Fetch the updated card
       const { rows } = await db.query(
-        'SELECT c.* FROM cards c WHERE c.id = $1',
+        'SELECT c.*, col.id as column_id FROM cards c JOIN columns col ON c.column_id = col.id WHERE c.id = $1',
         [id]
       );
       const updatedCard = rows[0];

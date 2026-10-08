@@ -1,16 +1,18 @@
 {
-  "name": "kanban-frontend",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
+  "keywords": [],
+  "type": "commonjs",
   "dependencies": {
-  },
-  "devDependencies": {
-    "vite": "^5.2.0"
+    "@vitejs/plugin-vue": "^6.0.9",
+    "vite": "^8.3.0",
+    "vue": "^3.5.43"
   }
 }

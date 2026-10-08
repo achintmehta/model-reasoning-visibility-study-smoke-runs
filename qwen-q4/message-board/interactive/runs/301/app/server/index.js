@@ -1,12 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { createRequire } from 'module';
 import { existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
-
-const require = createRequire(import.meta.url);
-const pglite = require('@electric-sql/pglite');
-const PGLite = pglite['PGlite'];
 
 const app = express();
 const PORT = 3001;
@@ -40,9 +35,10 @@ if (!existsSync(dbPath)) {
 let db;
 
 async function initDatabase() {
-  db = new PGLite({
-    dataDir: dbPath
-  });
+  // Dynamic import to avoid ESM issues with PGLite
+  const { PGlite } = await import('@electric-sql/pglite');
+
+  db = new PGlite('pglite-data');
 
   await db.waitReady;
 

@@ -1,56 +1,57 @@
-// frontend/src/main.js
-
 const messagesDiv = document.getElementById('messages');
-const form = document.getElementById('postForm');
-const input = document.getElementById('messageInput');
-const API_BASE = 'http://localhost:3000';
+const form = document.getElementById('message-form');
+const textarea = document.getElementById('text');
 
-async function fetchHistory() {
-  const res = await fetch(`${API_BASE}/api/messages`);
-  if (!res.ok) {
-    console.error('Failed to load history');
-    return;
-  }
-  const msgs = await res.json();
-  for (const msg of msgs) {
-    appendMessage(msg);
+// Fetch initial messages
+async function loadMessages() {
+  try {
+    const res = await fetch('/api/messages');
+    const data = await res.json();
+    data.forEach(addMessageElement);
+  } catch (e) {
+    console.error('Failed to load messages', e);
   }
 }
 
-function appendMessage(msg) {
-  const div = document.createElement('div');
-  div.className = 'message';
-  div.textContent = msg.text;
-  messagesDiv.appendChild(div);
+// Append message
+function addMessageElement(msg) {
+  const el = document.createElement('div');
+  el.className = 'message';
+  const time = new Date(msg.created_at).toLocaleTimeString();
+  el.textContent = `[${time}] ${msg.text}`;
+  messagesDiv.appendChild(el);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function setupSSE() {
-  const evtSource = new EventSource(`${API_BASE}/api/stream`);
-  evtSource.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    appendMessage(msg);
+// SSE listener
+function initSSE() {
+  const evtSource = new EventSource('/api/stream');
+  evtSource.onmessage = function (e) {
+    const msg = JSON.parse(e.data);
+    addMessageElement(msg);
   };
-  evtSource.onerror = (err) => {
-    console.error('EventSource failed:', err);
+  evtSource.onerror = function (e) {
+    console.error('SSE error', e);
   };
 }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const text = input.value.trim();
+  const text = textarea.value.trim();
   if (!text) return;
-  await fetch(`${API_BASE}/api/messages`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
-  });
-  input.value = '';
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error('Network response was not ok');
+    textarea.value = '';
+  } catch (err) {
+    console.error('Failed to send message', err);
+  }
 });
 
-async function init() {
-  await fetchHistory();
-  setupSSE();
-}
-
-init();
+// Initialize
+loadMessages();
+initSSE();

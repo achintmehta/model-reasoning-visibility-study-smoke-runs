@@ -1,93 +1,105 @@
 const express = require('express');
 const cors = require('cors');
 const { PGlite } = require('@electric-sql/pglite');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
+const { fileURLToPath } = require('url');
 
-// Create data directory if it doesn't exist
-const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR);
-}
-
-// Initialize PGlite with file system persistence
-const db = new PGlite({
-  dir: DATA_DIR
-});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.join(__dirname, 'pglite_data');
 
 // Initialize Express app
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database initialization: Create messages table if it doesn't exist
-async function initDatabase() {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS messages (
-      id SERIAL PRIMARY KEY,
-      text TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-  console.log('Database initialized');
+// Initialize PGLite
+let db;
+async function initDB() {
+  try {
+    // Create data directory if it doesn't exist
+    await fs.mkdir(DB_PATH, { recursive: true });
+    
+    // Initialize PGLite
+    db = new PGlite({ 
+      path: DB_PATH 
+    });
+    
+    // Run initialization script
+    const initSql = await fs.readFile(path.join(__dirname, 'init.sql'), 'utf8');
+    await db.exec(initSql);
+    
+    console.log('PGLite database initialized successfully');
+  } catch (error) {
+    console.error('Error initializing database:', error);
+    process.exit(1);
+  }
 }
 
-// SSE clients storage
-const sseClients = new Set();
+// Store active SSE connections
+const clients = new Set();
 
 // SSE endpoint
 app.get('/api/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-
-  // Send initial connection message
-  res.write(`data: ${JSON.stringify({ type: 'connected' })}\n\n`);
-
+  
   // Add client to the set
+  const clientId = Date.now().toString();
   const client = {
-    send: (data) => {
-      res.write(`data: ${JSON.stringify(data)}\n\n`);
-    }
+    id: clientId,
+    res
   };
-  sseClients.add(client);
-
+  clients.add(client);
+  
+  console.log(`New SSE client connected (total: ${clients.size})`);
+  
+  // Send initial comment to prevent browser from closing the connection
+  res.write(': initial connection established\n\n');
+  
   // Handle client disconnect
   req.on('close', () => {
-    sseClients.delete(client);
-    console.log('Client disconnected from SSE stream');
+    clients.delete(client);
+    console.log(`SSE client disconnected (total: ${clients.size})`);
   });
 });
 
-// Get historical messages
+// Get all messages
 app.get('/api/messages', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM messages ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (error) {
+    console.error('Error fetching messages:', error);
     res.status(500).json({ error: 'Failed to fetch messages' });
   }
 });
 
-// Post new message
+// Post a new message
 app.post('/api/messages', async (req, res) => {
   try {
     const { text } = req.body;
+    
     if (!text || text.trim() === '') {
       return res.status(400).json({ error: 'Message text is required' });
     }
-
+    
     const result = await db.query(
       'INSERT INTO messages (text) VALUES ($1) RETURNING id, text, created_at',
-      [text]
+      [text.trim()]
     );
-
-    // Broadcast the new message to all SSE clients
+    
     const newMessage = result.rows[0];
-    sseClients.forEach(client => client.send({ type: 'newMessage', data: newMessage }));
-
+    
+    // Broadcast to all SSE clients
+    clients.forEach(client => {
+      client.res.write(`data: ${JSON.stringify(newMessage)}\n\n`);
+    });
+    
     res.status(201).json(newMessage);
   } catch (error) {
+    console.error('Error creating message:', error);
     res.status(500).json({ error: 'Failed to create message' });
   }
 });
@@ -95,13 +107,15 @@ app.post('/api/messages', async (req, res) => {
 // Start server
 async function startServer() {
   try {
-    await initDatabase();
+    await initDB();
+    
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
+    process.exit(1);
   }
 }
 

@@ -18,17 +18,20 @@ function generateId(prefix = '') {
 
 /**
  * Compute a fractional position between two values.
- * If no neighbors, returns a default.
+ * beforePos = position of the card we want to be placed BEFORE (new pos < beforePos)
+ * afterPos = position of the card we want to be placed AFTER (new pos > afterPos)
  */
 function computePosition(beforePos, afterPos) {
   if (beforePos !== null && afterPos !== null) {
     return (beforePos + afterPos) / 2;
   }
   if (beforePos !== null) {
-    return beforePos + 0.5;
+    // Place just before the before card
+    return beforePos - 0.5;
   }
   if (afterPos !== null) {
-    return afterPos - 0.5;
+    // Place just after the after card
+    return afterPos + 0.5;
   }
   return 1; // Default position when column is empty
 }

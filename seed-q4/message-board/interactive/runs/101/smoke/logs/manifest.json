@@ -117,7 +117,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "5f767eba19be7f09",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -128,19 +128,19 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791151490.1968944,
-  "ended_at": 1791151603.1139627,
+  "started_at": 1791406474.9968367,
+  "ended_at": 1791406572.8406231,
   "status": "finished",
-  "steps": 13,
+  "steps": 15,
   "tokens_to_first_finish": {
-    "prompt_tokens": 50160,
-    "completion_tokens": 4494,
-    "total_tokens": 54654
+    "prompt_tokens": 63275,
+    "completion_tokens": 3705,
+    "total_tokens": 66980
   },
   "total_tokens_used": {
-    "prompt_tokens": 50160,
-    "completion_tokens": 4494,
-    "total_tokens": 54654
+    "prompt_tokens": 63275,
+    "completion_tokens": 3705,
+    "total_tokens": 66980
   },
   "human_turns": 0,
   "finish_nudges": 0,
@@ -148,12 +148,15 @@
   "verification_unlocked_at_step": null,
   "loop_guard_fired": null,
   "truncation_detected": null,
-  "reasoning_turns": 13,
-  "reasoning_chars": 1742,
+  "reasoning_turns": 15,
+  "reasoning_chars": 2010,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
   "reasoning_replayed_turns": 0,
   "reasoning_replayed_chars": 0,
   "tool_calls": {
-    "attempts": 19,
+    "attempts": 15,
     "malformed": 0,
     "malformation_rate": 0.0,
     "unparseable_arguments": 0,
@@ -169,8 +172,8 @@
     "max_times": 0
   },
   "workspace_fingerprint": {
-    "n_files": 13,
-    "sha": "75ba1b45aa046967"
+    "n_files": 14,
+    "sha": "2e97be1e9c0eccf9"
   },
   "decoding_dropped_params": [],
   "api_retries": {

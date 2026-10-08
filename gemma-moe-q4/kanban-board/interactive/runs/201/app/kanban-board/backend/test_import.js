@@ -1,2 +1,2 @@
-import * as pglite from '@electric-sql/pglite';
-console.log(pglite);
+const { PGLite } = require('@electric-sql/pglite');
+console.log('PGLite:', PGLite);

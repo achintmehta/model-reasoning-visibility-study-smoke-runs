@@ -2,13 +2,12 @@
   "name": "kanban-board",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "node server/index.mjs",
+    "dev:server": "node server/index.js",
     "dev:client": "cd client && npx vite --host",
     "build": "cd client && npx vite build",
-    "start": "node server/index.mjs"
+    "start": "node server/index.js"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.6",

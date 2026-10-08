@@ -1,6 +1,0 @@
-Starting server...
-Data dir: /tmp/runs/smokes/qwen-moe-q4/message-board/execution/runs/201/app/data
-Initializing database...
-PGLite ready
-Database initialized
-Server running on http://localhost:3000

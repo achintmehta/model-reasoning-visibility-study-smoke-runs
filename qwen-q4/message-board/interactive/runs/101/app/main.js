@@ -1,55 +1,80 @@
-const API_BASE = '';
-
-const messageList = document.getElementById('message-list');
+// DOM elements
 const messageForm = document.getElementById('message-form');
 const messageInput = document.getElementById('message-input');
+const messageList = document.getElementById('message-list');
+const sendBtn = document.getElementById('send-btn');
 
-// Render a single message element and return it
-function createMessageElement(message) {
-  const div = document.createElement('div');
-  div.className = 'message';
-  div.dataset.id = message.id;
+let eventSource = null;
 
-  const textEl = document.createElement('div');
-  textEl.className = 'text';
-  textEl.textContent = message.text;
-
-  const metaEl = document.createElement('div');
-  metaEl.className = 'meta';
-  const date = new Date(message.created_at);
-  metaEl.textContent = date.toLocaleString();
-
-  div.appendChild(textEl);
-  div.appendChild(metaEl);
-
-  return div;
+/**
+ * Format a date string into a readable time format.
+ */
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) +
+    ' · ' + date.toLocaleDateString();
 }
 
-// Append a message to the DOM
+/**
+ * Escape HTML to prevent XSS.
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Create a message DOM element from a message object.
+ */
+function createMessageElement(message) {
+  const el = document.createElement('div');
+  el.className = 'message';
+  el.innerHTML =
+    '<div class="message-text">' + escapeHtml(message.text) + '</div>' +
+    '<div class="message-time">' + formatTime(message.created_at) + '</div>';
+  return el;
+}
+
+/**
+ * Append a message to the message list and scroll into view.
+ */
 function appendMessage(message) {
   const el = createMessageElement(message);
   messageList.appendChild(el);
+  // Scroll to bottom smoothly
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
-// Fetch historical messages on page load
+/**
+ * Fetch initial messages from the API and render them.
+ */
 async function fetchMessages() {
   try {
-    const response = await fetch(`${API_BASE}/api/messages`);
-    if (!response.ok) throw new Error('Failed to fetch messages');
-    const messages = await response.json();
-    for (const message of messages) {
-      appendMessage(message);
+    const response = await fetch('/api/messages');
+    if (!response.ok) {
+      throw new Error('Failed to fetch messages');
     }
+    const messages = await response.json();
+    messageList.innerHTML = '';
+    messages.forEach(appendMessage);
   } catch (err) {
     console.error('Error fetching messages:', err);
   }
 }
 
-// Connect to SSE stream for real-time updates
+/**
+ * Connect to the SSE stream for real-time updates.
+ */
 function connectSSE() {
-  const eventSource = new EventSource(`${API_BASE}/api/stream`);
+  // Close existing connection if any
+  if (eventSource) {
+    eventSource.close();
+  }
 
-  eventSource.onmessage = (event) => {
+  eventSource = new EventSource('/api/stream');
+
+  eventSource.onmessage = function (event) {
     try {
       const message = JSON.parse(event.data);
       appendMessage(message);
@@ -58,36 +83,50 @@ function connectSSE() {
     }
   };
 
-  eventSource.onerror = (err) => {
-    console.error('SSE connection error:', err);
+  eventSource.onerror = function () {
+    console.warn('SSE connection lost. Reconnecting...');
     // EventSource will automatically attempt to reconnect
   };
 }
 
-// Handle form submission
-messageForm.addEventListener('submit', async (e) => {
+/**
+ * Handle form submission: POST a new message.
+ */
+async function handleSubmit(e) {
   e.preventDefault();
-
   const text = messageInput.value.trim();
   if (!text) return;
 
+  // Disable input while sending
+  messageInput.disabled = true;
+  sendBtn.disabled = true;
+
   try {
-    const response = await fetch(`${API_BASE}/api/messages`, {
+    const response = await fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     });
 
-    if (!response.ok) throw new Error('Failed to post message');
+    if (!response.ok) {
+      throw new Error('Failed to post message');
+    }
 
-    // Clear the input after successful post
+    // Clear input (the message will appear via SSE broadcast)
     messageInput.value = '';
-    messageInput.focus();
   } catch (err) {
     console.error('Error posting message:', err);
+    // Re-enable even on error so user can retry
+    messageInput.disabled = false;
+    sendBtn.disabled = false;
   }
-});
 
-// Initialize
+  messageInput.disabled = false;
+  sendBtn.disabled = false;
+  messageInput.focus();
+}
+
+// Initialize the app
+messageForm.addEventListener('submit', handleSubmit);
 fetchMessages();
 connectSSE();

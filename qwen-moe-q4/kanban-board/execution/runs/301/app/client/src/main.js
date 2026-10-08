@@ -17,7 +17,6 @@ const boardEl = document.getElementById('board');
 
 async function fetchBoard() {
   const res = await fetch(`${API_BASE}/board`);
-  if (!res.ok) throw new Error(`Failed to fetch board: ${res.status}`);
   return res.json();
 }
 
@@ -27,7 +26,6 @@ async function createCard(columnId, text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ columnId, text }),
   });
-  if (!res.ok) throw new Error(`Failed to create card: ${res.status}`);
   return res.json();
 }
 
@@ -37,7 +35,6 @@ async function moveCard(cardId, { columnId, beforeId, afterId }) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ columnId, beforeId, afterId }),
   });
-  if (!res.ok) throw new Error(`Failed to move card: ${res.status}`);
   return res.json();
 }
 
@@ -94,10 +91,6 @@ function renderBoard() {
           column.cards.push(card);
           renderBoard();
           input.value = '';
-        }).catch((err) => {
-          console.error('Failed to create card:', err);
-          // Re-fetch from server on failure
-          reloadBoard();
         });
       }
     });
@@ -106,8 +99,6 @@ function renderBoard() {
     // Drop zone for the column
     cardListEl.addEventListener('dragover', (e) => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-
       const draggingCard = document.querySelector('.card.dragging');
       if (!draggingCard) return;
 
@@ -148,8 +139,8 @@ function renderBoard() {
       e.preventDefault();
       document.querySelectorAll('.card-drop-indicator').forEach((el) => el.remove());
 
-      const { cardId: draggedCardId, sourceColumnId } = dragState;
-      if (!draggedCardId) return;
+      const { cardId, sourceColumnId, sourceIndex } = dragState;
+      if (!cardId) return;
 
       // Find the target column
       const targetColumn = boardState.columns.find((c) => c.id === column.id);
@@ -181,22 +172,22 @@ function renderBoard() {
       // Remove the card from source position optimistically
       const sourceCol = boardState.columns.find((c) => c.id === sourceColumnId);
       if (sourceCol) {
-        sourceCol.cards = sourceCol.cards.filter((c) => c.id !== draggedCardId);
+        sourceCol.cards = sourceCol.cards.filter((c) => c.id !== cardId);
       }
 
       // Find the card in target column (after removal from source)
-      let targetCard = targetColumn.cards.find((c) => c.id === draggedCardId);
+      let targetCard = targetColumn.cards.find((c) => c.id === cardId);
       if (!targetCard) {
         // Card is coming from another column, find it globally
         for (const col of boardState.columns) {
-          targetCard = col.cards.find((c) => c.id === draggedCardId);
+          targetCard = col.cards.find((c) => c.id === cardId);
           if (targetCard) break;
         }
       }
 
       if (targetCard) {
         // Remove from old position in target column
-        targetColumn.cards = targetColumn.cards.filter((c) => c.id !== draggedCardId);
+        targetColumn.cards = targetColumn.cards.filter((c) => c.id !== cardId);
 
         // Calculate optimistic position
         const sortedCards = [...targetColumn.cards].sort((a, b) => a.position - b.position);
@@ -224,7 +215,7 @@ function renderBoard() {
         renderBoard();
 
         // Send the move to the server
-        moveCard(draggedCardId, {
+        moveCard(cardId, {
           columnId: targetColumn.id,
           beforeId,
           afterId,
@@ -260,17 +251,12 @@ function createCardElement(card, index, columnId) {
     };
     cardEl.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    // Store the source column and index for later
-    e.dataTransfer.setData('text/plain', JSON.stringify({
-      cardId: card.id,
-      sourceColumnId: columnId,
-      sourceIndex: index,
-    }));
   });
 
   cardEl.addEventListener('dragend', () => {
     cardEl.classList.remove('dragging');
     document.querySelectorAll('.card-drop-indicator').forEach((el) => el.remove());
+    dragState = { cardId: null, sourceColumnId: null, sourceIndex: null };
   });
 
   return cardEl;
@@ -288,10 +274,7 @@ function connectSSE() {
     const column = boardState.columns.find((c) => c.id === columnId);
     if (column) {
       if (!column.cards) column.cards = [];
-      // Check if card already exists (optimistic update might have added it)
-      if (!column.cards.find((c) => c.id === card.id)) {
-        column.cards.push(card);
-      }
+      column.cards.push(card);
       renderBoard();
     }
   });

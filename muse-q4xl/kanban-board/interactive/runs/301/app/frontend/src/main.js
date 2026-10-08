@@ -98,23 +98,13 @@ function createCardElement(card) {
 }
 
 async function createCard(columnId, text) {
-  // Optimistic UI: create temporary card
-  const col = boardState.find(c => c.id === Number(columnId));
-  if (col) {
-    const tempCard = { id: 'temp-' + Date.now(), text, position: 999999, column_id: columnId };
-    col.cards.push(tempCard);
-    renderColumn(col);
-  }
   const res = await fetch(`${API_BASE}/cards`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ columnId: Number(columnId), text })
   });
-  if (!res.ok) {
-    // Revert on error
-    fetchBoard();
-  }
-  // SSE will reconcile
+  if (!res.ok) return;
+  // Optimistic update handled by SSE
 }
 
 function handleDragOver(e) {
@@ -192,11 +182,12 @@ async function handleMove(cardId, sourceColumnId, targetColumnId, beforeId, afte
 }
 
 // SSE
-const eventSource = new EventSource(`${API_BASE}/stream`);
+const eventSource = new EventSource('http://localhost:3000/api/stream');
 eventSource.onmessage = (e) => {
   // default message
 };
 eventSource.addEventListener('card-created', (e) => {
+  console.log('SSE card-created received', e.data);
   const { card, columnId } = JSON.parse(e.data);
   updateBoardStateOnCreate(card, columnId);
 });

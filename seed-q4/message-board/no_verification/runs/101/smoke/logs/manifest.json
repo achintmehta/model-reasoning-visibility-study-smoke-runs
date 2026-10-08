@@ -103,7 +103,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "46e0a3f1112af32c",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -114,19 +114,19 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791148550.627465,
-  "ended_at": 1791148640.2794936,
+  "started_at": 1791404040.4540374,
+  "ended_at": 1791404131.8886607,
   "status": "finished",
   "steps": 8,
   "tokens_to_first_finish": {
-    "prompt_tokens": 25981,
-    "completion_tokens": 3966,
-    "total_tokens": 29947
+    "prompt_tokens": 26657,
+    "completion_tokens": 4037,
+    "total_tokens": 30694
   },
   "total_tokens_used": {
-    "prompt_tokens": 25981,
-    "completion_tokens": 3966,
-    "total_tokens": 29947
+    "prompt_tokens": 26657,
+    "completion_tokens": 4037,
+    "total_tokens": 30694
   },
   "human_turns": 0,
   "finish_nudges": 0,
@@ -135,7 +135,12 @@
   "loop_guard_fired": null,
   "truncation_detected": null,
   "reasoning_turns": 8,
-  "reasoning_chars": 1072,
+  "reasoning_chars": 1537,
+  "reasoning_recovered_turns": 5,
+  "reasoning_recovered_chars": 460,
+  "reasoning_recovered_markers": {
+    "</seed:think>": 5
+  },
   "reasoning_replayed_turns": 0,
   "reasoning_replayed_chars": 0,
   "tool_calls": {
@@ -156,7 +161,7 @@
   },
   "workspace_fingerprint": {
     "n_files": 7,
-    "sha": "8bab7a3deaebbf58"
+    "sha": "8fd3e71c47562ccf"
   },
   "decoding_dropped_params": [],
   "api_retries": {

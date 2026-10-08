@@ -9,16 +9,15 @@
 <body>
   <div class="container">
     <h1>Real-Time Message Board</h1>
-    <div id="messages-container" class="messages-container"></div>
-    <form id="message-form" class="message-form">
+    <div id="messages" class="messages"></div>
+    <form id="messageForm" class="message-form">
       <input 
         type="text" 
-        id="message-input" 
-        class="message-input" 
+        id="messageInput" 
         placeholder="Type a message..." 
         required
       >
-      <button type="submit" class="message-submit">Post</button>
+      <button type="submit">Send</button>
     </form>
   </div>
   <script type="module" src="/src/main.js"></script>

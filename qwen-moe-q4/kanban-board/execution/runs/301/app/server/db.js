@@ -46,13 +46,15 @@ async function initializeSchema() {
   `);
 
   // Seed default columns if none exist
-  const countRes = await db.query('SELECT COUNT(*) as count FROM columns');
-  if (countRes.rows[0].count === 0) {
+  const count = await db.query('SELECT COUNT(*) as count FROM columns');
+  if (count.rows[0].count === 0) {
     const columns = [
       { id: generateId(), title: 'To Do', position: 0 },
       { id: generateId(), title: 'In Progress', position: 100 },
       { id: generateId(), title: 'Done', position: 200 },
     ];
+
+    const now = new Date().toISOString();
 
     for (const col of columns) {
       await db.query(
@@ -60,6 +62,13 @@ async function initializeSchema() {
         [col.id, col.title, col.position]
       );
     }
+
+    // Insert a sample card in To Do to demonstrate the board
+    const sampleCol = columns[0];
+    await db.query(
+      'INSERT INTO cards (id, column_id, text, position, created_at) VALUES ($1, $2, $3, $4, $5)',
+      [generateId(), sampleCol.id, 'Sample card - drag me around!', 50, now]
+    );
   }
 }
 

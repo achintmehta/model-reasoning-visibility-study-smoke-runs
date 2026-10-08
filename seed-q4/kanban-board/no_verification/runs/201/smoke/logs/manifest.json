@@ -99,7 +99,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "d376a673ab3c4b6c",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -110,8 +110,8 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791148657.3186305,
-  "ended_at": 1791148865.4626386,
+  "started_at": 1791404146.8434017,
+  "ended_at": 1791404355.1092927,
   "status": "finished",
   "steps": 8,
   "tokens_to_first_finish": {
@@ -131,7 +131,12 @@
   "loop_guard_fired": null,
   "truncation_detected": null,
   "reasoning_turns": 7,
-  "reasoning_chars": 4967,
+  "reasoning_chars": 18662,
+  "reasoning_recovered_turns": 1,
+  "reasoning_recovered_chars": 13693,
+  "reasoning_recovered_markers": {
+    "</seed:think>": 1
+  },
   "reasoning_replayed_turns": 0,
   "reasoning_replayed_chars": 0,
   "tool_calls": {

@@ -1,19 +1,22 @@
 import express from 'express';
 import cors from 'cors';
-import * as pglite from '@electric-sql/pglite';
+import { PGlite } from '@electric-sql/pglite';
+import { NodeFS } from '@electric-sql/pglite/nodefs';
 import path from 'path';
-import crypto from 'crypto';
 
 const app = express();
-const port = 3000;
-
 app.use(cors());
 app.use(express.json());
 
-// Initialize PGLite with a local directory for persistence
-const db = new pglite.PGlite('/tmp/pglite_data');
+const PORT = 3000;
+const DB_PATH = path.join(process.cwd(), 'pgdata');
 
-// Database initialization
+// Initialize PGLite with persistence
+const db = new PGlite({
+  fs: new NodeFS(DB_PATH)
+});
+
+// DB Initialization
 async function initDb() {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS columns (
@@ -30,8 +33,8 @@ async function initDb() {
     );
   `);
 
-  const { rows: columns } = await db.query('SELECT * FROM columns');
-  if (columns.length === 0) {
+  const columns = await db.query('SELECT * FROM columns');
+  if (columns.rows.length === 0) {
     await db.exec(`
       INSERT INTO columns (id, title, position) VALUES 
       ('todo', 'To Do', 1),
@@ -43,7 +46,7 @@ async function initDb() {
 
 await initDb();
 
-// SSE setup
+// SSE logic
 let clients = [];
 function broadcast(event, data) {
   const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -54,7 +57,6 @@ app.get('/api/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Access-Control-Allow-Origin', '*');
 
   const client = { res };
   clients.push(client);
@@ -65,97 +67,82 @@ app.get('/api/stream', (req, res) => {
 });
 
 app.get('/api/board', async (req, res) => {
-  try {
-    const columnsResult = await db.query('SELECT * FROM columns ORDER BY position');
-    const columns = columnsResult.rows;
-
-    const board = await Promise.all(columns.map(async (col) => {
-      const cardsResult = await db.query('SELECT * FROM cards WHERE column_id = $1 ORDER BY position', [col.id]);
-      return {
-        ...col,
-        cards: cardsResult.rows
-      };
-    }));
-
-    res.json(board);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  const colsRes = await db.query('SELECT * FROM columns ORDER BY position');
+  const columns = colsRes.rows;
+  
+  const board = [];
+  for (const col of columns) {
+    const cardsRes = await db.query('SELECT * FROM cards WHERE column_id = $1 ORDER BY position', [col.id]);
+    board.push({
+      ...col,
+      cards: cardsRes.rows
+    });
   }
+  res.json(board);
 });
 
 app.post('/api/cards', async (req, res) => {
   const { columnId, text } = req.body;
-  if (!columnId || !text) return res.status(400).json({ error: 'Missing columnId or text' });
+  const id = Math.random().toString(36).substring(2, 9);
+  
+  // Get last card position
+  const lastCard = await db.query('SELECT position FROM cards WHERE column_id = $1 ORDER BY position DESC LIMIT 1', [columnId]);
+  const position = lastCard.rows.length > 0 ? lastCard.rows[0].position + 1000 : 1000;
 
-  try {
-    const cardId = crypto.randomUUID();
-    
-    // Find the last card's position in the column
-    const lastCardResult = await db.query('SELECT position FROM cards WHERE column_id = $1 ORDER BY position DESC LIMIT 1', [columnId]);
-    const lastPosition = lastCardResult.rows.length > 0 ? lastCardResult.rows[0].position : 0;
-    const position = lastPosition + 1000; // Simple spacing
-
-    await db.query('INSERT INTO cards (id, column_id, text, position) VALUES ($1, $2, $3, $4)', [cardId, columnId, text, position]);
-    
-    const newCard = { id: cardId, column_id: columnId, text, position };
-    broadcast('cardCreated', newCard);
-    res.status(201).json(newCard);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await db.query('INSERT INTO cards (id, column_id, text, position) VALUES ($1, $2, $3, $4)', [id, columnId, text, position]);
+  
+  const newCard = { id, columnId, text, position };
+  broadcast('cardCreated', newCard);
+  res.status(201).json(newCard);
 });
 
 app.patch('/api/cards/:id/move', async (req, res) => {
   const { id } = req.params;
   const { columnId, beforeId, afterId } = req.body;
 
-  try {
-    // Atomic move using a transaction
-    await db.exec('BEGIN');
-    
-    let newPosition;
-    if (beforeId && afterId) {
-      const beforeRes = await db.query('SELECT position FROM cards WHERE id = $1', [beforeId]);
-      const afterRes = await db.query('SELECT position FROM cards WHERE id = $1', [afterId]);
-      if (beforeRes.rows.length && afterRes.rows.length) {
-        newPosition = (beforeRes.rows[0].position + afterRes.rows[0].position) / 2;
-      }
-    } else if (beforeId) {
-      const beforeRes = await db.query('SELECT position FROM cards WHERE id = $1', [beforeId]);
-      if (beforeRes.rows.length) {
-        newPosition = beforeRes.rows[0].position - 1000;
-      }
-    } else if (afterId) {
-      const afterRes = await db.query('SELECT position FROM cards WHERE id = $1', [afterId]);
-      if (afterRes.rows.length) {
-        newPosition = afterRes.rows[0].position + 1000;
-      }
-    } else {
-      // Moving into empty column or first card
-      const lastCardResult = await db.query('SELECT position FROM cards WHERE column_id = $1 ORDER BY position DESC LIMIT 1', [columnId]);
-      newPosition = lastCardResult.rows.length > 0 ? lastCardResult.rows[0].position + 1000 : 1000;
+  let position;
+  
+  // Compute position
+  if (beforeId && afterId) {
+    const before = await db.query('SELECT position FROM cards WHERE id = $1', [beforeId]);
+    const after = await db.query('SELECT position FROM cards WHERE id = $1', [afterId]);
+    if (before.rows.length && after.rows.length) {
+      position = (before.rows[0].position + after.rows[0].position) / 2;
     }
-
-    // Fallback for cases where beforeId/afterId were not found or both null
-    if (newPosition === undefined) {
-        const lastCardResult = await db.query('SELECT position FROM cards WHERE column_id = $1 ORDER BY position DESC LIMIT 1', [columnId]);
-        newPosition = lastCardResult.rows.length > 0 ? lastCardResult.rows[0].position + 1000 : 1000;
+  } else if (beforeId) {
+    const before = await db.query('SELECT position FROM cards WHERE id = $1', [beforeId]);
+    if (before.rows.length) {
+      position = before.rows[0].position - 1000;
     }
-
-    await db.query('UPDATE cards SET column_id = $1, position = $2 WHERE id = $3', [columnId, newPosition, id]);
-    await db.exec('COMMIT');
-
-    const cardResult = await db.query('SELECT * FROM cards WHERE id = $1', [id]);
-    const updatedCard = cardResult.rows[0];
-    
-    broadcast('cardMoved', updatedCard);
-    res.json(updatedCard);
-  } catch (err) {
-    await db.exec('ROLLBACK');
-    res.status(500).json({ error: err.message });
+  } else if (afterId) {
+    const after = await db.query('SELECT position FROM cards WHERE id = $1', [afterId]);
+    if (after.rows.length) {
+      position = after.rows[0].position + 1000;
+    }
+  } else {
+    // Empty column or first card
+    position = 1000;
   }
+
+  // If position is not determined, default it
+  if (position === undefined) position = 1000;
+
+  // Update atomically
+  await db.exec('BEGIN');
+  try {
+    await db.query('UPDATE cards SET column_id = $1, position = $2 WHERE id = $3', [columnId, position, id]);
+    await db.exec('COMMIT');
+  } catch (e) {
+    await db.exec('ROLLBACK');
+    res.status(500).json({ error: 'Database error' });
+    return;
+  }
+
+  const updatedCard = { id, columnId, position };
+  broadcast('cardMoved', updatedCard);
+  res.json(updatedCard);
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Backend server running at http://localhost:${PORT}`);
 });

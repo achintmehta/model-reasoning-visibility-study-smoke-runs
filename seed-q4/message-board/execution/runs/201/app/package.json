@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "install": "cd backend && npm install && cd frontend && npm install",
-    "start": "cd backend && npm run start"
+    "start": "cd backend && node src/server.js"
   },
   "dependencies": {
     "concurrently": "^8.2.0"

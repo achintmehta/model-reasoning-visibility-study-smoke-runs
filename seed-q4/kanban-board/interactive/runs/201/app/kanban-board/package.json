@@ -1,24 +1,23 @@
 {
   "name": "kanban-board",
   "version": "1.0.0",
-  "type": "module",
+  "description": "Collaborative Kanban Board with PGLite and SSE",
+  "main": "src/server.js",
   "scripts": {
-    "dev:backend": "node src/server.js",
-    "dev:frontend": "http-server frontend/public -p 8080 -c-1",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "backend": "node src/server.js",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "start": "npm run dev"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "type": "commonjs",
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "cors": "^2.8.6",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "concurrently": "^9.2.4",
-    "http-server": "^14.1.1"
+    "concurrently": "^10.0.5"
   }
 }

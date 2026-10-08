@@ -2,6 +2,7 @@
   "name": "kanban-board",
   "version": "1.0.0",
   "description": "Real-time collaborative Kanban board with SSE",
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "node backend/server.js",

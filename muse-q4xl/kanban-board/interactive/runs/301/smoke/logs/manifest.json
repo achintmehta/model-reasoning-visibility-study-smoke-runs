@@ -117,7 +117,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "c0a5d065be21b19d",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -128,19 +128,19 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791155429.7898865,
-  "ended_at": 1791155817.0154278,
+  "started_at": 1791409470.9089541,
+  "ended_at": 1791410375.5038784,
   "status": "finished",
-  "steps": 84,
+  "steps": 170,
   "tokens_to_first_finish": {
-    "prompt_tokens": 1799929,
-    "completion_tokens": 19162,
-    "total_tokens": 1819091
+    "prompt_tokens": 7268178,
+    "completion_tokens": 37824,
+    "total_tokens": 7306002
   },
   "total_tokens_used": {
-    "prompt_tokens": 1799929,
-    "completion_tokens": 19162,
-    "total_tokens": 1819091
+    "prompt_tokens": 7268178,
+    "completion_tokens": 37824,
+    "total_tokens": 7306002
   },
   "human_turns": 0,
   "finish_nudges": 0,
@@ -148,12 +148,15 @@
   "verification_unlocked_at_step": null,
   "loop_guard_fired": null,
   "truncation_detected": null,
-  "reasoning_turns": 84,
-  "reasoning_chars": 38111,
-  "reasoning_replayed_turns": 84,
-  "reasoning_replayed_chars": 38111,
+  "reasoning_turns": 170,
+  "reasoning_chars": 85982,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
+  "reasoning_replayed_turns": 170,
+  "reasoning_replayed_chars": 85982,
   "tool_calls": {
-    "attempts": 84,
+    "attempts": 170,
     "malformed": 0,
     "malformation_rate": 0.0,
     "unparseable_arguments": 0,
@@ -162,15 +165,15 @@
     "tool_errors_other": 1
   },
   "file_state_repeats": {
-    "count": 0,
+    "count": 1,
     "writes": 0,
-    "edits": 0,
-    "reverts": 0,
-    "max_times": 0
+    "edits": 1,
+    "reverts": 1,
+    "max_times": 2
   },
   "workspace_fingerprint": {
-    "n_files": 9,
-    "sha": "65dd447fbaf82e21"
+    "n_files": 12,
+    "sha": "3213da1d77b30cac"
   },
   "decoding_dropped_params": [],
   "api_retries": {

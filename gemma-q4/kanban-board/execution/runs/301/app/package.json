@@ -1,11 +1,10 @@
 {
   "name": "kanban-board",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && node index.js",
+    "dev:frontend": "cd frontend && npm run dev"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

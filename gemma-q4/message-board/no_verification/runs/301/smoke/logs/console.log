@@ -9,6 +9,7 @@ WARNING: --extra-body is in force: {"chat_template_kwargs": {"enable_thinking": 
 [preflight] server OK, serving 'gemma-4-31b'
 [serving] D:\llm_models\LM Studio\unsloth\gemma-4-31B-it-GGUF\gemma-4-31B-it-Q4_K_M.gguf n_ctx=65536 template_sha=aa3185dfc6505104
 [serving] served file matches the registry entry (gemma-4-31B-it-Q4_K_M.gguf)
+Cleaning workspace directory: /tmp/runs/smokes/gemma-q4/message-board/no_verification/runs/301/app
 
 --- Step 1 ---
 Reasoning (1883 chars): The user wants me to implement a real-time message board using Node.js, PGLite, and SSE.

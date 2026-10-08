@@ -9,6 +9,7 @@ WARNING: --extra-body is in force: {"chat_template_kwargs": {"enable_thinking": 
 [preflight] server OK, serving 'qwen3.6-35b-a3b'
 [serving] D:\llm_models\LM Studio\unsloth\Qwen3.6-35B-A3B-UD\Qwen3.6-35B-A3B-UD-Q4_K_M.gguf n_ctx=262144 template_sha=55d4931433fe502b
 [serving] served file matches the registry entry (Qwen3.6-35B-A3B-UD-Q4_K_M.gguf)
+Cleaning workspace directory: /tmp/runs/smokes/qwen-moe-q4/message-board/no_verification/runs/301/app
 [RealClient] waiting for model reply #1 - 30s elapsed, 1% of the 3600s timeout
 
 --- Step 1 ---

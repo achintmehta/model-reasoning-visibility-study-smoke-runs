@@ -2,6 +2,11 @@ const messageList = document.getElementById('message-list');
 const messageForm = document.getElementById('message-form');
 const messageInput = document.getElementById('message-input');
 
+// API base URL - in dev, connect directly to backend for SSE (Vite proxy doesn't handle SSE well)
+// In production, all requests go through the same origin
+const isDev = window.location.hostname === 'localhost' && window.location.port !== '3000';
+const API_BASE = isDev ? 'http://localhost:3000/api' : '/api';
+
 // Format timestamp for display
 function formatTime(isoString) {
   const date = new Date(isoString);
@@ -29,7 +34,7 @@ function escapeHtml(text) {
 // Fetch and render historical messages
 async function loadMessages() {
   try {
-    const res = await fetch('/api/messages');
+    const res = await fetch(`${API_BASE}/messages`);
     const messages = await res.json();
     messageList.innerHTML = '';
     for (const msg of messages) {
@@ -42,7 +47,7 @@ async function loadMessages() {
 
 // Connect to SSE stream for real-time updates
 function connectSSE() {
-  const eventSource = new EventSource('/api/stream');
+  const eventSource = new EventSource(`${API_BASE}/stream`);
 
   eventSource.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
@@ -67,7 +72,7 @@ messageForm.addEventListener('submit', async (e) => {
   if (!text) return;
 
   try {
-    await fetch('/api/messages', {
+    await fetch(`${API_BASE}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),

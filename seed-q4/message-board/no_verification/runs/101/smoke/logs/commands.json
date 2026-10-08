@@ -17,22 +17,22 @@
   {
     "step": 4,
     "tool": "write_file",
-    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"frontend\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Frontend "
+    "args_head": "{\"content\": \"CREATE TABLE IF NOT EXISTS messages (\\n    id SERIAL PRIMARY KEY,\\n    text TEXT NOT NU"
   },
   {
     "step": 5,
     "tool": "write_file",
-    "args_head": "{\"content\": \"import { defineConfig } from 'vite'\\n\\nexport default defineConfig({\\n  server: {\\n    "
+    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"frontend\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Frontend "
   },
   {
     "step": 6,
     "tool": "write_file",
-    "args_head": "{\"content\": \"<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n  <meta charset=\\\"UTF-8\\\">\\n  <meta name=\\"
+    "args_head": "{\"content\": \"<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n    <meta charset=\\\"UTF-8\\\">\\n    <meta na"
   },
   {
     "step": 7,
     "tool": "write_file",
-    "args_head": "{\"content\": \"// Get DOM elements\\nconst messageList = document.getElementById('message-list');\\ncons"
+    "args_head": "{\"content\": \"const messagesList = document.getElementById('messages-list');\\nconst messageForm = doc"
   },
   {
     "step": 8,

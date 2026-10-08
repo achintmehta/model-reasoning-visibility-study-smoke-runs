@@ -1,4 +1,0 @@
-Error initializing database: TypeError: f?.startsWith is not a function
-    at ru (file:///tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/@electric-sql/pglite/dist/chunk-EKNQE2HU.js:1:36644)
-    at new Dt (file:///tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/@electric-sql/pglite/dist/chunk-OVRU7FYL.js:1:22182)
-    at initDB (file:///tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/server.js:28:10)

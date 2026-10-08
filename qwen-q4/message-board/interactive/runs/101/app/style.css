@@ -1,5 +1,7 @@
-*, *::before, *::after {
+* {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -7,33 +9,34 @@ body {
     Ubuntu, Cantarell, sans-serif;
   background-color: #f5f5f5;
   color: #333;
-  margin: 0;
-  padding: 20px;
+  line-height: 1.6;
 }
 
 .container {
   max-width: 640px;
   margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
   color: #1a1a1a;
 }
 
 #message-form {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 #message-input {
   flex: 1;
-  padding: 10px 14px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
   outline: none;
   transition: border-color 0.2s;
 }
@@ -42,43 +45,47 @@ h1 {
   border-color: #4a90d9;
 }
 
-#message-form button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #4a90d9;
+#send-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
   color: #fff;
+  background-color: #4a90d9;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-#message-form button:hover {
+#send-btn:hover {
   background-color: #357abd;
+}
+
+#send-btn:active {
+  background-color: #2a6298;
 }
 
 #message-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .message {
   background: #fff;
-  padding: 12px 16px;
+  padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease-in;
 }
 
-.message .text {
-  margin-bottom: 6px;
-  word-break: break-word;
-  line-height: 1.5;
+.message .message-text {
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
 }
 
-.message .meta {
-  font-size: 12px;
+.message .message-time {
+  font-size: 0.8rem;
   color: #888;
 }
 

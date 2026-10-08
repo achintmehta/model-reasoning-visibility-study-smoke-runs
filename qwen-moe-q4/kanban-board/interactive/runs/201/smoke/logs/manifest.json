@@ -118,7 +118,7 @@
   "interactive": false,
   "briefing_mode": "universal",
   "no_briefing": false,
-  "harness_git": "600a8d2565226c220b3db6c5e44511fc78277fca",
+  "harness_git": "5ac366f4175dc0929c28ad45e1560d26760f83fa",
   "system_prompt_sha": "9944399f0326bbe1",
   "base_prompt_sha": "a1b949af9e7bda1c",
   "condition_briefing_sha": "c988f43155c49538",
@@ -129,40 +129,44 @@
   "workspace_git": "none",
   "seed_workspace": null,
   "seed_fingerprint": null,
-  "started_at": 1791158237.1184366,
-  "ended_at": 1791159014.0187228,
-  "status": "stopped_no_tool_call",
-  "steps": 101,
+  "started_at": 1791412710.9802947,
+  "ended_at": 1791413561.0068798,
+  "status": "finished",
+  "steps": 172,
   "tokens_to_first_finish": {
-    "prompt_tokens": 507729,
-    "completion_tokens": 35134,
-    "total_tokens": 542863
+    "prompt_tokens": 758857,
+    "completion_tokens": 32290,
+    "total_tokens": 791147
   },
   "total_tokens_used": {
-    "prompt_tokens": 3784897,
-    "completion_tokens": 61826,
-    "total_tokens": 3846723
+    "prompt_tokens": 6868307,
+    "completion_tokens": 60594,
+    "total_tokens": 6928901
   },
   "human_turns": 0,
-  "finish_nudges": 7,
+  "finish_nudges": 8,
   "finish_nudge_steps": [
-    31,
-    57,
-    63,
-    74,
-    84,
-    94,
-    100
+    44,
+    52,
+    104,
+    108,
+    111,
+    127,
+    155,
+    159
   ],
   "verification_unlocked_at_step": null,
   "loop_guard_fired": null,
   "truncation_detected": null,
-  "reasoning_turns": 98,
-  "reasoning_chars": 94758,
+  "reasoning_turns": 160,
+  "reasoning_chars": 114036,
+  "reasoning_recovered_turns": 0,
+  "reasoning_recovered_chars": 0,
+  "reasoning_recovered_markers": {},
   "reasoning_replayed_turns": 0,
   "reasoning_replayed_chars": 0,
   "tool_calls": {
-    "attempts": 94,
+    "attempts": 167,
     "malformed": 0,
     "malformation_rate": 0.0,
     "unparseable_arguments": 0,
@@ -171,15 +175,15 @@
     "tool_errors_other": 0
   },
   "file_state_repeats": {
-    "count": 3,
-    "writes": 3,
+    "count": 2,
+    "writes": 2,
     "edits": 0,
-    "reverts": 1,
-    "max_times": 3
+    "reverts": 0,
+    "max_times": 2
   },
   "workspace_fingerprint": {
     "n_files": 993,
-    "sha": "dc709537ec6d1e0d"
+    "sha": "235559178e2743c9"
   },
   "decoding_dropped_params": [],
   "api_retries": {

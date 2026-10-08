@@ -2,12 +2,12 @@
   "name": "kanban-board",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run dev:server\" \"wait-on http://localhost:3001/api/board && npm run dev:client\"",
     "dev:server": "node server/index.js",
-    "dev:client": "cd client && npm run dev",
-    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
+    "dev:client": "cd client && npm run dev"
   },
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "wait-on": "^8.0.1"
   }
 }

@@ -26,7 +26,7 @@ const db = new PGlite({
   dataDir: `file://${dataDir}`,
 });
 
-// SSE clients registry - store raw res objects instead of wrapping write
+// SSE clients registry - store both the write function and the response for flushing
 const sseClients = [];
 
 // ---- Database Initialization ----
@@ -95,15 +95,21 @@ app.get('/api/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+
+  // Flush headers immediately
   res.flushHeaders();
 
-  sseClients.push(res);
+  const client = { write: res.write.bind(res), res };
+  sseClients.push(client);
+  console.log(`SSE client connected. Total clients: ${sseClients.length}`);
 
   req.on('close', () => {
-    const index = sseClients.indexOf(res);
+    const index = sseClients.indexOf(client);
     if (index !== -1) {
       sseClients.splice(index, 1);
     }
+    console.log(`SSE client disconnected. Total clients: ${sseClients.length}`);
   });
 });
 
@@ -111,13 +117,17 @@ app.get('/api/stream', (req, res) => {
 function broadcast(message) {
   const data = JSON.stringify(message);
   const payload = `data: ${data}\n\n`;
+  let sentCount = 0;
   for (const client of sseClients) {
     try {
-      client.write(payload);
+      const result = client.write(payload);
+      console.log(`SSE broadcast to client: write returned ${result}`);
+      if (result === true) sentCount++;
     } catch (err) {
-      console.error('SSE broadcast error:', err);
+      console.error('SSE broadcast error:', err.message);
     }
   }
+  console.log(`Broadcast complete. Sent to ${sentCount}/${sseClients.length} clients.`);
 }
 
 // ---- Start Server ----

@@ -1,7 +1,7 @@
 # Smoke runs — study 42: does a coding agent's model need to re-read its own reasoning?
 
 This repository holds the **certifying smoke set** of study 42: 66 short agent runs, made on
-2026-10-04, that check the whole pipeline (models, server, harness, arms, logging) before the
+2026-10-07, that check the whole pipeline (models, server, harness, arms, logging) before the
 pre-registered grid is run. Every run here was made with the frozen harness and server settings
 the grid will use, and the set was checked by the gate script included here (`verify_smokes.py`).
 
@@ -28,7 +28,7 @@ gpt-oss-20b and Muse Glimmer 30B have no off-switch, so they run UNSEEN and SEEN
 
 | what | where |
 |---|---|
-| harness (the agent, the run wrappers, the tasks and rubrics) | not public; its code at commit `600a8d2565226c220b3db6c5e44511fc78277fca` (tag `model-reasoning-visibility-study-freeze-100426`) is archived with the OSF registration. Every run records this commit as `harness_git` in its `manifest.json` |
+| harness (the agent, the run wrappers, the tasks and rubrics) | not public; its code at commit `5ac366f4175dc0929c28ad45e1560d26760f83fa` (tag to be added) is archived with the OSF registration. Every run records this commit as `harness_git` in its `manifest.json` |
 | protocol and study plan | the OSF pre-registration of study 42 (link to be added) |
 | these smoke runs | this repository, `github.com/achintmehta/model-reasoning-visibility-study-smoke-runs` |
 | grid data | to be deposited on Zenodo when the grid is complete |
@@ -109,11 +109,11 @@ This is the agent's working folder exactly as the run left it: the source it wro
 | file | what it records |
 |---|---|
 | `manifest.json` | the run's summary: model, arm, condition, decoding settings and their source, the harness commit (`harness_git`), prompt and task hashes, start and end times, terminal `status`, step count, token totals, reasoning counts, tool-call counts and malformations, retries, loop-guard firings, and a fingerprint of the final workspace |
-| `trace.jsonl` | every exchange with the model, one JSON object per line: each `request` (the full conversation sent), each `response` (content, reasoning, tool calls, token usage) and each `tool_result`. The one trace over 100 MB (`glm-q4/kanban-board/execution/runs/301`) is stored compressed, as `trace.jsonl.zst` |
+| `trace.jsonl` | every exchange with the model, one JSON object per line: each `request` (the full conversation sent), each `response` (content, reasoning, tool calls, token usage) and each `tool_result`. |
 | `console.log` | the agent's console output: its command line, start-up checks (server, served model file, template hash), and a step-by-step account of reasoning, tool calls and results |
 | `commands.json` | each tool call in order: step, tool and the start of its arguments |
 | `environment.txt` | the toolchain the run saw: Node and npm versions, npm's registry freeze date, Python, Chromium, the llama-server build, the GPU and the WSL kernel |
-| `llama-server.log.zst` | the model server's log at its most detailed level (`-lv 5`), zstd-compressed (1.87 GB of logs in all, 98 MB compressed). It opens with the server's exact command line, and for each request it keeps the prompt the server rendered from the chat template and the model's raw output before parsing. Read it with `zstd -dc llama-server.log.zst \| less` |
+| `llama-server.log.zst` | the model server's log at its most detailed level (`-lv 5`), zstd-compressed (1.69 GB of logs uncompressed). It opens with the server's exact command line, and for each request it keeps the prompt the server rendered from the chat template and the model's raw output before parsing. Read it with `zstd -dc llama-server.log.zst \| less` |
 
 `smoke/screenshot/` is empty: the browser in `interactive` is text-only, so no screenshots
 are taken.
@@ -126,11 +126,9 @@ ignores.
 
 If a run ends in an infrastructure failure (for example the server returning an error), the
 batch runner moves the attempt here, with the same `app/` and `smoke/logs/` contents, and runs
-the slot again with the same seed. The run that finally counts stays in `runs/<id>/`. In this
-set only one slot has failed attempts: `gptoss-20b/kanban-board/execution`, where gpt-oss's
-output could not be parsed by the server three times in a row, identically each time (the
-same prompt and seed give the same tokens). Its last attempt is recorded as a **void**, which
-is within the ceiling the protocol allows (gate G14).
+the slot again with the same seed. The run that finally counts stays in `runs/<id>/`. A slot
+whose every attempt fails is recorded as a **void**, within a ceiling the protocol sets (gate
+G14). This set has no failed attempt and no void, so it contains no `failed-attempts/` folder.
 
 ## `batch-state/` — the batch runner's records
 
@@ -164,11 +162,19 @@ sha256 begins `d3149737912ebbde`, the value every run records as `decoding_regis
 Without `--decoding-registry`, G15 reports that it cannot check. The exit status is the number
 of failed gates.
 
-On this set all gates pass, one of them by a waiver registered in the protocol: **G9** (token
-budget). One GLM-4.7-Flash SEEN run (`glm-q4/kanban-board/execution/runs/301`) reached the
-20M-token budget while each of its last 30 calls repeated one it had already made; reaching the
-budget while looping is an outcome, not a censored run. The gpt-oss void described above is
-within G14's ceiling, and no run overflowed its context window.
+On this set all gates pass, one of them by a waiver registered in the protocol: **G2** (no
+thinking in the OFF arm). Gemma-4-26B-A4B-it's off-switch leaks, so its OFF arm is kept and
+watched rather than failed; its longest OFF reasoning here was 80,891 characters. No run
+reached the 20M-token budget (the peak was 7.9M), none overflowed its context window, and no
+slot was voided.
+
+**Reasoning left in the reply text.** When a model starts thinking without writing its
+opening tag, the server files the whole thought as reply text. From plan v2.5.37 the harness
+moves such text to the reasoning field before the reply is used, recording each move in the
+step's trace row (`reasoning_recovered`) and in the manifest (`reasoning_recovered_*`); the
+trace keeps the server's message untouched under `raw`. In this set that happened on 23
+steps, all Seed-OSS (18 UNSEEN, 5 OFF), each at a closing `</seed:think>` tag. Gate G4 checks
+that no think, channel or turn marker is left in any reply text the harness kept.
 
 ## What is not here
 

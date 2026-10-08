@@ -1,11 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const pg = require('@electric-sql/pglite');
+const pgModule = require('@electric-sql/pglite');
+const PGLite = pgModule.PGlite;
 const fs = require('fs');
 const path = require('path');
-
-// PGLite is lazily loaded via getter - access it properly
-const PGLite = Object.getOwnPropertyDescriptor(pg, 'PGlite').get.call(pg);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,18 +21,13 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Initialize PGLite
-let db;
+// Initialize PGLite with data directory for persistence
+const db = new PGLite({
+  dataDir: DATA_DIR,
+});
 
-async function initDB() {
-  db = new PGLite({
-    dataDirectory: DATA_DIR,
-  });
-
-  // Wait for PGLite to be ready (it initializes automatically)
-  await db.waitReady;
-
-  // Create messages table if it doesn't exist
+// Create messages table
+async function initSchema() {
   await db.query(`
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
@@ -42,7 +35,6 @@ async function initDB() {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     )
   `);
-
   console.log('PGLite database initialized successfully');
 }
 
@@ -129,7 +121,7 @@ function broadcastMessage(message) {
 }
 
 // Start server
-initDB()
+initSchema()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);

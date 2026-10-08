@@ -15,7 +15,8 @@ app.use(express.json());
 const dataDir = path.join(__dirname, 'data');
 await fs.mkdir(dataDir, { recursive: true });
 
-const db = new PGlite({ dataDir });
+const dbPath = path.join(dataDir, 'db.sqlite');
+const db = new PGlite('file://' + dbPath);
 await db.exec(`
 CREATE TABLE IF NOT EXISTS messages (
   id SERIAL PRIMARY KEY,
@@ -25,15 +26,6 @@ CREATE TABLE IF NOT EXISTS messages (
 `);
 
 const clients = new Set();
-
-function broadcast(message) {
-  const payload = `data: ${JSON.stringify(message)}\n\n`;
-  for (const client of clients) {
-    try {
-      client.res.write(payload);
-    } catch {}
-  }
-}
 
 app.get('/api/messages', async (req, res) => {
   try {
@@ -75,6 +67,15 @@ app.post('/api/messages', async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+function broadcast(message) {
+  const payload = `data: ${JSON.stringify(message)}\n\n`;
+  for (const client of clients) {
+    try {
+      client.res.write(payload);
+    } catch {}
+  }
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

@@ -44,12 +44,7 @@ async function initDb() {
   }
 }
 
-initDb().then(() => {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Backend listening on http://localhost:${PORT}`);
-  });
-}).catch(err => {
+initDb().catch(err => {
   console.error('DB init error', err);
   process.exit(1);
 });
@@ -58,6 +53,7 @@ initDb().then(() => {
 const clients = new Set();
 
 function broadcast(eventType, data) {
+  console.log('Broadcasting', eventType, 'to', clients.size, 'clients');
   const payload = `event: ${eventType}\n data: ${JSON.stringify(data)}\n\n`;
   for (const res of clients) {
     try {
@@ -248,16 +244,34 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 
 // SSE endpoint
 app.get('/api/stream', (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream');
+  console.log('SSE client connected, total:', clients.size + 1);
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
+  // res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
+  req.socket.setTimeout(0);
+  res.socket.setTimeout(0);
 
   // Send comment to keep connection alive
   res.write(': connected\n\n');
   clients.add(res);
 
+  const keepAlive = setInterval(() => {
+    try {
+      res.write(': keep-alive\n\n');
+    } catch (e) {
+      clearInterval(keepAlive);
+    }
+  }, 4000);
+
   req.on('close', () => {
+    console.log('SSE client disconnected, total:', clients.size - 1);
+    clearInterval(keepAlive);
     clients.delete(res);
   });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Backend listening on http://localhost:${PORT}`);
 });

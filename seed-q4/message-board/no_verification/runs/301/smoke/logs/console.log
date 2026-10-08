@@ -9,6 +9,7 @@ WARNING: --extra-body is in force: {}. These fields go to the server on EVERY re
 [preflight] server OK, serving 'seed-oss-36b'
 [serving] D:\llm_models\LM Studio\unsloth\Seed-OSS-36B\Seed-OSS-36B-Instruct-Q4_K_M.gguf n_ctx=262144 template_sha=25b74a75d793cc03
 [serving] served file matches the registry entry (Seed-OSS-36B-Instruct-Q4_K_M.gguf)
+Cleaning workspace directory: /tmp/runs/smokes/seed-q4/message-board/no_verification/runs/301/app
 
 --- Step 1 ---
 Reasoning (1650 chars): Let's start by breaking down the task and understanding what we need to build:

@@ -1,21 +1,22 @@
-import './style.css';
-
 const API_BASE = 'http://localhost:3001/api';
-const SSE_URL = 'http://localhost:3001/api/stream';
 
-let board = [];
+let boardState = [];
 
-const boardEl = document.getElementById('board');
+const boardElement = document.getElementById('board');
 
 async function fetchBoard() {
-  const res = await fetch(`${API_BASE}/board`);
-  board = await res.json();
-  renderBoard();
+  try {
+    const response = await fetch(`${API_BASE}/board`);
+    boardState = await response.json();
+    renderBoard();
+  } catch (err) {
+    console.error('Failed to fetch board:', err);
+  }
 }
 
 function renderBoard() {
-  boardEl.innerHTML = '';
-  board.forEach(column => {
+  boardElement.innerHTML = '';
+  boardState.forEach(column => {
     const columnEl = document.createElement('div');
     columnEl.className = 'column';
     columnEl.dataset.id = column.id;
@@ -23,8 +24,8 @@ function renderBoard() {
       <h2>${column.title}</h2>
       <div class="card-list" data-column-id="${column.id}"></div>
       <div class="card-form">
-        <input type="text" placeholder="Add a card..." />
-        <button>Add</button>
+        <input type="text" placeholder="New card..." class="card-input">
+        <button class="add-card-btn">Add</button>
       </div>
     `;
 
@@ -34,66 +35,38 @@ function renderBoard() {
       cardListEl.appendChild(cardEl);
     });
 
-    const form = columnEl.querySelector('.card-form');
-    const input = form.querySelector('input');
-    const button = form.querySelector('button');
-
-    button.onclick = async () => {
+    // Add card event
+    columnEl.querySelector('.add-card-btn').addEventListener('click', () => {
+      const input = columnEl.querySelector('.card-input');
       const text = input.value.trim();
-      if (!text) return;
-      input.value = '';
-      await createCard(column.id, text);
-    };
+      if (text) {
+        createCard(column.id, text);
+        input.value = '';
+      }
+    });
 
-    input.onkeypress = (e) => {
-      if (e.key === 'Enter') button.click();
-    };
-
-    // Drag and drop listeners for the column
+    // Drag and drop events on the card list
     cardListEl.addEventListener('dragover', handleDragOver);
-    cardListEl.addEventListener('drop', (e) => handleDrop(e, column.id, null, null));
+    cardListEl.addEventListener('drop', handleDrop);
 
-    boardEl.appendChild(columnEl);
+    boardElement.appendChild(columnEl);
   });
 }
 
 function createCardElement(card) {
   const cardEl = document.createElement('div');
   cardEl.className = 'card';
+  cardEl.draggable = true;
+  cardEl.id = `card-${card.id}`;
   cardEl.textContent = card.text;
   cardEl.dataset.id = card.id;
-  cardEl.draggable = true;
 
   cardEl.addEventListener('dragstart', handleDragStart);
   cardEl.addEventListener('dragend', handleDragEnd);
-  
-  // To handle dropping on a card to place before/after it
-  cardEl.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const rect = cardEl.getBoundingClientRect();
-    const midpoint = rect.top + rect.height / 2;
-    cardEl.classList.toggle('drop-before', e.clientY < midpoint);
-    cardEl.classList.toggle('drop-after', e.clientY >= midpoint);
-  });
-
-  cardEl.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const rect = cardEl.getBoundingClientRect();
-    const midpoint = rect.top + rect.height / 2;
-    
-    if (e.clientY < midpoint) {
-      handleDrop(e, card.column_id, card.id, null); // before card.id
-    } else {
-      handleDrop(e, card.column_id, null, card.id); // after card.id
-    }
-  });
 
   return cardEl;
 }
 
-// Globals for drag and drop
 let draggedCardId = null;
 
 function handleDragStart(e) {
@@ -103,127 +76,133 @@ function handleDragStart(e) {
 
 function handleDragEnd(e) {
   e.target.classList.remove('dragging');
-  document.querySelectorAll('.card').forEach(el => {
-    el.classList.remove('drop-before', 'drop-after');
-  });
+  draggedCardId = null;
 }
 
 function handleDragOver(e) {
   e.preventDefault();
+  const cardList = e.currentTarget;
+  const afterElement = getDragAfterElement(cardList, e.clientY);
+  const draggingCard = document.getElementById(`card-${draggedCardId}`);
+  if (afterElement == null) {
+    cardList.appendChild(draggingCard);
+  } else {
+    cardList.insertBefore(draggingCard, afterElement);
+  }
 }
 
-async function handleDrop(e, targetColumnId, beforeId, afterId) {
-  e.preventDefault();
-  if (!draggedCardId) return;
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
 
-  // Find the dragged card in the current state
-  let draggedCard;
-  for (const col of board) {
-    const found = col.cards.find(c => c.id === draggedCardId);
-    if (found) {
-      draggedCard = found;
-      break;
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
     }
-  }
-
-  if (!draggedCard) return;
-
-  const originalColumnId = draggedCard.column_id;
-
-  // Optimistic Update
-  // 1. Remove from original column
-  const originalCol = board.find(c => c.id === originalColumnId);
-  if (originalCol) {
-    originalCol.cards = originalCol.cards.filter(c => c.id !== draggedCardId);
-  }
-
-  // 2. Add to target column
-  const targetCol = board.find(c => c.id === targetColumnId);
-  if (targetCol) {
-    // For optimistic UI, we just append it for now, or insert it.
-    // To keep it simple, let's just append it.
-    targetCol.cards.push({ ...draggedCard, column_id: targetColumnId });
-  }
-
-  renderBoard();
-
-  // 3. Send request to server
-  try {
-    const res = await fetch(`${API_BASE}/cards/${draggedCardId}/move`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        columnId: targetColumnId,
-        beforeId,
-        afterId
-      })
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to move card');
-    }
-    
-    // We don't need to do anything else here because SSE will sync the canonical state.
-    // But if we wanted to be more robust, we could reconcile here.
-  } catch (err) {
-    console.error(err);
-    // If it fails, re-fetch the board to revert optimistic state
-    await fetchBoard();
-  } finally {
-    draggedCardId = null;
-  }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 async function createCard(columnId, text) {
+  await fetch(`${API_BASE}/cards`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columnId, text })
+  });
+}
+
+async function handleDrop(e) {
+  e.preventDefault();
+  if (!draggedCardId) return;
+
+  const cardList = e.currentTarget;
+  const targetColumnId = cardList.dataset.columnId;
+  const cardEl = document.getElementById(`card-${draggedCardId}`);
+  
+  const newCardsInCol = [...cardList.querySelectorAll('.card')];
+  const newIndex = newCardsInCol.indexOf(cardEl);
+
+  let beforeId = null;
+  let afterId = null;
+
+  if (newIndex > 0) {
+    beforeId = newCardsInCol[newIndex - 1].dataset.id;
+  }
+  if (newIndex < newCardsInCol.length - 1) {
+    afterId = newCardsInCol[newIndex + 1].dataset.id;
+  }
+
+  // Send the move request
   try {
-    const res = await fetch(`${API_BASE}/cards`, {
-      method: 'POST',
+    await fetch(`${API_BASE}/cards/${draggedCardId}/move`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ columnId, text })
+      body: JSON.stringify({ columnId: targetColumnId, beforeId, afterId })
     });
-    if (!res.ok) throw new Error('Failed to create card');
   } catch (err) {
-    console.error(err);
-    await fetchBoard();
+    console.error('Failed to move card:', err);
+    // If it fails, we should ideally re-fetch the board to sync back to reality
+    fetchBoard();
   }
 }
 
-// SSE Connection
-const eventSource = new EventSource(SSE_URL);
+function setupSSE() {
+  const sseUrl = 'http://localhost:3001/api/stream';
+  const es = new EventSource(sseUrl);
 
-eventSource.onmessage = (event) => {
-  const { event: eventType, data } = JSON.parse(event.data);
-  console.log('SSE event:', eventType, data);
-
-  if (eventType === 'card-created') {
-    // Find column and add card
-    const col = board.find(c => c.id === data.column_id);
-    if (col) {
-      col.cards.push(data);
-      col.cards.sort((a, b) => a.position - b.position);
-    }
-  } else if (eventType === 'card-moved') {
-    // Remove from old column (if changed) and add to new column
-    // The server sends the canonical card, so we just need to update our state.
+  es.onmessage = (event) => {
+    const { type, payload } = JSON.parse(event.data);
+    console.log('SSE received:', type, payload);
     
-    // 1. Remove everywhere else
-    board.forEach(col => {
-      col.cards = col.cards.filter(c => c.id !== data.id);
-    });
-
-    // 2. Add to new column
-    const col = board.find(c => c.id === data.column_id);
-    if (col) {
-      col.cards.push(data);
-      col.cards.sort((a, b) => a.position - b.position);
+    if (type === 'CARD_CREATED') {
+      handleCardCreated(payload);
+    } else if (type === 'CARD_MOVED') {
+      handleCardMoved(payload);
+    } else if (type === 'COLUMN_UPDATED') {
+      handleColumnUpdated(payload);
     }
+  };
+
+  es.onerror = (err) => {
+    console.error('SSE error:', err);
+  };
+}
+
+function handleCardCreated(newCard) {
+  const column = boardState.find(c => c.id === newCard.columnId);
+  if (column) {
+    column.cards.push(newCard);
+    renderBoard();
   }
+}
+
+function handleCardMoved(movedCard) {
+  // Remove from old position in state
+  boardState.forEach(col => {
+    col.cards = col.cards.filter(card => card.id !== movedCard.id);
+  });
+
+  // Add to new position in state
+  const column = boardState.find(c => c.id === movedCard.columnId);
+  if (column) {
+    column.cards.push(movedCard);
+    column.cards.sort((a, b) => a.position - b.position);
+  }
+
   renderBoard();
-};
+}
 
-eventSource.onerror = (err) => {
-  console.error('SSE error:', err);
-};
+function handleColumnUpdated(payload) {
+  const { columnId, cards } = payload;
+  const column = boardState.find(c => c.id === columnId);
+  if (column) {
+    column.cards = cards;
+    renderBoard();
+  }
+}
 
-// Start the app
+// Initialize
 fetchBoard();
+setupSSE();

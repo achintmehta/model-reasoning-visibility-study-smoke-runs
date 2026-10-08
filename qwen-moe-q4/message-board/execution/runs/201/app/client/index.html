@@ -4,17 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Realtime Message Board</title>
-  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="container">
     <h1>Message Board</h1>
-    <form id="message-form">
-      <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" maxlength="500" required>
-      <button type="submit">Post</button>
+    <div id="message-list" class="message-list"></div>
+    <form id="message-form" class="message-form">
+      <input
+        type="text"
+        id="message-input"
+        placeholder="Type a message..."
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Send</button>
     </form>
-    <ul id="message-list"></ul>
   </div>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>

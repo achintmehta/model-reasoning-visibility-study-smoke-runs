@@ -1,8 +1,0 @@
-
-> message-board-backend@1.0.0 start
-> node index.js
-
-Backend server listening at http://localhost:3001
-Database initialized
-New client connected: 1791161930045. Total clients: 1
-New client connected: 1791161937177. Total clients: 2

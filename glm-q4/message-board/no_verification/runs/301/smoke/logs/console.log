@@ -9,6 +9,7 @@ WARNING: --extra-body is in force: {"chat_template_kwargs": {"clear_thinking": f
 [preflight] server OK, serving 'glm-4.7-flash'
 [serving] D:\llm_models\LM Studio\unsloth\GLM-4.7-Flash-GGUF\GLM-4.7-Flash-Q4_K_M.gguf n_ctx=202752 template_sha=d63ad536c3c81880
 [serving] served file matches the registry entry (GLM-4.7-Flash-Q4_K_M.gguf)
+Cleaning workspace directory: /tmp/runs/smokes/glm-q4/message-board/no_verification/runs/301/app
 
 --- Step 1 ---
 Reasoning (882 chars): Let me break down the task:

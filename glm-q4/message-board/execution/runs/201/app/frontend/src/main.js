@@ -5,6 +5,191 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const status = document.getElementById('status');
 
+// Add inline styles for the UI
+const style = document.createElement('style');
+style.textContent = `
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  h1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .message-list {
+    height: 500px;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+  }
+
+  .message {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .message-text {
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+  }
+
+  .message-time {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .message-form {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .message-form input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+
+  .message-form input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .message-form button {
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .message-form button:hover {
+    opacity: 0.9;
+  }
+
+  .message-form button:active {
+    transform: scale(0.98);
+  }
+
+  .message-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .status {
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .status.connected {
+    color: #28a745;
+    background: #d4edda;
+  }
+
+  .status.disconnected {
+    color: #6c757d;
+    background: #e2e3e5;
+  }
+
+  .status.error {
+    color: #dc3545;
+    background: #f8d7da;
+  }
+
+  .message-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .message-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .message-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .message-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  @media (max-width: 640px) {
+    h1 {
+      font-size: 1.25rem;
+      padding: 16px;
+    }
+
+    .message-list {
+      height: 400px;
+      padding: 16px;
+    }
+
+    .message-form {
+      padding: 16px;
+    }
+  }
+`;
+document.head.appendChild(style);
+
 let eventSource = null;
 
 // Format timestamp for display
@@ -120,9 +305,6 @@ function connectToStream() {
       status.textContent = 'Connected to live updates';
       status.className = 'status connected';
     });
-
-    // Store event source for cleanup if needed
-    eventSource = eventSource;
     
   } catch (error) {
     console.error('Error connecting to SSE:', error);

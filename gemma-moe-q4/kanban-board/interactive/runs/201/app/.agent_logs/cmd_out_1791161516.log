@@ -1,9 +1,0 @@
-
-> kanban-backend@1.0.0 dev
-> node --watch index.js
-
-(node:513783) ExperimentalWarning: Watch mode is an experimental feature and might change at any time
-(Use `node --trace-warnings ...` to show where the warning was created)
-Completed running 'index.js'
-Restarting 'index.js'
-Server running on port 3000

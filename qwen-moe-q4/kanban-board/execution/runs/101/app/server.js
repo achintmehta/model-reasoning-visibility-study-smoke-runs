@@ -49,8 +49,7 @@ async function initDB() {
   }
 }
 
-// Wait for DB to be ready before starting server
-const dbReady = initDB().catch(err => {
+initDB().catch(err => {
   console.error('Failed to initialize database:', err);
   process.exit(1);
 });
@@ -70,7 +69,6 @@ function broadcast(event, data) {
 // ─── Board State Endpoint ──────────────────────────────────────
 app.get('/api/board', async (_req, res) => {
   try {
-    await dbReady;
     const columnsRes = await db.query(
       'SELECT id, title FROM columns ORDER BY position'
     );
@@ -108,7 +106,6 @@ app.post('/api/cards', async (req, res) => {
   }
 
   try {
-    await dbReady;
     // Get the max position in the target column
     const maxRes = await db.query(
       'SELECT COALESCE(MAX(position), 0) AS maxPos FROM cards WHERE column_id = $1',
@@ -141,7 +138,6 @@ app.patch('/api/cards/:id/move', async (req, res) => {
   }
 
   try {
-    await dbReady;
     // Compute the new position using fractional positioning
     let newPos;
 
@@ -214,9 +210,14 @@ app.patch('/api/cards/:id/move', async (req, res) => {
       }
     }
 
-    // Also check if position is too extreme (precision exhaustion)
-    if (!needsRenormalize && (Math.abs(newPos) > 1e8 || Math.abs(newPos) < 1e-8)) {
-      needsRenormalize = true;
+    // Also check if position is too close to another (less than 0.0001)
+    if (!needsRenormalize) {
+      for (const row of existingRes.rows) {
+        if (Math.abs(row.position - newPos) < 0.0001) {
+          needsRenormalize = true;
+          break;
+        }
+      }
     }
 
     let finalNewPos = newPos;
@@ -236,7 +237,7 @@ app.patch('/api/cards/:id/move', async (req, res) => {
       const card = { ...updateRes.rows[0], columnId };
 
       // Renormalize the entire column if needed
-      if (needsRenormalize) {
+      if (needsRenormalize || hasPrecisionIssue(finalNewPos)) {
         await renormalizeColumn(tx, columnId);
         // Re-read the card after renormalization
         const reReadRes = await tx.query(
@@ -260,6 +261,11 @@ app.patch('/api/cards/:id/move', async (req, res) => {
 });
 
 // ─── Renormalization Helper ────────────────────────────────────
+function hasPrecisionIssue(position) {
+  // If position is extremely small (negative large magnitude), renormalize
+  return Math.abs(position) < 1e-10 || Math.abs(position) > 1e10;
+}
+
 async function renormalizeColumn(tx, columnId) {
   const cardsRes = await tx.query(
     'SELECT id FROM cards WHERE column_id = $1 ORDER BY position',
@@ -288,7 +294,7 @@ async function renormalizeColumn(tx, columnId) {
 }
 
 // ─── SSE Stream Endpoint ───────────────────────────────────────
-app.get('/api/stream', async (req, res) => {
+app.get('/api/stream', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -296,34 +302,35 @@ app.get('/api/stream', async (req, res) => {
     'Access-Control-Allow-Origin': '*'
   });
 
-  // Wait for DB and send initial board state
-  try {
-    await dbReady;
-    const columnsRes = await db.query(
-      'SELECT id, title FROM columns ORDER BY position'
-    );
-    const result = [];
-
-    for (const col of columnsRes.rows) {
-      const cardsRes = await db.query(
-        'SELECT id, text, position FROM cards WHERE column_id = $1 ORDER BY position',
-        [col.id]
+  // Send initial board state
+  (async () => {
+    try {
+      const columnsRes = await db.query(
+        'SELECT id, title FROM columns ORDER BY position'
       );
-      result.push({
-        id: col.id,
-        title: col.title,
-        cards: cardsRes.rows.map(r => ({
-          id: r.id,
-          text: r.text,
-          position: r.position
-        }))
-      });
-    }
+      const result = [];
 
-    res.write(`event: board-initial\ndata: ${JSON.stringify(result)}\n\n`);
-  } catch (err) {
-    console.error('SSE initial state error:', err);
-  }
+      for (const col of columnsRes.rows) {
+        const cardsRes = await db.query(
+          'SELECT id, text, position FROM cards WHERE column_id = $1 ORDER BY position',
+          [col.id]
+        );
+        result.push({
+          id: col.id,
+          title: col.title,
+          cards: cardsRes.rows.map(r => ({
+            id: r.id,
+            text: r.text,
+            position: r.position
+          }))
+        });
+      }
+
+      res.write(`event: board-initial\ndata: ${JSON.stringify(result)}\n\n`);
+    } catch (err) {
+      console.error('SSE initial state error:', err);
+    }
+  })();
 
   subscribers.add(res);
 
@@ -332,9 +339,7 @@ app.get('/api/stream', async (req, res) => {
   });
 });
 
-// ─── Start Server (waits for DB) ──────────────────────────────
-dbReady.then(() => {
-  app.listen(PORT, () => {
-    console.log(`Kanban board server running on http://localhost:${PORT}`);
-  });
+// ─── Start Server ──────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`Kanban board server running on http://localhost:${PORT}`);
 });

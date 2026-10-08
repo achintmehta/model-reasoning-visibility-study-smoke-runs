@@ -22,221 +22,176 @@
   {
     "step": 5,
     "tool": "run_command",
-    "args_head": "npm install -D vite vite-plugin-commonjs"
+    "args_head": "npm install -D vite @vitejs/plugin-vue"
   },
   {
     "step": 6,
     "tool": "run_command",
-    "args_head": "npm install -D @vitejs/plugin-vue"
+    "args_head": "npm install -D nodemon"
   },
   {
     "step": 7,
-    "tool": "run_command",
-    "args_head": "npm install -D esbuild-plugin-vue"
+    "tool": "write_file",
+    "args_head": "{\"content\": \"{\\n  \\\"name\\\": \\\"kanban-board\\\",\\n  \\\"version\\\": \\\"1.0.0\\\",\\n  \\\"description\\\": \\\"Real-"
   },
   {
     "step": 8,
     "tool": "run_command",
-    "args_head": "npm install -D @types/node"
+    "args_head": "npm install"
   },
   {
     "step": 9,
     "tool": "run_command",
-    "args_head": "npm install -D typescript @types/cors"
+    "args_head": "npm install express @electric-sql/pglite cors concurrently"
   },
   {
     "step": 10,
     "tool": "run_command",
-    "args_head": "npm install -D tailwindcss postcss autoprefixer"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 11,
     "tool": "run_command",
-    "args_head": "npx tailwindcss init -p"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 12,
     "tool": "run_command",
-    "args_head": "npx tailwindcss init -p"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 13,
     "tool": "run_command",
-    "args_head": "./node_modules/.bin/tailwindcss init -p"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 14,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep tailwind"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 15,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | head -20"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 16,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep postcss"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 17,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep vite"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 18,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 19,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 20,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 21,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 22,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 23,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 24,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 25,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 26,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 27,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 28,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 29,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 30,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 31,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 32,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 33,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 34,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 35,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 36,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 37,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 38,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   },
   {
     "step": 39,
     "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 40,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 41,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 42,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 43,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 44,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 45,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 46,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 47,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
-  },
-  {
-    "step": 48,
-    "tool": "run_command",
-    "args_head": "ls node_modules/.bin/ | grep css"
+    "args_head": "npm install express @electric-sql/pglite cors"
   }
 ]

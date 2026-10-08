@@ -1,84 +1,83 @@
-// Get DOM elements
-const messageList = document.getElementById('message-list');
+const messagesList = document.getElementById('messages-list');
 const messageForm = document.getElementById('message-form');
 const messageInput = document.getElementById('message-input');
 
-// Format timestamp as readable string
-function formatTime(timestamp) {
-  const date = new Date(timestamp);
-  return date.toLocaleString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    hour: 'numeric', 
-    minute: 'numeric' 
-  });
+// Format date as "YYYY-MM-DD HH:MM"
+function formatDate(date) {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).format(new Date(date));
 }
 
-// Render a single message
-function renderMessage(message) {
-  const messageElement = document.createElement('div');
-  messageElement.className = 'message';
+// Create a message element
+function createMessageElement(message) {
+  const messageEl = document.createElement('div');
+  messageEl.className = 'message';
   
-  const textElement = document.createElement('div');
-  textElement.className = 'message-text';
-  textElement.textContent = message.text;
+  const textEl = document.createElement('div');
+  textEl.className = 'message-text';
+  textEl.textContent = message.text;
   
-  const timeElement = document.createElement('div');
-  timeElement.className = 'message-time';
-  timeElement.textContent = formatTime(message.created_at);
+  const timeEl = document.createElement('div');
+  timeEl.className = 'message-time';
+  timeEl.textContent = formatDate(message.created_at);
   
-  messageElement.appendChild(textElement);
-  messageElement.appendChild(timeElement);
+  messageEl.appendChild(textEl);
+  messageEl.appendChild(timeEl);
   
-  messageList.prepend(messageElement); // Add to top of list
+  return messageEl;
 }
 
 // Fetch initial messages
-async function fetchInitialMessages() {
+async function fetchMessages() {
   try {
-    const response = await fetch('/api/messages');
+    const response = await fetch('http://localhost:3000/api/messages');
     const messages = await response.json();
     
-    // Clear message list and render all messages
-    messageList.innerHTML = '';
-    messages.forEach(renderMessage);
+    // Clear existing messages
+    messagesList.innerHTML = '';
+    
+    // Add messages in reverse order (newest first)
+    messages.forEach(message => {
+      messagesList.appendChild(createMessageElement(message));
+    });
   } catch (error) {
-    console.error('Failed to fetch initial messages:', error);
+    console.error('Error fetching messages:', error);
   }
 }
 
-// Set up SSE connection
-function setupSSE() {
-  const eventSource = new EventSource('/api/stream');
+// Connect to SSE stream
+function connectToSSE() {
+  const eventSource = new EventSource('http://localhost:3000/api/stream');
   
   eventSource.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data.type === 'newMessage') {
-        renderMessage(data.data);
-      }
-    } catch (error) {
-      console.error('Error processing SSE message:', error);
-    }
+    const message = JSON.parse(event.data);
+    messagesList.insertBefore(createMessageElement(message), messagesList.firstChild);
+    messagesList.scrollTop = 0; // Auto-scroll to top for new messages
   };
   
   eventSource.onerror = (error) => {
     console.error('SSE error:', error);
     eventSource.close();
-    // Try to reconnect after a short delay
-    setTimeout(setupSSE, 1000);
+    // Try to reconnect after 3 seconds
+    setTimeout(connectToSSE, 3000);
   };
 }
 
 // Handle form submission
-async function handleSubmit(event) {
-  event.preventDefault();
-  const text = messageInput.value.trim();
+messageForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
   
+  const text = messageInput.value.trim();
   if (!text) return;
   
   try {
-    await fetch('/api/messages', {
+    const response = await fetch('http://localhost:3000/api/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -86,18 +85,22 @@ async function handleSubmit(event) {
       body: JSON.stringify({ text }),
     });
     
-    messageInput.value = '';
+    if (response.ok) {
+      messageInput.value = '';
+    } else {
+      const errorData = await response.json();
+      console.error('Error posting message:', errorData.error);
+    }
   } catch (error) {
-    console.error('Failed to post message:', error);
+    console.error('Error posting message:', error);
   }
-}
+});
 
 // Initialize the app
 async function init() {
-  await fetchInitialMessages();
-  setupSSE();
-  messageForm.addEventListener('submit', handleSubmit);
+  await fetchMessages();
+  connectToSSE();
 }
 
-// Start the app when the DOM is loaded
+// Start the app when the DOM is ready
 document.addEventListener('DOMContentLoaded', init);

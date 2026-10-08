@@ -1,12 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-import { PGlite } from '@electric-sql/pglite';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const { PGlite } = require('@electric-sql/pglite');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = 3001;
@@ -14,33 +10,29 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
-const dbDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir);
+const DB_PATH = path.join(__dirname, 'pgdata');
+
+// Ensure DB directory exists (PGLite might handle it, but good to be sure)
+if (!fs.existsSync(DB_PATH)) {
+  fs.mkdirSync(DB_PATH);
 }
 
-const db = new PGlite(dbDir);
+let db;
+let clients = [];
 
-// Initialize database
 async function initDb() {
-  await db.exec(`
+  db = new PGlite(DB_PATH);
+  await db.query(`
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
       text TEXT NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
   `);
-  console.log('Database initialized');
+  console.log('PGLite initialized');
 }
 
-initDb().catch(err => {
-  console.error('Failed to initialize database', err);
-  process.exit(1);
-});
-
-// SSE clients
-let clients = [];
-
+// SSE setup
 app.get('/api/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -62,11 +54,13 @@ app.get('/api/stream', (req, res) => {
 });
 
 function broadcast(message) {
+  const data = JSON.stringify(message);
   clients.forEach(client => {
-    client.res.write(`data: ${JSON.stringify(message)}\n\n`);
+    client.res.write(`data: ${data}\n\n`);
   });
 }
 
+// API Endpoints
 app.get('/api/messages', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM messages ORDER BY created_at DESC');
@@ -89,7 +83,10 @@ app.post('/api/messages', async (req, res) => {
       [text]
     );
     const newMessage = result.rows[0];
+    
+    // Broadcast to all SSE clients
     broadcast(newMessage);
+
     res.status(201).json(newMessage);
   } catch (err) {
     console.error(err);
@@ -97,6 +94,14 @@ app.post('/api/messages', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Backend server running at http://localhost:${port}`);
+async function startServer() {
+  await initDb();
+  app.listen(port, () => {
+    console.log(`Backend listening at http://localhost:${port}`);
+  });
+}
+
+startServer().catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });

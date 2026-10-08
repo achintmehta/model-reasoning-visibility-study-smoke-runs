@@ -161,7 +161,25 @@ async function submitMessage(event) {
       throw new Error('Failed to post message');
     }
 
-    // Clear input and focus
+    const newMessage = await response.json();
+    
+    // Update last message ID
+    lastMessageId = newMessage.id;
+    
+    // Remove empty state if it exists
+    const emptyState = messagesContainer.querySelector('.empty-state');
+    if (emptyState) {
+      emptyState.remove();
+    }
+    
+    // Append new message
+    const messageEl = renderMessage(newMessage);
+    messagesContainer.appendChild(messageEl);
+    
+    // Scroll to bottom
+    messageEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    
+    // Clear input
     messageInput.value = '';
     messageInput.focus();
   } catch (error) {

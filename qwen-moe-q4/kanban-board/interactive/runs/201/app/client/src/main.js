@@ -1,15 +1,10 @@
 // Kanban Board Frontend
 
 const API_BASE = '/api';
-// For SSE, try to connect to the server directly if proxy fails
-const SSE_BASE = window.location.origin; // Will be proxied via /api/stream
 
 // State
 let boardState = []; // Array of { id, title, position, cards: [...] }
 let dragState = null; // { cardId, sourceColumnId, sourceIndex }
-
-// Track IDs of cards added via optimistic update to avoid SSE duplicates
-let optimisticIds = new Set();
 
 // DOM references
 const boardEl = document.getElementById('board');
@@ -45,90 +40,40 @@ async function moveCard(cardId, columnId, beforeId, afterId) {
 // ---- SSE Connection ----
 
 function connectSSE() {
-  const eventSource = new EventSource(SSE_BASE + '/api/stream');
+  const eventSource = new EventSource(`${API_BASE}/stream`);
 
   eventSource.addEventListener('board-sync', (e) => {
     const state = JSON.parse(e.data);
     boardState = state;
-    optimisticIds.clear();
     renderBoard();
   });
 
-  eventSource.addEventListener('card-created', (e) => {
-    const card = JSON.parse(e.data);
-
-    // Skip if this was our own optimistic update
-    if (optimisticIds.has(card.id)) {
-      optimisticIds.delete(card.id);
-      return;
-    }
-
-    // Skip if card already exists
-    const exists = boardState.some(col => col.cards.some(c => c.id === card.id));
-    if (exists) return;
-
-    const column = boardState.find(c => c.id === card.column_id);
-    if (column) {
-      let inserted = false;
-      for (let i = 0; i < column.cards.length; i++) {
-        if (card.position < column.cards[i].position) {
-          column.cards.splice(i, 0, card);
-          inserted = true;
-          break;
-        }
-      }
-      if (!inserted) {
-        column.cards.push(card);
-      }
-      renderBoard();
-    }
+  eventSource.addEventListener('card-created', async (e) => {
+    await reSyncBoard();
   });
 
-  eventSource.addEventListener('card-moved', (e) => {
-    const card = JSON.parse(e.data);
-    let movedCard = null;
-    for (const col of boardState) {
-      const idx = col.cards.findIndex(c => c.id === card.id);
-      if (idx !== -1) {
-        movedCard = col.cards.splice(idx, 1)[0];
-        break;
-      }
-    }
-    if (movedCard) {
-      movedCard.column_id = card.column_id;
-      movedCard.position = card.position;
-      const targetCol = boardState.find(c => c.id === card.column_id);
-      if (targetCol) {
-        let inserted = false;
-        for (let i = 0; i < targetCol.cards.length; i++) {
-          if (card.position < targetCol.cards[i].position) {
-            targetCol.cards.splice(i, 0, movedCard);
-            inserted = true;
-            break;
-          }
-        }
-        if (!inserted) {
-          targetCol.cards.push(movedCard);
-        }
-        renderBoard();
-      }
-    }
+  eventSource.addEventListener('card-moved', async (e) => {
+    await reSyncBoard();
   });
 
-  eventSource.addEventListener('column-renormalized', (e) => {
-    const { columnId, cards } = JSON.parse(e.data);
-    const column = boardState.find(c => c.id === columnId);
-    if (column) {
-      column.cards = cards;
-      renderBoard();
-    }
+  eventSource.addEventListener('column-renormalized', async (e) => {
+    await reSyncBoard();
   });
 
   eventSource.onerror = (e) => {
-    console.error('SSE error:', e);
+    console.error('SSE error, reconnecting...', e);
   };
 
   return eventSource;
+}
+
+async function reSyncBoard() {
+  try {
+    boardState = await fetchBoard();
+    renderBoard();
+  } catch (err) {
+    console.error('Failed to re-sync board:', err);
+  }
 }
 
 // ---- Rendering ----
@@ -136,6 +81,7 @@ function connectSSE() {
 function renderBoard() {
   boardEl.innerHTML = '';
 
+  // Sort columns by position
   const sortedColumns = [...boardState].sort((a, b) => a.position - b.position);
 
   for (const column of sortedColumns) {
@@ -143,15 +89,18 @@ function renderBoard() {
     columnEl.className = 'column';
     columnEl.dataset.columnId = column.id;
 
+    // Header
     const headerEl = document.createElement('div');
     headerEl.className = 'column-header';
     headerEl.textContent = column.title;
     columnEl.appendChild(headerEl);
 
+    // Card list
     const cardListEl = document.createElement('div');
     cardListEl.className = 'card-list';
     cardListEl.dataset.columnId = column.id;
 
+    // Sort cards by position
     const sortedCards = [...column.cards].sort((a, b) => a.position - b.position);
 
     for (const card of sortedCards) {
@@ -161,12 +110,14 @@ function renderBoard() {
 
     columnEl.appendChild(cardListEl);
 
+    // Add card form
     const formEl = createAddCardForm(column.id);
     columnEl.appendChild(formEl);
 
-    // Column drop zone
+    // Drop zone events on column (only when dropping on the card-list area or empty column area)
     columnEl.addEventListener('dragover', (e) => {
       e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
       columnEl.classList.add('drag-over-column');
     });
 
@@ -185,19 +136,49 @@ function renderBoard() {
       const { cardId, sourceColumnId, sourceIndex } = dragState;
       const targetColumnId = columnEl.dataset.columnId;
 
-      // Find drop position relative to cards in target column
-      const cardElements = cardListEl.querySelectorAll('.card:not(.dragging)');
+      // Determine the drop target - if we dropped on a card, find the before/after position
+      // If we dropped on the card-list area (not on a card), determine position relative to cards
+      const cardElements = Array.from(cardListEl.querySelectorAll('.card:not(.dragging)'));
       let beforeId = null;
       let afterId = null;
 
+      // Find which card (if any) we're dropping over
+      let droppedOnCard = false;
       for (const cardEl of cardElements) {
         const rect = cardEl.getBoundingClientRect();
-        const midY = rect.top + rect.height / 2;
-        if (e.clientY < midY) {
-          beforeId = cardEl.dataset.cardId;
+        if (
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        ) {
+          droppedOnCard = true;
+          // Determine if we're dropping above or below the midpoint
+          const midY = rect.top + rect.height / 2;
+          if (e.clientY < midY) {
+            beforeId = cardEl.dataset.cardId;
+          } else {
+            afterId = cardEl.dataset.cardId;
+          }
           break;
         }
-        afterId = cardEl.dataset.cardId;
+      }
+
+      // If dropped on the card-list area but not on a specific card
+      if (!droppedOnCard) {
+        const cardListRect = cardListEl.getBoundingClientRect();
+        if (
+          e.clientX >= cardListRect.left &&
+          e.clientX <= cardListRect.right &&
+          e.clientY >= cardListRect.top &&
+          e.clientY <= cardListRect.bottom
+        ) {
+          // Drop at the end of the column
+          // Find the last card
+          if (cardElements.length > 0) {
+            afterId = cardElements[cardElements.length - 1].dataset.cardId;
+          }
+        }
       }
 
       // Optimistic update
@@ -230,17 +211,20 @@ function createCardElement(card) {
     };
     cardEl.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', card.id);
   });
 
   cardEl.addEventListener('dragend', () => {
     cardEl.classList.remove('dragging');
-    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    // Clean up all drag-over classes
+    document.querySelectorAll('.drag-over').forEach((el) => el.classList.remove('drag-over'));
   });
 
   cardEl.addEventListener('dragover', (e) => {
     e.preventDefault();
-    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
+
+    // Add visual indicator
     cardEl.classList.add('drag-over');
   });
 
@@ -269,8 +253,8 @@ function createAddCardForm(columnId) {
     if (!text) return;
 
     createCard(columnId, text).then((card) => {
-      optimisticIds.add(card.id);
-      const column = boardState.find(c => c.id === columnId);
+      // Optimistic update
+      const column = boardState.find((c) => c.id === columnId);
       if (column) {
         column.cards.push(card);
         renderBoard();
@@ -298,14 +282,16 @@ function createAddCardForm(columnId) {
 
 // Optimistic move: update local state immediately, then reconcile from SSE
 function optimisticMove(cardId, sourceColumnId, sourceIndex, targetColumnId, beforeId, afterId) {
+  // Find the card in current state
   let movedCard = null;
   let sourceCol = null;
 
   for (const col of boardState) {
-    const idx = col.cards.findIndex(c => c.id === cardId);
+    const idx = col.cards.findIndex((c) => c.id === cardId);
     if (idx !== -1) {
       movedCard = col.cards[idx];
       sourceCol = col;
+      // Remove from source
       col.cards.splice(idx, 1);
       break;
     }
@@ -313,16 +299,17 @@ function optimisticMove(cardId, sourceColumnId, sourceIndex, targetColumnId, bef
 
   if (!movedCard) return;
 
-  const targetCol = boardState.find(c => c.id === targetColumnId);
+  // Insert at correct position in target column
+  const targetCol = boardState.find((c) => c.id === targetColumnId);
   if (!targetCol) return;
 
   // Calculate optimistic position
   let optimisticPosition;
   if (beforeId) {
-    const beforeCard = targetCol.cards.find(c => c.id === beforeId);
+    const beforeCard = targetCol.cards.find((c) => c.id === beforeId);
     optimisticPosition = beforeCard ? beforeCard.position - 1 : 1;
   } else if (afterId) {
-    const afterCard = targetCol.cards.find(c => c.id === afterId);
+    const afterCard = targetCol.cards.find((c) => c.id === afterId);
     optimisticPosition = afterCard ? afterCard.position + 1 : 1;
   } else {
     const maxPos = targetCol.cards.reduce((max, c) => Math.max(max, c.position), 0);
@@ -334,6 +321,7 @@ function optimisticMove(cardId, sourceColumnId, sourceIndex, targetColumnId, bef
   movedCard.position = optimisticPosition;
   movedCard.column_id = targetColumnId;
 
+  // Insert at correct position
   let inserted = false;
   for (let i = 0; i < targetCol.cards.length; i++) {
     if (optimisticPosition < targetCol.cards[i].position) {
@@ -349,12 +337,28 @@ function optimisticMove(cardId, sourceColumnId, sourceIndex, targetColumnId, bef
   renderBoard();
 }
 
-// ---- Init ----
+// ---- Init with retry ----
 
 async function init() {
-  boardState = await fetchBoard();
-  renderBoard();
-  connectSSE();
+  let retries = 0;
+  const maxRetries = 10;
+
+  while (retries < maxRetries) {
+    try {
+      boardState = await fetchBoard();
+      renderBoard();
+      connectSSE();
+      return;
+    } catch (err) {
+      retries++;
+      if (retries >= maxRetries) {
+        console.error('Failed to connect to server after retries:', err);
+        return;
+      }
+      console.log(`Retrying connection to server... (${retries}/${maxRetries})`);
+      await new Promise(resolve => setTimeout(resolve, 500 * retries));
+    }
+  }
 }
 
 init();

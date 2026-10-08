@@ -1,16 +1,13 @@
 import { defineConfig } from 'vite';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-    },
-  },
+  root: __dirname,
   build: {
-    outDir: '../dist',
+    outDir: path.join(__dirname, '../dist'),
   },
 });

@@ -79,12 +79,8 @@ function createCardElement(card) {
   cardEl.dataset.cardId = card.id;
 
   // Determine which column this card belongs to
-  for (const col of boardState) {
-    if (col.cards.some(c => c.id === card.id)) {
-      cardEl.dataset.columnId = col.id;
-      break;
-    }
-  }
+  const colId = findColumnForCard(card.id);
+  cardEl.dataset.columnId = colId || '';
 
   const textEl = document.createElement('div');
   textEl.className = 'card-text';
@@ -97,6 +93,15 @@ function createCardElement(card) {
   cardEl.addEventListener('dragend', handleDragEnd);
 
   return cardEl;
+}
+
+function findColumnForCard(cardId) {
+  for (const col of boardState) {
+    if (col.cards.some(c => c.id === cardId)) {
+      return col.id;
+    }
+  }
+  return null;
 }
 
 // ─── Drag and Drop Handlers ────────────────────────────────────
@@ -218,11 +223,10 @@ async function moveCard(cardId, columnId, beforeId, afterId) {
     }
 
     const canonicalCard = await res.json();
-    // Re-render the entire board to ensure consistency with server state
-    renderBoard();
+    reconcileWithServer(cardId, canonicalCard);
   } catch (err) {
     console.error('Move error:', err);
-    // Revert optimistic update on failure by re-loading from server
+    // Revert optimistic update on failure
     loadBoard();
   }
 }
@@ -257,28 +261,51 @@ function optimisticAddCard(columnId, card) {
   // Update state
   column.cards.push(card);
 
-  // Render the new card at the end of the column's cards list
+  // Render the new card
   const cardsListEl = document.querySelector(`.cards-list[data-column-id="${columnId}"]`);
   if (cardsListEl) {
-    const sortedCards = [...column.cards].sort((a, b) => a.position - b.position);
-    // Find where to insert the new card
-    let inserted = false;
-    for (const c of sortedCards) {
-      if (c.id === card.id) {
-        // Insert after the last existing card (optimistic: at end)
-        cardsListEl.appendChild(createCardElement(c));
-        cardElements.set(c.id, cardsListEl.lastChild);
-        inserted = true;
-        break;
-      }
-    }
-    if (!inserted) {
-      // Card not in sorted list yet (shouldn't happen but safety)
-      const cardEl = createCardElement(card);
-      cardsListEl.appendChild(cardEl);
-      cardElements.set(card.id, cardEl);
+    const cardEl = createCardElement(card);
+    cardsListEl.appendChild(cardEl);
+    cardElements.set(card.id, cardEl);
+  }
+}
+
+// ─── Reconciliation ────────────────────────────────────────────
+function reconcileWithServer(cardId, canonicalCard) {
+  // Update the card in our state
+  let found = false;
+  for (const col of boardState) {
+    const idx = col.cards.findIndex(c => c.id === cardId);
+    if (idx !== -1) {
+      col.cards[idx] = { ...col.cards[idx], position: canonicalCard.position };
+      found = true;
+      break;
     }
   }
+
+  // If the card was moved to a new column, add it there
+  if (!found) {
+    let targetCol = boardState.find(c => c.id === canonicalCard.columnId);
+    if (!targetCol) {
+      // Column not found in state - shouldn't happen but handle gracefully
+      return;
+    }
+    targetCol.cards.push({ id: cardId, position: canonicalCard.position });
+  }
+
+  // Sort each column by position
+  for (const col of boardState) {
+    col.cards.sort((a, b) => a.position - b.position);
+  }
+
+  // Re-render the entire board to ensure consistency
+  renderBoard();
+}
+
+function reconcileFullBoard(newBoardState) {
+  boardState = newBoardState;
+  cardElements.clear();
+  renderBoard();
 }
 
 // ─── SSE Connection ────────────────────────────────────────────
@@ -293,34 +320,16 @@ function connectSSE() {
 
   eventSource.addEventListener('board-initial', (e) => {
     const data = JSON.parse(e.data);
-    boardState = data;
-    cardElements.clear();
-    renderBoard();
+    reconcileFullBoard(data);
   });
 
   eventSource.addEventListener('card-created', (e) => {
     const card = JSON.parse(e.data);
-    // Find the column and add the card
+    // Add to state
     const column = boardState.find(c => c.id === card.columnId);
     if (column) {
-      // Check if card already exists (from optimistic update)
-      let existingIdx = -1;
-      for (let i = 0; i < column.cards.length; i++) {
-        if (column.cards[i].id === card.id) {
-          existingIdx = i;
-          break;
-        }
-      }
-
-      if (existingIdx !== -1) {
-        // Update the existing card's position
-        column.cards[existingIdx] = { ...column.cards[existingIdx], position: card.position };
-      } else {
-        // Add new card
-        column.cards.push(card);
-      }
-
-      // Sort by position and re-render
+      column.cards.push(card);
+      // Sort by position
       column.cards.sort((a, b) => a.position - b.position);
       renderBoard();
     }
@@ -328,49 +337,21 @@ function connectSSE() {
 
   eventSource.addEventListener('card-moved', (e) => {
     const card = JSON.parse(e.data);
-
-    // Find the card in our state and update its position/column
-    let foundInSourceCol = false;
-    let foundInTargetCol = false;
-
-    for (const col of boardState) {
-      const idx = col.cards.findIndex(c => c.id === card.id);
-      if (idx !== -1) {
-        // Remove from source column
-        col.cards.splice(idx, 1);
-        foundInSourceCol = true;
-      }
-    }
-
-    // Add to target column
-    const targetCol = boardState.find(c => c.id === card.columnId);
-    if (targetCol) {
-      targetCol.cards.push(card);
-      foundInTargetCol = true;
-    }
-
-    // Sort all columns by position and re-render
-    for (const col of boardState) {
-      col.cards.sort((a, b) => a.position - b.position);
-    }
-    renderBoard();
+    reconcileWithServer(card.id, card);
   });
 
   eventSource.addEventListener('column-renormalized', (e) => {
     const data = JSON.parse(e.data);
-    // Update the column's cards in state with new positions
+    // Update the column's cards in state
     const column = boardState.find(c => c.id === data.columnId);
     if (column && data.cards) {
       for (const card of data.cards) {
         const existing = column.cards.find(c => c.id === card.id);
         if (existing) {
           existing.position = card.position;
-        } else {
-          // Card might have been added/removed, rebuild the list
-          column.cards.push({ ...card });
         }
       }
-      // Sort by position and re-render
+      // Sort by position
       column.cards.sort((a, b) => a.position - b.position);
       renderBoard();
     }

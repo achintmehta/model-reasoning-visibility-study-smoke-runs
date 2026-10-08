@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import * as PGLiteModule from '@electric-sql/pglite';
-const { PGlite } = PGLiteModule;
+import { pglite } from '@electric-sql/pglite';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,7 +12,7 @@ app.use(express.static('public'));
 
 // Initialize PGLite database
 const dbDir = './data';
-const pg = new PGLite({ location: dbDir });
+const pg = new PGlite({ location: dbDir });
 
 // Initialize database
 async function initDatabase() {
