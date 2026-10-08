@@ -1,0 +1,19 @@
+npm notice run realtime-message-board@1.0.0 dev
+npm notice run concurrently "npm run dev:server" "npm run dev:client"
+[0] npm notice run realtime-message-board@1.0.0 dev:server
+[0] npm notice run node --watch backend/server.js
+[1] npm notice run realtime-message-board@1.0.0 dev:client
+[1] npm notice run cd frontend && npm run dev
+[1] npm error Missing script: "dev"
+[1] npm error
+[1] npm error To see a list of scripts, run:
+[1] npm error   npm run
+[1] npm error A complete log of this run can be found in: /home/achintmehta/.npm/_logs/2026-10-07T18_45_23_814Z-debug-0.log
+[1] npm run dev:client exited with code 1
+[0] Database initialized successfully
+[0] Server running on http://localhost:3001
+[0] API endpoint: http://localhost:3001/api/messages
+[0] SSE endpoint: http://localhost:3001/api/stream
+[0] Message inserted: Hello, World!
+[0] Client disconnected from SSE
+[0] npm run dev:server exited with code SIGTERM

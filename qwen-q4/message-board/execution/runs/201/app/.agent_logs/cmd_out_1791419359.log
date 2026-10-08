@@ -1,0 +1,17 @@
+npm notice run message-board@1.0.0 dev
+npm notice run concurrently "npm run dev:server" "npm run dev:client"
+[0] npm notice run message-board@1.0.0 dev:server
+[0] npm notice run node server/index.js
+[1] npm notice run message-board@1.0.0 dev:client
+[1] npm notice run cd client && npx vite --host
+[1] npm warn install-scripts .npmrc allow-scripts setting is being ignored because --allow-scripts was passed on the command line
+[1] npm notice run message-board-client@1.0.0 npx
+[1] npm notice run 'vite' --host
+[1] 
+[1]   VITE v8.3.0  ready in 119 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: http://10.255.255.254:5173/  lo
+[1]   ➜  Network: http://172.25.255.211:5173/  eth0
+[0] PGLite database initialized successfully
+[0] Server running on http://localhost:3001

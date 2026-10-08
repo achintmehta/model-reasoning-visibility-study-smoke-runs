@@ -1,0 +1,1 @@
+{\n  "name": "realtime-board-frontend",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "vite",\n    "build": "vite build"\n  },\n  "dependencies": {},\n  "devDependencies": {\n    "vite": "^5.0.0"\n  }\n}\n

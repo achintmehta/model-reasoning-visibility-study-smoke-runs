@@ -1,0 +1,17 @@
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0: connected
+
+100     13   0     13   0      0     10      0           00:01             10100     13   0     13   0      0      5      0           00:02              5100     13   0     13   0      0      4      0           00:03              4: keep-alive
+
+100     27   0     27   0      0      5      0           00:05              5event: card-created
+ data: {"card":{"id":166,"column_id":1,"text":"curl sse test","position":"19000","created_at":"2026-10-08T02:57:27.472Z"},"columnId":1}
+
+100    184   0    184   0      0     30      0           00:06             30100    184   0    184   0      0     25      0           00:07             28: keep-alive
+
+100    198   0    198   0      0     21      0           00:09             27100    198   0    198   0      0     19      0           00:10             27100    198   0    198   0      0     17      0           00:11             28: keep-alive
+
+100    212   0    212   0      0     16      0           00:13              4100    212   0    212   0      0     15      0           00:14              4100    212   0    212   0      0     14      0           00:15              2: keep-alive
+
+100    226   0    226   0      0     13      0           00:17              4
+curl: (18) transfer closed with outstanding read data remaining

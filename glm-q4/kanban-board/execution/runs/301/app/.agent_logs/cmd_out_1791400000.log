@@ -1,0 +1,56 @@
+Starting server...
+Creating tables...
+Tables created
+Checking for existing columns...
+Column count: 3
+Column count type: number
+Columns already exist, skipping seed
+Database initialized
+Server running on http://localhost:3001
+Column range for todo : { min_pos: 0, max_pos: 0 }
+Column range for inprogress : { min_pos: null, max_pos: null }
+Column range for todo : { min_pos: 0, max_pos: 1 }
+Error moving card: error: there is no parameter $1
+    at pe.Ue (file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:17959)
+    at pe.tt (file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:15347)
+    at pe.parse (file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-2BOC2OMW.js:1:14021)
+    at N.qe (file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:5:1762)
+    at file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:5:1155
+    at wasm://wasm/0267bb86:wasm-function[10930]:0x5a5ccf
+    at wasm://wasm/0267bb86:wasm-function[3585]:0x27eaeb
+    at wasm://wasm/0267bb86:wasm-function[3627]:0x2869d1
+    at wasm://wasm/0267bb86:wasm-function[3637]:0x286c2d
+    at wasm://wasm/0267bb86:wasm-function[9914]:0x54fd4d {
+  length: 95,
+  severity: 'ERROR',
+  code: '42P02',
+  detail: undefined,
+  hint: undefined,
+  position: '137',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_expr.c',
+  line: '902',
+  routine: 'transformParamRef',
+  query: '\n' +
+    '      BEGIN;\n' +
+    '      \n' +
+    '      -- Remove card from old column\n' +
+    '      UPDATE cards \n' +
+    '      SET column_id = $2, position = $3 \n' +
+    '      WHERE id = $1;\n' +
+    '      \n' +
+    '      -- Renormalize if we changed columns or need to fix positions\n' +
+    "      -- Note: We'll handle renormalization in the update by checking if positions need fixing\n" +
+    '      \n' +
+    '      COMMIT;\n' +
+    '    ',
+  params: undefined,
+  queryOptions: [ 'card_1791400014703_wnupclqua', 'inprogress', NaN ]
+}

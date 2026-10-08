@@ -1,0 +1,12 @@
+npm notice run kanban-frontend@0.0.0 dev
+npm notice run vite --port 5173
+
+  VITE v5.4.21  ready in 96 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+4:49:23 PM [vite] page reload src/main.js
+4:52:07 PM [vite] page reload src/main.js
+4:52:37 PM [vite] page reload src/main.js
+4:55:17 PM [vite] page reload src/main.js
+4:56:29 PM [vite] page reload test-sse.html

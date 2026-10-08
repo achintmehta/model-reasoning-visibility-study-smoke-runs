@@ -1,0 +1,17 @@
+npm notice run realtime-message-board@1.0.0 dev
+npm notice run concurrently "cd backend && npm run dev" "cd frontend && npm run dev"
+[1] npm notice run realtime-message-board-frontend@1.0.0 dev
+[1] npm notice run vite
+[0] npm notice run realtime-message-board-backend@1.0.0 dev
+[0] npm notice run node server.js
+[0] No existing messages found, starting fresh
+[0] Server running on port 3000
+[0] Backend API available at http://localhost:3000/api
+[1] 
+[1]   VITE v5.4.21  ready in 108 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] New SSE client connected (total: 1)
+[0] cd backend && npm run dev exited with code SIGTERM
+[1] cd frontend && npm run dev exited with code SIGTERM

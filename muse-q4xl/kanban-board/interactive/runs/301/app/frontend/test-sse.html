@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>SSE Test</title></head>
+<body>
+<h1>SSE Test</h1>
+<div id="log"></div>
+<script>
+const log = document.getElementById('log');
+const es = new EventSource('http://localhost:3000/api/stream');
+es.onopen = () => log.innerHTML += 'open<br>';
+es.onerror = (e) => log.innerHTML += 'error<br>';
+es.addEventListener('card-created', (e) => log.innerHTML += 'card-created: ' + e.data + '<br>');
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+npm notice run dev
+npm notice run concurrently "npm run dev --workspace=backend" "npm run dev --workspace=frontend"
+[0] npm notice run backend@1.0.0 dev
+[0] npm notice run node server.js
+[1] npm notice run frontend@1.0.0 dev
+[1] npm notice run vite
+[1] 
+[1]   VITE v5.4.21  ready in 96 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] Backend listening on http://localhost:3000

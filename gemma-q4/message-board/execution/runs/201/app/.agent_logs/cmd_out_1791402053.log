@@ -1,0 +1,26 @@
+
+added 11 packages, and audited 12 packages in 2s
+
+3 packages are looking for funding
+  run `npm fund` for details
+
+3 vulnerabilities (1 moderate, 2 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm warn install-scripts 1 package had install scripts blocked because they are not covered by allowScripts:
+npm warn install-scripts   esbuild@0.21.5 (postinstall: node install.js)
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+npm notice run message-board-frontend@0.0.0 dev
+npm notice run vite
+
+  VITE v5.4.21  ready in 90 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose

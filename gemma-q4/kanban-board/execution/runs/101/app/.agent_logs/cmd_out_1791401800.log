@@ -1,0 +1,35 @@
+npm notice run kanban-board@0.1.0 dev
+npm notice run concurrently "npm run dev:backend" "npm run dev:frontend"
+[0] npm notice run kanban-board@0.1.0 dev:backend
+[0] npm notice run cd backend && npm run dev
+[1] npm notice run kanban-board@0.1.0 dev:frontend
+[1] npm notice run cd frontend && npm run dev
+[0] npm notice run kanban-backend@1.0.0 dev
+[0] npm notice run node index.js
+[1] npm notice run frontend@1.0.0 dev
+[1] npm notice run vite
+[0] node:fs:1410
+[0]   const result = binding.mkdir(
+[0]                          ^
+[0] 
+[0] Error: ENOENT: no such file or directory, mkdir '/tmp/runs/smokes/gemma-q4/kanban-board/execution/runs/101/app/backend/backend/pgdata'
+[0]     at Module.mkdirSync (node:fs:1410:26)
+[0]     at new m (file:///tmp/runs/smokes/gemma-q4/kanban-board/execution/runs/101/app/backend/node_modules/@electric-sql/pglite/dist/fs/nodefs.js:1:248)
+[0]     at file:///tmp/runs/smokes/gemma-q4/kanban-board/execution/runs/101/app/backend/index.js:16:7
+[0]     at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+[0]     at async node:internal/modules/esm/loader:647:26
+[0]     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+[0]   errno: -2,
+[0]   code: 'ENOENT',
+[0]   syscall: 'mkdir',
+[0]   path: '/tmp/runs/smokes/gemma-q4/kanban-board/execution/runs/101/app/backend/backend/pgdata'
+[0] }
+[0] 
+[0] Node.js v24.21.0
+[0] npm run dev:backend exited with code 1
+[1] 
+[1]   VITE v8.3.0  ready in 99 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] npm run dev:frontend exited with code SIGTERM

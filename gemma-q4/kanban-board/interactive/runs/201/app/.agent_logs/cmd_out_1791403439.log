@@ -1,0 +1,39 @@
+npm notice run dev
+npm notice run concurrently "npm run dev:backend" "npm run dev:frontend"
+[1] npm notice run dev:frontend
+[1] npm notice run npm run dev --workspace=frontend
+[0] npm notice run dev:backend
+[0] npm notice run npm run dev --workspace=backend
+[1] npm notice run frontend@0.0.0 dev
+[1] npm notice run vite
+[0] npm notice run backend@1.0.0 dev
+[0] npm notice run node index.js
+[0] /tmp/runs/smokes/gemma-q4/kanban-board/interactive/runs/201/app/backend/index.js:13
+[0] const db = new PGLite({
+[0]            ^
+[0] 
+[0] TypeError: PGLite is not a constructor
+[0]     at Object.<anonymous> (/tmp/runs/smokes/gemma-q4/kanban-board/interactive/runs/201/app/backend/index.js:13:12)
+[0]     at Module._compile (node:internal/modules/cjs/loader:1929:14)
+[0]     at Object..js (node:internal/modules/cjs/loader:2060:10)
+[0]     at Module.load (node:internal/modules/cjs/loader:1651:32)
+[0]     at Module._load (node:internal/modules/cjs/loader:1443:12)
+[0]     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+[0]     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+[0]     at node:internal/main/run_main_module:33:47
+[0] 
+[0] Node.js v24.21.0
+[0] npm error Lifecycle script `dev` failed with error:
+[0] npm error code 1
+[0] npm error path /tmp/runs/smokes/gemma-q4/kanban-board/interactive/runs/201/app/backend
+[0] npm error workspace backend@1.0.0
+[0] npm error location /tmp/runs/smokes/gemma-q4/kanban-board/interactive/runs/201/app/backend
+[0] npm error command failed
+[0] npm error command sh -c node index.js
+[0] npm run dev:backend exited with code 1
+[1] 
+[1]   VITE v8.3.0  ready in 98 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] npm run dev:frontend exited with code SIGTERM

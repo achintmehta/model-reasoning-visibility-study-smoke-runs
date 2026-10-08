@@ -1,0 +1,15 @@
+[eval]:1
+const {PGlite}=require('@electric-sql/pglite'); const db=new PGlite('./backend/data'); db.init().then(()=>db.query('SELECT COALESCE(MAX(position),0) as maxPos FROM cards WHERE column_id=1')).then(r=>console.log(r))
+                                                                                          ^
+
+TypeError: db.init is not a function
+    at [eval]:1:91
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3
+
+Node.js v24.21.0

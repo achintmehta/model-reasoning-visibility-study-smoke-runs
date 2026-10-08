@@ -1,0 +1,15 @@
+npm notice run kanban-frontend@1.0.0 dev
+npm notice run vite
+failed to load config from /tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/frontend/vite.config.js
+error when starting dev server:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/frontend/vite.config.js.timestamp-1791400660008-90b7c97c5f39b8.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)

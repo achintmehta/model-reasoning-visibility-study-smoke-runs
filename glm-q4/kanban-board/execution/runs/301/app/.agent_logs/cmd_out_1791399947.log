@@ -1,0 +1,7 @@
+npm notice run kanban-board@1.0.0 dev:frontend
+npm notice run vite
+
+  VITE v5.4.21  ready in 102 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose

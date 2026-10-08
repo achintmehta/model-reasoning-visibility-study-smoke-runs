@@ -1,0 +1,38 @@
+Initializing database...
+Database initialized successfully
+Server running on http://localhost:3001
+Error creating card: error: there is no parameter $1
+    at ye.Ve (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/chunk-3WWIVTCY.js:1:17616)
+    at ye.nt (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/chunk-3WWIVTCY.js:1:15003)
+    at ye.parse (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/chunk-3WWIVTCY.js:1:13755)
+    at file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:224748
+    at wasm://wasm/021d3ac6:wasm-function[3717]:0x27f7ed
+    at wasm://wasm/021d3ac6:wasm-function[3727]:0x27fb64
+    at wasm://wasm/021d3ac6:wasm-function[9511]:0x50b432
+    at wasm://wasm/021d3ac6:wasm-function[175]:0x5ad13
+    at invoke_v (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:209340)
+    at wasm://wasm/021d3ac6:wasm-function[178]:0x5b558 {
+  length: 94,
+  severity: 'ERROR',
+  code: '42P02',
+  detail: undefined,
+  hint: undefined,
+  position: '72',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_expr.c',
+  line: '903',
+  routine: 'transformParamRef',
+  query: '\n' +
+    '      INSERT INTO cards (id, column_id, text, position)\n' +
+    '      VALUES ($1, $2, $3, $4)\n' +
+    '    ',
+  params: undefined,
+  queryOptions: [ 'card-1791400470897-yqfi2py8d', 'todo', 'Test card', 0 ]
+}

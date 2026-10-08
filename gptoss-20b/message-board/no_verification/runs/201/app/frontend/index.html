@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtime Board</title>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 0; padding: 1rem;}
+    #messages {max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem;}
+    .message {margin-bottom: 0.5rem;}
+    .message span {color: #777; font-size: 0.8rem;}
+    form {display: flex; margin-top: 1rem;}
+    input[type=text] {flex: 1; padding: 0.5rem; font-size: 1rem;}
+    button {padding: 0.5rem 1rem; font-size: 1rem;}
+  </style>
+</head>
+<body>
+  <h1>Realtime Message Board</h1>
+  <div id="messages"></div>
+  <form id="postForm">
+    <input type="text" id="msgInput" placeholder="Type a message" required autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="/scripts.js"></script>
+</body>
+</html>

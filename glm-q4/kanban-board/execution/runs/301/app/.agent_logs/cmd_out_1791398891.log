@@ -1,0 +1,57 @@
+npm notice run kanban-board@1.0.0 dev:backend
+npm notice run node --watch backend/server.js
+file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js:3
+import { PGLite } from '@electric-sql/pglite';
+         ^^^^^^
+SyntaxError: The requested module '@electric-sql/pglite' does not provide an export named 'PGLite'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0
+Failed running 'backend/server.js'. Waiting for file changes before restarting...
+Change detected in '/tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js'
+Restarting 'backend/server.js'
+file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js:3
+import PGLite from '@electric-sql/pglite';
+       ^^^^^^
+SyntaxError: The requested module '@electric-sql/pglite' does not provide an export named 'default'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0
+Failed running 'backend/server.js'. Waiting for file changes before restarting...
+Change detected in '/tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js'
+Restarting 'backend/server.js'
+file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js:3
+import { PGLite } from '@electric-sql/pglite';
+         ^^^^^^
+SyntaxError: The requested module '@electric-sql/pglite' does not provide an export named 'PGLite'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0
+Failed running 'backend/server.js'. Waiting for file changes before restarting...
+Change detected in '/tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js'
+Restarting 'backend/server.js'
+file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js:14
+const pg = new PGLite({ dataDir });
+           ^
+
+ReferenceError: PGLite is not defined
+    at file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.js:14:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0
+Failed running 'backend/server.js'. Waiting for file changes before restarting...

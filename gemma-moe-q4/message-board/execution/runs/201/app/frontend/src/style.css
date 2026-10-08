@@ -1,0 +1,81 @@
+#app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+#messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 8px;
+  min-height: 300px;
+  max-height: 60vh;
+}
+
+#messages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#messages-list li {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+#messages-list li:last-child {
+  border-bottom: none;
+}
+
+.message-text {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.message-date {
+  font-size: 0.8em;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+#message-form {
+  display: flex;
+  gap: 10px;
+}
+
+#message-input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 0.9;
+}

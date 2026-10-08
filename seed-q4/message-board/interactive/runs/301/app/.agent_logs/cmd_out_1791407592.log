@@ -1,0 +1,59 @@
+npm notice run realtime-message-board@1.0.0 dev
+npm notice run concurrently "cd backend && npm run dev" "cd frontend && npm run dev"
+[0] npm notice run realtime-message-board-backend@1.0.0 dev
+[0] npm notice run node server.js
+[1] npm notice run realtime-message-board-frontend@1.0.0 dev
+[1] npm notice run vite
+[0] /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/bindings/bindings.js:135
+[0]   throw err;
+[0]   ^
+[0] 
+[0] Error: Could not locate the bindings file. Tried:
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/Debug/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/Release/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/out/Debug/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/Debug/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/out/Release/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/Release/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/default/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/compiled/24.21.0/linux/x64/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/release/install-root/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/debug/install-root/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/default/install-root/node_sqlite3.node
+[0]  → /tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/lib/binding/node-v137-linux-x64/node_sqlite3.node
+[0]     at bindings (/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/bindings/bindings.js:126:9)
+[0]     at Object.<anonymous> (/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/lib/sqlite3-binding.js:1:37)
+[0]     at Module._compile (node:internal/modules/cjs/loader:1929:14)
+[0]     at Object..js (node:internal/modules/cjs/loader:2060:10)
+[0]     at Module.load (node:internal/modules/cjs/loader:1651:32)
+[0]     at Module._load (node:internal/modules/cjs/loader:1443:12)
+[0]     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+[0]     at Module.require (node:internal/modules/cjs/loader:1674:12)
+[0]     at require (node:internal/modules/helpers:157:16)
+[0]     at Object.<anonymous> (/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/lib/sqlite3.js:2:17) {
+[0]   tries: [
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/Debug/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/Release/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/out/Debug/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/Debug/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/out/Release/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/Release/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/build/default/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/compiled/24.21.0/linux/x64/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/release/install-root/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/debug/install-root/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/addon-build/default/install-root/node_sqlite3.node',
+[0]     '/tmp/runs/smokes/seed-q4/message-board/interactive/runs/301/app/backend/node_modules/sqlite3/lib/binding/node-v137-linux-x64/node_sqlite3.node'
+[0]   ]
+[0] }
+[0] 
+[0] Node.js v24.21.0
+[0] cd backend && npm run dev exited with code 1
+[1] 
+[1]   VITE v5.4.21  ready in 101 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] cd frontend && npm run dev exited with code SIGTERM

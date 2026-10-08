@@ -1,0 +1,7 @@
+Failed to start server: TypeError: e.arrayBuffer is not a function
+    at ce (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/node_modules/@electric-sql/pglite/dist/chunk-WGR4JCLS.js:1:8534)
+    at pe.qe (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/node_modules/@electric-sql/pglite/dist/index.js:3:243364)
+    at async pe._checkReady (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/node_modules/@electric-sql/pglite/dist/index.js:3:238920)
+    at async pe.query (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:255)
+    at async initDatabase (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/index.js:23:3)
+    at async start (file:///tmp/runs/smokes/qwen-q4/kanban-board/execution/runs/301/app/server/index.js:412:5)

@@ -1,0 +1,10 @@
+Starting server...
+Creating tables...
+Tables created
+Checking for existing columns...
+Column count: 3
+Column count type: number
+Columns already exist, skipping seed
+Database initialized
+Server running on http://localhost:3001
+Column range for todo : { min_pos: 0, max_pos: 0 }

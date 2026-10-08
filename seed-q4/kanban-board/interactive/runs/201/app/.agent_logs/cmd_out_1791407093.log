@@ -1,0 +1,24 @@
+npm notice run kanban-board@1.0.0 dev
+npm notice run concurrently "npm run backend" "npm run frontend"
+[0] npm notice run kanban-board@1.0.0 backend
+[0] npm notice run node src/server.js
+[1] npm notice run kanban-board@1.0.0 frontend
+[1] npm notice run cd frontend && npm run dev
+[1] npm notice run frontend@0.0.0 dev
+[1] npm notice run vite
+[1] 
+[1]   VITE v8.3.0  ready in 116 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] 4:04:54 PM [vite] http proxy error: /api/stream
+[1] Error: connect ECONNREFUSED 127.0.0.1:3000
+[1]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2021:16)
+[1] 4:04:54 PM [vite] http proxy error: /api/board
+[1] Error: connect ECONNREFUSED 127.0.0.1:3000
+[1]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2021:16)
+[0] Server running on port 3000
+[1] 4:05:20 PM [vite] vite.config.js changed, restarting server...
+[1] 4:05:20 PM [vite] server restarted.
+[1] npm run frontend exited with code SIGTERM
+[0] npm run backend exited with code SIGTERM

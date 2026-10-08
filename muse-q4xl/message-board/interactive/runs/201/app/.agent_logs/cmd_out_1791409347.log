@@ -1,0 +1,45 @@
+npm notice run dev
+npm notice run concurrently "npm run dev --workspace=backend" "npm run dev --workspace=frontend"
+[1] npm notice run frontend@1.0.0 dev
+[1] npm notice run vite
+[0] npm notice run backend@1.0.0 dev
+[0] npm notice run node server.js
+[0] node:fs:1410
+[0]   const result = binding.mkdir(
+[0]                          ^
+[0] 
+[0] Error: ENOENT: no such file or directory, mkdir '/tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend/file:/tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend/data/db.sqlite'
+[0]     at Module.mkdirSync (node:fs:1410:26)
+[0]     at new m (file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/fs/nodefs.js:1:248)
+[0]     at Ae (file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:1:5434)
+[0]     at async pe.qe (file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:241364)
+[0]     at async pe._checkReady (file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:238920)
+[0]     at async pe.exec (file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:463)
+[0]     at async file:///tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend/server.js:19:1 {
+[0]   errno: -2,
+[0]   code: 'ENOENT',
+[0]   syscall: 'mkdir',
+[0]   path: '/tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend/file:/tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend/data/db.sqlite'
+[0] }
+[0] 
+[0] Node.js v24.21.0
+[0] npm error Lifecycle script `dev` failed with error:
+[0] npm error code 1
+[0] npm error path /tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend
+[0] npm error workspace backend@1.0.0
+[0] npm error location /tmp/runs/smokes/muse-q4xl/message-board/interactive/runs/201/app/backend
+[0] npm error command failed
+[0] npm error command sh -c node server.js
+[0] npm run dev --workspace=backend exited with code 1
+[1] 
+[1]   VITE v5.4.21  ready in 102 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[1] 4:42:30 PM [vite] http proxy error: /api/messages
+[1] Error: connect ECONNREFUSED 127.0.0.1:3000
+[1]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2021:16)
+[1] 4:42:30 PM [vite] http proxy error: /api/stream
+[1] Error: connect ECONNREFUSED 127.0.0.1:3000
+[1]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2021:16)
+[1] npm run dev --workspace=frontend exited with code SIGTERM

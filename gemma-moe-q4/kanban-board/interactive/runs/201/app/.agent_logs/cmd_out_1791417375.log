@@ -1,0 +1,8 @@
+npm notice run backend@1.0.0 start
+npm notice run node index.js
+Backend listening on port 3001
+Client 1791417379412 connected
+Client 1791417379412 disconnected
+Client 1791417382595 connected
+Client 1791417382595 disconnected
+Client 1791417385485 connected

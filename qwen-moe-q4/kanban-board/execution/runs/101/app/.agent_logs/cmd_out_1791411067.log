@@ -1,0 +1,16 @@
+npm notice run kanban-board@1.0.0 dev
+npm notice run concurrently "npm run dev:backend" "npm run dev:frontend"
+[1] npm notice run kanban-board@1.0.0 dev:frontend
+[1] npm notice run cd frontend && vite
+[0] npm notice run kanban-board@1.0.0 dev:backend
+[0] npm notice run node server.js
+[0] Kanban board server running on http://localhost:3000
+[1] 
+[1]   VITE v8.0.16  ready in 168 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] Killed
+[0] npm run dev:backend exited with code 137
+[1] Killed
+[1] npm run dev:frontend exited with code 137

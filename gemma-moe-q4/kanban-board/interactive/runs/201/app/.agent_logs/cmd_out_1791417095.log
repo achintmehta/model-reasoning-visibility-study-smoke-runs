@@ -1,0 +1,11 @@
+npm notice run backend@1.0.0 start
+npm notice run node index.js
+Seeded columns
+Backend listening on port 3001
+Client 1791417102320 connected
+Client 1791417102320 disconnected
+Client 1791417125525 connected
+Error: Must provide beforeId or afterId
+    at file:///tmp/runs/smokes/gemma-moe-q4/kanban-board/interactive/runs/201/app/kanban-board/backend/index.js:152:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async /tmp/runs/smokes/gemma-moe-q4/kanban-board/interactive/runs/201/app/kanban-board/backend/node_modules/@electric-sql/pglite/dist/index.cjs:11:1761

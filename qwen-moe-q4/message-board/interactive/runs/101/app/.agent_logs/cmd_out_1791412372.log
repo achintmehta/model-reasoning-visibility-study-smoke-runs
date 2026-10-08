@@ -1,0 +1,11 @@
+npm notice run realtime-message-board@1.0.0 npx
+npm notice run 'vite' --port 5173
+
+  VITE v5.4.21  ready in 102 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+5:36:35 PM [vite] page reload main.js
+5:36:45 PM [vite] vite.config.js changed, restarting server...
+5:36:45 PM [vite] server restarted.
+5:36:49 PM [vite] page reload main.js

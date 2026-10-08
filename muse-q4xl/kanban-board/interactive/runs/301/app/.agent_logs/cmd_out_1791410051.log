@@ -1,0 +1,7 @@
+Backend listening on http://localhost:3000
+SSE client connected, total: 1
+SSE client connected, total: 2
+SSE client disconnected, total: 1
+SSE client connected, total: 2
+SSE client disconnected, total: 1
+SSE client connected, total: 2

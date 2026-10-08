@@ -1,0 +1,7 @@
+Database initialized.
+Backend server running on http://localhost:3000
+SSE client connected. Total clients: 1
+SSE client disconnected. Total clients: 0
+SSE client connected. Total clients: 1
+SSE broadcast to client: write returned true
+Broadcast complete. Sent to 1/1 clients.

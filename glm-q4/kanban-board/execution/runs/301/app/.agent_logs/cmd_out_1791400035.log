@@ -1,0 +1,12 @@
+Starting server...
+Creating tables...
+Tables created
+Checking for existing columns...
+Column count: 3
+Column count type: number
+Columns already exist, skipping seed
+Database initialized
+Server running on http://localhost:3001
+Error moving card: TypeError: Assignment to constant variable.
+    at file:///tmp/runs/smokes/glm-q4/kanban-board/execution/runs/301/app/backend/server.mjs:196:16
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

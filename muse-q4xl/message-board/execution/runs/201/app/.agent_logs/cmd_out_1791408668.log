@@ -1,0 +1,7 @@
+npm notice run frontend@1.0.0 dev
+npm notice run vite --port 5173
+
+  VITE v5.4.21  ready in 103 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose

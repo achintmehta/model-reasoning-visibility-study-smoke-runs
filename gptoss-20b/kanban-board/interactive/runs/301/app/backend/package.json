@@ -1,0 +1,13 @@
+{
+  "name": "kanban-backend",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@electric-sql/pglite": "^0.3.0",
+    "cors": "^2.8.5"
+  }
+}

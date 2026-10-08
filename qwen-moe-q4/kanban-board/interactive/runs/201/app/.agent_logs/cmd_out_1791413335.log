@@ -1,0 +1,24 @@
+npm notice run dev
+npm notice run concurrently "npm run dev:server" "npm run dev:client"
+[1] npm notice run dev:client
+[1] npm notice run cd client && npm run dev
+[0] npm notice run dev:server
+[0] npm notice run node server/index.js
+[1] npm notice run kanban-board-client@0.0.1 dev
+[1] npm notice run vite
+[1] failed to load config from /tmp/runs/smokes/qwen-moe-q4/kanban-board/interactive/runs/201/app/client/vite.config.js
+[1] error when starting dev server:
+[1] Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'http-proxy' imported from /tmp/runs/smokes/qwen-moe-q4/kanban-board/interactive/runs/201/app/client/node_modules/.vite-temp/vite.config.js.timestamp-1791413335555-383e32153ac908.mjs
+[1]     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+[1]     at packageResolve (node:internal/modules/esm/resolve:784:25)
+[1]     at moduleResolve (node:internal/modules/esm/resolve:873:18)
+[1]     at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+[1]     at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+[1]     at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+[1]     at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+[1]     at #resolve (node:internal/modules/esm/loader:687:17)
+[1]     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+[1]     at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+[1] npm run dev:client exited with code 1
+[0] Kanban server running on port 3001
+[0] npm run dev:server exited with code SIGTERM

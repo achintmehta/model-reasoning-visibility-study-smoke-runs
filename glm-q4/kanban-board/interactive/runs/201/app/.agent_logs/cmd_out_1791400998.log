@@ -1,0 +1,12 @@
+Initializing database...
+Failed to initialize server: RuntimeError: Aborted(). Build with -sASSERTIONS for more info.
+    at abort (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:1:79379)
+    at __abort_js (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:2:63229)
+    at wasm://wasm/021d3ac6:wasm-function[11084]:0x5b015a
+    at wasm://wasm/021d3ac6:wasm-function[9509]:0x508b38
+    at wasm://wasm/021d3ac6:wasm-function[9689]:0x51a3ff
+    at wasm://wasm/021d3ac6:wasm-function[181]:0x6606c
+    at Module._pgl_backend (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:25358)
+    at L.Ve (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:226289)
+    at async L._checkReady (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/index.js:3:220312)
+    at async L.exec (file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/node_modules/@electric-sql/pglite/dist/chunk-F2DQ4FIK.js:8:463)

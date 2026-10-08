@@ -1,0 +1,27 @@
+npm notice run message-board@1.0.0 dev
+npm notice run concurrently "npm run dev --prefix backend" "npm run dev --prefix frontend"
+[0] npm notice run backend@1.0.0 dev
+[0] npm notice run node index.js
+[1] npm notice run frontend@0.0.0 dev
+[1] npm notice run vite
+[0] /tmp/runs/smokes/gemma-moe-q4/message-board/interactive/runs/101/app/backend/index.js:18
+[0] const db = new PGLite(DB_DIR);
+[0]            ^
+[0] 
+[0] TypeError: PGLite is not a constructor
+[0]     at Object.<anonymous> (/tmp/runs/smokes/gemma-moe-q4/message-board/interactive/runs/101/app/backend/index.js:18:12)
+[0]     at Module._compile (node:internal/modules/cjs/loader:1929:14)
+[0]     at Object..js (node:internal/modules/cjs/loader:2060:10)
+[0]     at Module.load (node:internal/modules/cjs/loader:1651:32)
+[0]     at Module._load (node:internal/modules/cjs/loader:1443:12)
+[0]     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+[0]     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+[0]     at node:internal/main/run_main_module:33:47
+[0] 
+[0] Node.js v24.21.0
+[0] npm run dev --prefix backend exited with code 1
+[1] 
+[1]   VITE v8.3.0  ready in 133 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose

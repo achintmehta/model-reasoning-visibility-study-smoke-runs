@@ -1,0 +1,64 @@
+npm notice run kanban-board@1.0.0 dev
+npm notice run concurrently "npm run start:backend" "npm run start:frontend"
+[1] npm notice run kanban-board@1.0.0 start:frontend
+[1] npm notice run cd frontend && npm run dev
+[0] npm notice run kanban-board@1.0.0 start:backend
+[0] npm notice run node server.js
+[1] npm notice run frontend@0.0.0 dev
+[1] npm notice run vite
+[1] 
+[1]   VITE v8.3.0  ready in 128 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] error: cannot insert multiple commands into a prepared statement
+[0]     at Ie.la (/tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/index.cjs:4:22506)
+[0]     at Ie.Qa (/tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/index.cjs:4:19876)
+[0]     at Ie.parse (/tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/index.cjs:4:18520)
+[0]     at _e.Ia (/tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/index.cjs:15:1788)
+[0]     at /tmp/runs/smokes/seed-q4/kanban-board/execution/runs/301/app/kanban-board/node_modules/@electric-sql/pglite/dist/index.cjs:15:1161
+[0]     at wasm://wasm/0267bb86:wasm-function[10930]:0x5a5ccf
+[0]     at wasm://wasm/0267bb86:wasm-function[3585]:0x27eaeb
+[0]     at wasm://wasm/0267bb86:wasm-function[3627]:0x2869d1
+[0]     at wasm://wasm/0267bb86:wasm-function[3637]:0x286c2d
+[0]     at wasm://wasm/0267bb86:wasm-function[9914]:0x54fd4d {
+[0]   length: 123,
+[0]   severity: 'ERROR',
+[0]   code: '42601',
+[0]   detail: undefined,
+[0]   hint: undefined,
+[0]   position: undefined,
+[0]   internalPosition: undefined,
+[0]   internalQuery: undefined,
+[0]   where: undefined,
+[0]   schema: undefined,
+[0]   table: undefined,
+[0]   column: undefined,
+[0]   dataType: undefined,
+[0]   constraint: undefined,
+[0]   file: 'postgres.c',
+[0]   line: '1581',
+[0]   routine: 'exec_parse_message',
+[0]   query: '\n' +
+[0]     '      CREATE TABLE IF NOT EXISTS columns (\n' +
+[0]     '        id SERIAL PRIMARY KEY,\n' +
+[0]     '        title TEXT NOT NULL,\n' +
+[0]     '        position NUMERIC NOT NULL DEFAULT 0\n' +
+[0]     '      );\n' +
+[0]     '      \n' +
+[0]     '      CREATE TABLE IF NOT EXISTS cards (\n' +
+[0]     '        id SERIAL PRIMARY KEY,\n' +
+[0]     '        column_id INTEGER NOT NULL REFERENCES columns(id) ON DELETE CASCADE,\n' +
+[0]     '        text TEXT NOT NULL,\n' +
+[0]     '        position NUMERIC NOT NULL DEFAULT 0,\n' +
+[0]     '        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP\n' +
+[0]     '      );\n' +
+[0]     '      \n' +
+[0]     '      CREATE INDEX IF NOT EXISTS cards_column_position_idx \n' +
+[0]     '      ON cards (column_id, position);\n' +
+[0]     '    ',
+[0]   params: [],
+[0]   queryOptions: undefined
+[0] }
+[0] npm run start:backend exited with code 0
+[1] npm run start:frontend exited with code SIGTERM

@@ -1,0 +1,137 @@
+npm notice run realtime-message-board@1.0.0 dev
+npm notice run concurrently "npm run dev:server" "npm run dev:client"
+[1] npm notice run realtime-message-board@1.0.0 dev:client
+[1] npm notice run vite
+[0] npm notice run realtime-message-board@1.0.0 dev:server
+[0] npm notice run node --watch backend/server.js
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:3
+[0] import { PGLite } from '@electric-sql/pglite';
+[0]          ^^^^^^
+[0] SyntaxError: The requested module '@electric-sql/pglite' does not provide an export named 'PGLite'
+[0]     at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+[0]     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[0]     at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+[0]     at async node:internal/modules/esm/loader:647:26
+[0]     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[1] 
+[1]   VITE v5.4.21  ready in 94 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:14
+[0] const pg = new PGLite({ dataDir });
+[0]            ^
+[0] 
+[0] ReferenceError: PGLite is not defined
+[0]     at file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:14:12
+[0]     at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+[0]     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[0]     at async node:internal/modules/esm/loader:647:26
+[0]     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:17
+[0] const pg = new PGLite({ dataDir });
+[0]            ^
+[0] 
+[0] ReferenceError: PGLite is not defined
+[0]     at file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:17:12
+[0]     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:16
+[0] const pg = new PGLite({ dataDir });
+[0]            ^
+[0] 
+[0] ReferenceError: PGLite is not defined
+[0]     at file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:16:12
+[0]     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:23
+[0] const pg = new PGLite({ dataDir });
+[0]       ^
+[0] 
+[0] SyntaxError: Identifier 'pg' has already been declared
+[0]     at compileSourceTextModule (node:internal/modules/esm/utils:319:16)
+[0]     at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:89:18)
+[0]     at #translate (node:internal/modules/esm/loader:438:20)
+[0]     at afterLoad (node:internal/modules/esm/loader:506:29)
+[0]     at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:511:12)
+[0]     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+[0]     at afterResolve (node:internal/modules/esm/loader:611:52)
+[0]     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+[0]     at node:internal/modules/esm/loader:636:32
+[0]     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:22
+[0] const dataDir = './data';
+[0]       ^
+[0] 
+[0] SyntaxError: Identifier 'dataDir' has already been declared
+[0]     at compileSourceTextModule (node:internal/modules/esm/utils:319:16)
+[0]     at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:89:18)
+[0]     at #translate (node:internal/modules/esm/loader:438:20)
+[0]     at afterLoad (node:internal/modules/esm/loader:506:29)
+[0]     at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:511:12)
+[0]     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+[0]     at afterResolve (node:internal/modules/esm/loader:611:52)
+[0]     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+[0]     at node:internal/modules/esm/loader:636:32
+[0]     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] file:///tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js:22
+[0] const dataDir = './data';
+[0]       ^
+[0] 
+[0] SyntaxError: Identifier 'dataDir' has already been declared
+[0]     at compileSourceTextModule (node:internal/modules/esm/utils:319:16)
+[0]     at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:89:18)
+[0]     at #translate (node:internal/modules/esm/loader:438:20)
+[0]     at afterLoad (node:internal/modules/esm/loader:506:29)
+[0]     at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:511:12)
+[0]     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+[0]     at afterResolve (node:internal/modules/esm/loader:611:52)
+[0]     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+[0]     at node:internal/modules/esm/loader:636:32
+[0]     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+[0] 
+[0] Node.js v24.21.0
+[0] Failed running 'backend/server.js'. Waiting for file changes before restarting...
+[0] Change detected in '/tmp/runs/smokes/glm-q4/message-board/execution/runs/201/app/backend/server.js'
+[0] Restarting 'backend/server.js'
+[0] Database initialized successfully
+[0] Server running on http://localhost:3001
+[0] API endpoint: http://localhost:3001/api/messages
+[0] SSE endpoint: http://localhost:3001/api/stream
+[0] Client disconnected from SSE
+[1] 1:43:18 PM [vite] page reload frontend/src/index.html
+[1] 1:43:39 PM [vite] page reload frontend/index.html
+[1] 1:43:41 PM [vite] page reload frontend/index.html
+[1] 1:43:53 PM [vite] page reload frontend/index.html
+[1] 1:43:57 PM [vite] page reload frontend/index.html
+[1] 1:43:57 PM [vite] page reload frontend/src/index.html
+[1] npm run dev:client exited with code SIGTERM
+[0] npm run dev:server exited with code SIGTERM

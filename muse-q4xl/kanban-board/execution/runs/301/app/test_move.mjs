@@ -1,0 +1,10 @@
+import { PGlite } from '@electric-sql/pglite';
+const db = await PGlite.create('./data/kanban.db');
+await db.exec('BEGIN');
+const cur = await db.query('SELECT id, column_id, position FROM cards WHERE id = $1', [2]);
+console.log('cur', cur);
+const columnId = 2;
+const newPosition = 0;
+await db.exec('UPDATE cards SET column_id = $1, position = $2 WHERE id = $3', [columnId, newPosition, 2]);
+await db.exec('COMMIT');
+console.log('done');

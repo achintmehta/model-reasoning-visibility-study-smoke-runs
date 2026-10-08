@@ -1,0 +1,15 @@
+(node:35142) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/backend/server.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+file:///tmp/runs/smokes/glm-q4/kanban-board/interactive/runs/201/app/backend/server.js:3
+import { PGLite } from '@electric-sql/pglite';
+         ^^^^^^
+SyntaxError: The requested module '@electric-sql/pglite' does not provide an export named 'PGLite'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0

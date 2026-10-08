@@ -1,0 +1,19 @@
+npm notice run kanban-board@1.0.0 dev
+npm notice run concurrently "npm run dev:server" "npm run dev:client"
+[0] npm notice run kanban-board@1.0.0 dev:server
+[0] npm notice run node server/server.js
+[1] npm notice run kanban-board@1.0.0 dev:client
+[1] npm notice run cd client && npx vite
+[1] npm warn install-scripts .npmrc allow-scripts setting is being ignored because --allow-scripts was passed on the command line
+[1] npm notice run kanban-board-client@1.0.0 npx
+[1] npm notice run 'vite'
+[1] [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[1] 
+[1]   VITE v5.4.21  ready in 107 ms
+[1] 
+[1]   ➜  Local:   http://localhost:3000/
+[1]   ➜  Network: use --host to expose
+[0] Database initialized
+[0] Kanban board server running on http://localhost:3001
+[1] npm run dev:client exited with code SIGTERM
+[0] npm run dev:server exited with code SIGTERM

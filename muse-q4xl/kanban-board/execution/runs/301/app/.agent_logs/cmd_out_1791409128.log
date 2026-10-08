@@ -1,0 +1,27 @@
+Backend listening on http://localhost:3001
+error: there is no parameter $3
+    at ye.Ve (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:17602)
+    at ye.nt (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:14988)
+    at ye.parse (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:13740)
+    at pe.execProtocol (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/index.js:3:239489)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async pe.l (file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:1911)
+    at async file:///tmp/runs/smokes/muse-q4xl/kanban-board/execution/runs/301/app/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:2923 {
+  length: 94,
+  severity: 'ERROR',
+  code: '42P02',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_expr.c',
+  line: '867',
+  routine: 'transformParamRef'
+}

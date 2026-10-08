@@ -1,0 +1,7 @@
+Database initialized successfully
+Server running on http://localhost:3001
+API endpoint: http://localhost:3001/api/messages
+SSE endpoint: http://localhost:3001/api/stream
+Message inserted: Test message from curl
+Client disconnected from SSE
+Client disconnected from SSE

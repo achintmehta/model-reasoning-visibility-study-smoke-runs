@@ -1,0 +1,4 @@
+node_modules/
+.pglite-data/
+dist/
+*.log
