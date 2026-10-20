@@ -1,6 +1,8 @@
-# Smoke runs — study 42: does a coding agent's model need to re-read its own reasoning?
+# Smoke runs — does a coding agent's model need to re-read its own reasoning?
 
-This repository holds the **certifying smoke set** of study 42: 66 short agent runs, made on
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23239989.svg)](https://doi.org/10.5281/zenodo.23239989)
+
+This repository holds the **certifying smoke set** of the study: 66 short agent runs, made on
 2026-10-07, that check the whole pipeline (models, server, harness, arms, logging) before the
 pre-registered grid is run. Every run here was made with the frozen harness and server settings
 the grid will use, and the set was checked by the gate script included here (`verify_smokes.py`).
@@ -28,8 +30,8 @@ gpt-oss-20b and Muse Glimmer 30B have no off-switch, so they run UNSEEN and SEEN
 
 | what | where |
 |---|---|
-| harness (the agent, the run wrappers, the tasks and rubrics) | not public; its code at commit `5ac366f4175dc0929c28ad45e1560d26760f83fa` (tag to be added) is archived with the OSF registration. Every run records this commit as `harness_git` in its `manifest.json` |
-| protocol and study plan | the OSF pre-registration of study 42 (link to be added) |
+| harness (the agent, the run wrappers, the tasks and rubrics) | the repository is not public. These runs were made at commit `5ac366f4175dc0929c28ad45e1560d26760f83fa` (tag `model-reasoning-visibility-study-freeze-100826`), which every run records as `harness_git` in its `manifest.json`. The public copy of the harness is the archive of the study's later freeze tag, `model-reasoning-visibility-plan-freeze-101926` (commit `90a4758`; sha256 `6ee3bb5808338941662dcec67fe0e4936975474a2e3da0a5b48b7659af95066b`), in the plan repository `github.com/achintmehta/model-reasoning-visibility-plan` (`harness/`). It differs from `5ac366f` only in `tasks/rubrics/`, the grader, which no run reads: every file these runs executed or read is in it unchanged |
+| protocol and study plan | the plan repository, `github.com/achintmehta/model-reasoning-visibility-plan`, and the study's OSF pre-registration (link to be added) |
 | these smoke runs | this repository, `github.com/achintmehta/model-reasoning-visibility-study-smoke-runs` |
 | grid data | to be deposited on Zenodo when the grid is complete |
 
@@ -41,6 +43,9 @@ smoke-runs/
 ├── verify_smokes.py          the gate script that certified this set
 ├── verify_smokes_result.txt  its output on this set
 ├── decoding-registry.json    the per-model sampling settings the runs were checked against
+├── LICENSE                   CC BY 4.0
+├── CITATION.cff              how to cite this set
+├── .zenodo.json              the metadata Zenodo archives the repository with
 ├── batch-state/              the batch runner's schedule and progress records
 └── <model>/                  one folder per model (8)
     └── <task>/               message-board | kanban-board
@@ -69,8 +74,8 @@ NVIDIA RTX PRO 6000 Blackwell machine. The folder name is the run wrapper's mode
 
 `message-board` and `kanban-board` are the two apps the agent is asked to build from a written
 spec (a real-time message board, and a collaborative kanban board), each with a Node.js
-backend using PGlite and a browser frontend. The specs are part of the harness archive on OSF
-(`tasks/`).
+backend using PGlite and a browser frontend. The specs are part of the harness archive in the plan
+repository (`tasks/`).
 
 ### Conditions
 
@@ -181,3 +186,21 @@ that no think, channel or turn marker is left in any reply text the harness kept
 - `node_modules/` folders, which are rebuilt from each lockfile with `npm ci`.
 - The blind-grading key, which stays private until grading of the grid is finished. Smoke runs
   are not graded.
+
+## License
+
+The run data, the documentation and `verify_smokes.py` are licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see `LICENSE`. The apps in the
+runs' `app/` folders were written by the models under test; their dependencies keep their own
+licenses.
+
+## Citation
+
+Mehta, A. (2026). *Certifying smoke runs of the study: does a coding agent's model need to re-read its own reasoning?* (Version v1.0.0) [Data set]. Zenodo.
+https://doi.org/10.5281/zenodo.23239990
+
+To cite the set whatever its version, use the concept DOI
+[10.5281/zenodo.23239989](https://doi.org/10.5281/zenodo.23239989), which always resolves to
+the latest version.
+
+`CITATION.cff` carries the same, for GitHub's "Cite this repository".
